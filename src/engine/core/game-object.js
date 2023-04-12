@@ -136,7 +136,7 @@ export default class GameObject {
    * GameObject는 currentRenderTarget의 하위로 이동하게 된다.
    *
    * <!-- from -->
-   * 
+   *
    * <renderTarget>
    *   <parentGameObj>     <-- parent
    *     <GameObject>      <-- this
@@ -146,7 +146,7 @@ export default class GameObject {
    * </renderTarget>
    *
    * <!-- to -->
-   * 
+   *
    * <renderTarget>
    *   <parentGameObj>     <-- parent
    *   </parentGameObj>
@@ -167,7 +167,9 @@ export default class GameObject {
       // 현재 element를 currentRenderTarget하위로 이동.
       // 이동하면서 자동으로 html속성을 변경시켜줌.
       // addChild(), removeChild(), setParent() 참고.
-      SceneManager.getCurrentSceneElement().appendChild(this.element);
+      if (this.element !== undefined) {
+        SceneManager.getCurrentSceneElement().appendChild(this.element);
+      }
     }
   }
 
@@ -197,5 +199,28 @@ export default class GameObject {
 
   setRotation(degree) {
     this.matrix.rotation = degree;
+  }
+
+  destroy() {
+    /* JS에는 클래스를 삭제하는 예약어가 따로 없다.
+     * 단지 어떤 변수를 아무도 참조하지 않을 때 가비지 컬렉터(GC)가
+     * 자동으로 수집해 제거한다.
+     *
+     * 그러므로 이 GameObject를 제거하기 위해서는 이 GameObject를
+     * 아무도 참조하지 않으면 된다.
+     * 따라서 부모가 이 GameObject를 참조하지 않도록 removeParent를 호출하고,
+     * 이 GameObject의 자식객체들도 연쇄적으로 삭제하면 된다.
+     *
+     * 그리고 DOM에서도 삭제되어야 완전히 제거된 것이므로,
+     * html element도 삭제하면 된다.
+     */
+    if (this.parentGameObj !== undefined) {
+      this.removeParent();
+    }
+    this.element.remove();
+
+    while (this.childGameObjs.length) {
+      this.childGameObjs[0].destroy();
+    }
   }
 }
