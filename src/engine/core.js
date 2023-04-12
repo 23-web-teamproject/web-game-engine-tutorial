@@ -16,7 +16,7 @@ import Vector from "/src/engine/core/vector.js";
 import Matrix from "/src/engine/core/matrix.js";
 import GameObject from "/src/engine/core/game-object.js";
 import Sprite from "/src/engine/core/sprite.js";
-import SoundFx from "/src/engine/core/soundfx.js";
+import SoundEffect from "/src/engine/core/sound-effect.js";
 import ParticleEffect from "/src/engine/core/particle-effect.js";
 
 export {
@@ -28,6 +28,6 @@ export {
   Matrix,
   GameObject,
   Sprite,
-  SoundFx
+  SoundEffect,
   ParticleEffect
 }
