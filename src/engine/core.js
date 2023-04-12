@@ -17,6 +17,7 @@ import Matrix from "/src/engine/core/matrix.js";
 import GameObject from "/src/engine/core/game-object.js";
 import Sprite from "/src/engine/core/sprite.js";
 import SoundFx from "/src/engine/core/soundfx.js";
+import ParticleEffect from "/src/engine/core/particle-effect.js";
 
 export {
   CSSManager,
@@ -28,4 +29,5 @@ export {
   GameObject,
   Sprite,
   SoundFx
+  ParticleEffect
 }
