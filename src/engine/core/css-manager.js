@@ -53,4 +53,8 @@ export default class CSSManager {
     const height = parseInt(this.element.style.height, 10);
     return new Vector(width, height);
   }
+
+  setAlpha(alpha) {
+    this.element.style.opacity = alpha;
+  }
 }
