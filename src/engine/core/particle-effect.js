@@ -13,24 +13,26 @@ class Particle extends Sprite {
     super(options.imageSrc);
     this.options = options;
     this.lifeTime = options.lifeTime;
-    this.direction = 
-      options.direction - options.diffuseness +
-        Math.random() * options.diffuseness * 2;
+    this.direction =
+      options.direction -
+      options.diffuseness +
+      Math.random() * options.diffuseness * 2;
     this.speed = options.speed;
   }
 
   update(deltaTime) {
     this.lifeTime -= deltaTime;
     this.spreadOut(deltaTime);
+    this.addEffect();
     this.fadeAway();
-    
-    if(this.lifeTime < 0){
+
+    if (this.lifeTime < 0) {
       this.destroy();
     }
   }
 
   spreadOut(deltaTime) {
-    const rad = this.direction * Math.PI / 180;
+    const rad = (this.direction * Math.PI) / 180;
     const forward = new Vector(
       Math.cos(rad) * this.speed * deltaTime,
       Math.sin(rad) * this.speed * deltaTime
@@ -39,10 +41,15 @@ class Particle extends Sprite {
   }
 
   fadeAway() {
-    this.setScale(
-      this.lifeTime / this.options.lifeTime,
-      this.lifeTime / this.options.lifeTime
-    );
+    if (this.options.isScaleFade) {
+      this.setScale(
+        this.lifeTime / this.options.lifeTime,
+        this.lifeTime / this.options.lifeTime
+      );
+    }
+    if (this.options.isAlphaFade) {
+      this.cssManager.setAlpha(this.lifeTime / this.options.lifeTime);
+    }
   }
 }
 
@@ -59,11 +66,16 @@ export default class ParticleEffect extends GameObject {
       isEnable: false,
 
       /*
-       * 파티클의 종류를 의미한다.
-       * 0 = alpha fade (파티클이 점점 투명해짐)
-       * 1 = size fade (파티클이 점점 작아짐)
+       * 파티클이 점점 크기가 작아질건지를 의미한다.
+       * 기본값은 true다.
        */
-      particleType: 0,
+      isScaleFade: true,
+
+      /*
+       * 파티클이 점점 투명해질건지를 의미한다.
+       * 기본값은 true다.
+       */
+      isAlphaFade: true,
 
       /*
        * 1초동안 생성할 파티클의 개수를 의미한다.
@@ -117,12 +129,14 @@ export default class ParticleEffect extends GameObject {
     super.update(deltaTime);
     if (this.isEnable) {
       this.elapsedTime += deltaTime;
-      
+
       // 파티클 효과가 켜지면 파티클들을 생성한다.
-      // 누적된 시간이 unitTime보다 커질 때에만 파티클을 생성한다. 
+      // 누적된 시간이 unitTime보다 커질 때에만 파티클을 생성한다.
       if (this.elapsedTime > this.unitTime) {
         this.elapsedTime %= this.unitTime;
         const newParticle = new Particle(this.options);
+        const centerPos = newParticle.getCenterPos();
+        newParticle.addPos(-centerPos.x, -centerPos.y);
         this.addChild(newParticle);
       }
     }
