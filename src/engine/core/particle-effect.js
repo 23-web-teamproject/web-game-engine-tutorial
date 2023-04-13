@@ -23,7 +23,6 @@ class Particle extends Sprite {
   update(deltaTime) {
     this.lifeTime -= deltaTime;
     this.spreadOut(deltaTime);
-    this.addEffect();
     this.fadeAway();
 
     if (this.lifeTime < 0) {
