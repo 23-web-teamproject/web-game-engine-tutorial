@@ -1,5 +1,5 @@
-import Vector from "/src/engine/core/vector.js";
-import Matrix from "/src/engine/core/matrix.js";
+import Vector from "/src/engine/data-structure/vector.js";
+import Matrix from "/src/engine/data-structure/matrix.js";
 
 export default class Transform {
   constructor() {

@@ -6,7 +6,7 @@
  */
 import GameObject from "/src/engine/core/game-object.js";
 import Sprite from "/src/engine/core/sprite.js";
-import Vector from "/src/engine/core/vector.js";
+import Vector from "/src/engine/data-structure/vector.js";
 
 class Particle extends Sprite {
   constructor(options) {
@@ -30,6 +30,11 @@ class Particle extends Sprite {
     }
   }
 
+  draw() {
+
+    super.draw();
+  }
+
   spreadOut(deltaTime) {
     const rad = (this.direction * Math.PI) / 180;
     const forward = new Vector(
@@ -47,7 +52,8 @@ class Particle extends Sprite {
       );
     }
     if (this.options.isAlphaFade) {
-      this.cssManager.setAlpha(this.lifeTime / this.options.lifeTime);
+      // TODO
+      // alpha값 조절할 방법 추가해야함.
     }
   }
 }
@@ -81,7 +87,7 @@ export default class ParticleEffect extends GameObject {
        * 1 ~ 100 사이의 값을 지정할 수 있다. 기본값은 10이다.
        * 파티클 생성 주기는 이 값에 의해 결정된다.
        */
-      numberOverOneSecond: 3,
+      numberOverOneSecond: 30,
 
       /*
        * 파티클이 생성되어 퍼져나가는 주 방향을 의미한다.
@@ -134,8 +140,11 @@ export default class ParticleEffect extends GameObject {
       if (this.elapsedTime > this.unitTime) {
         this.elapsedTime %= this.unitTime;
         const newParticle = new Particle(this.options);
-        const centerPos = newParticle.getCenterPos();
-        newParticle.addPos(-centerPos.x, -centerPos.y);
+        // TODO
+        // transformOrigin과 같은 속성이 좌상단으로 되어있다면?
+        // 
+        // const centerPos = newParticle.getCenterPos();
+        // newParticle.addPos(-centerPos.x, -centerPos.y);
         this.addChild(newParticle);
       }
     }

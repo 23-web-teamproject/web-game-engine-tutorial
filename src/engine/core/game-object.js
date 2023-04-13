@@ -1,4 +1,4 @@
-import Transform from "/src/engine/core/transform.js";
+import Transform from "/src/engine/data-structure/transform.js";
 import CanvasManager from "/src/engine/core/canvas-manager.js";
 
 export default class GameObject {

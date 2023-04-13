@@ -1,4 +1,4 @@
-import Vector from "/src/engine/core/vector.js";
+import Vector from "/src/engine/data-structure/vector.js";
 import RenderManager from "/src/engine/core/render-manager.js";
 
 const KEY_STATUS = {
