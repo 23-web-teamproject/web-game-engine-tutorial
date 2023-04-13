@@ -42,4 +42,13 @@ export default class CSSManager {
     this.element.style.width = width;
     this.element.style.height = height;
   }
+
+  getElementSize() {
+    if(this.element.style.width == ""){
+      return new Vector(0, 0);
+    }
+    const width = parseInt(this.element.style.width, 10);
+    const height = parseInt(this.element.style.height, 10);
+    return new Vector(width, height);
+  }
 }
