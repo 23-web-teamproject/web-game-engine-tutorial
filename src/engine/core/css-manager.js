@@ -36,4 +36,10 @@ export default class CSSManager {
 
     this.element.style.transform = `matrix(${values[0]}, ${values[1]}, ${values[2]}, ${values[3]}, ${values[4]}, ${values[5]})`;
   }
+
+  setBackgroundImage(src, width, height) {
+    this.element.style.backgroundImage = `url(${src})`;
+    this.element.style.width = width;
+    this.element.style.height = height;
+  }
 }
