@@ -1,6 +1,6 @@
 import GameObject from "/src/engine/core/game-object.js";
 
-class Sprite extends GameObject {
+export default class Sprite extends GameObject {
   constructor(src) {
     super();
     // TODO
@@ -31,5 +31,3 @@ class Sprite extends GameObject {
       );
   }
 }
-
-export default Sprite;
