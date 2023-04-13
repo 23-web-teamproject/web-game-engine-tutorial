@@ -1,25 +1,12 @@
 import GameObject from "/src/engine/core/game-object.js";
-import HTMLFactory from "/src/engine/core/html-factory.js";
 
 class Sprite extends GameObject {
   constructor(src) {
     super();
-    this.src = src;
-    this.findWidthAndHeightFromImage();
-    this.cssManager.setBackgroundImage(src, this.imgWidth, this.imgHeight);
-  }
-
-  /*
-   * div태그에 backgroundImage 속성으로 이미지를 보여주려고 하면
-   * width와 height속성이 지정되지 않아 화면에 나타나지 않는다.
-   * 그래서 img태그로 생성한 다음, naturalWidth, naturalHeight로
-   * 가로 세로 길이를 구한다.
-   */
-  findWidthAndHeightFromImage() {
-    const img = HTMLFactory.createImg(this.src);
-    this.imgWidth = img.naturalWidth;
-    this.imgHeight = img.naturalHeight;
-    img.remove();
+    // TODO
+    // src가 상대경로일 때도 처리해야함.
+    this.image = new Image();
+    this.image.src = src;
   }
 
   update(deltaTime) {
@@ -28,6 +15,20 @@ class Sprite extends GameObject {
 
   render() {
     super.render();
+  }
+
+  draw() {
+    // TODO
+    // canvas의 출력 기준점(transformOrigin)은 좌상단이다.
+    // 회전을 한다고 치면 좌상단을 기준으로 회전한다.
+    // 그러므로 만약 가운데를 기준으로 회전해야한다면,
+    // 그냥 출력 위치를 크기의 절반만큼 이동시켜서 출력하면 된다.
+    // 하지만 이럴경우 진짜 position이 달라질 수 있다.
+    this.context2d.drawImage(
+      this.image, 
+      -this.image.naturalWidth / 2,
+      -this.image.naturalHeight / 2
+      );
   }
 }
 

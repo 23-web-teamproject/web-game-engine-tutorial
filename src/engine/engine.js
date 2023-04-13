@@ -1,4 +1,4 @@
-import { InputManager, SceneManager } from "/src/engine/core.js";
+import { InputManager, SceneManager, RenderManager } from "/src/engine/module.js";
 import { Timer } from "/src/engine/utils.js";
 
 import ExampleScene from "/src/example-scene/scene.js";
@@ -37,7 +37,10 @@ class Engine {
       // Update game logic
       this.currentScene.update(this.timer.deltaTime);
       
-      // Update graphic logic
+      // Remove previous canvas
+      RenderManager.clearScreen();
+      
+      // Render updated objects
       this.currentScene.render();
     }, 10);
   }

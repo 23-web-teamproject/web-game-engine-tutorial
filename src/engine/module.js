@@ -11,7 +11,7 @@
 import CSSManager from "/src/engine/core/css-manager.js";
 import InputManager from "/src/engine/core/input-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
-import HTMLFactory from "/src/engine/core/html-factory.js";
+import RenderManager from "/src/engine/core/render-manager.js";
 import Vector from "/src/engine/core/vector.js";
 import Matrix from "/src/engine/core/matrix.js";
 import GameObject from "/src/engine/core/game-object.js";
@@ -23,7 +23,7 @@ export {
   CSSManager,
   InputManager,
   SceneManager,
-  HTMLFactory,
+  RenderManager,
   Vector,
   Matrix,
   GameObject,

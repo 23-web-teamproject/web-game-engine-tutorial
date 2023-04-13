@@ -1,11 +1,21 @@
-body {
-  margin: 0;
-  padding: 0;
+html {
+  background-color: black;
 }
 
-.scene-render-target {
-  width: 100%;
-  height: 100%;
+body{
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#render-target{
+  background-color: white;
+}
+
+.error-msg{
+  color: gray;
 }
 
 ::-webkit-scrollbar {
