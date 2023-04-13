@@ -1,3 +1,5 @@
+import Vector from "/src/engine/core/vector.js";
+
 const KEY_STATUS = {
   UP: 0,
   DOWN: 1,
@@ -8,8 +10,16 @@ const KEY_STATUS = {
 export default class InputManager {
   static keyTable = new Object();
   static keyStatus = new Object();
+  static mousePosition = new Vector(0, 0);
 
   constructor() {
+    this.buttonNameList = [
+      "leftMouse",
+      "middleMouse",
+      "rightMouse",
+      "mouse4",
+      "mouse5",
+    ]
     this.registerEventListener();
   }
 
@@ -27,9 +37,31 @@ export default class InputManager {
       }
       InputManager.keyTable[event.key][0] = false;
     });
+
+    document.addEventListener("mousedown", (event) => {
+      const buttonName = this.buttonNameList[event.button];
+      if(!InputManager.isKeyInKeyTable()){
+        InputManager.keyTable[buttonName] = new Array(false, false);
+      }
+      InputManager.keyTable[buttonName][0] = true;
+    });
+
+    document.addEventListener("mouseup", (event) => {
+      const buttonName = this.buttonNameList[event.button];
+      if(!InputManager.isKeyInKeyTable(buttonName)){
+        InputManager.keyTable[buttonName] = new Array(false, false);
+      }
+      InputManager.keyTable[buttonName][0] = false;
+    });
+
+    document.addEventListener("mousemove", (event) => {
+      InputManager.mousePosition.x = event.clientX;
+      InputManager.mousePosition.y = event.clientY;
+    });
   }
 
   update() {
+    // update keyboard keys status.
     for (let key in InputManager.keyTable) {
       InputManager.keyStatus[key] = InputManager.keyTable[key][1] * 2 + InputManager.keyTable[key][0];
       InputManager.keyTable[key][1] = InputManager.keyTable[key][0];
@@ -66,5 +98,9 @@ export default class InputManager {
   
   static isKeyInKeyTable(key) {
     return InputManager.keyTable.hasOwnProperty(key);
+  }
+
+  static getMousePos() {
+    return InputManager.mousePosition;
   }
 }
