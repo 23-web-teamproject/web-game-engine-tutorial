@@ -2,6 +2,7 @@ import CSSManager from "/src/engine/core/css-manager.js";
 import HTMLFactory from "/src/engine/core/html-factory.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 import Matrix from "/src/engine/core/matrix.js";
+import Vector from "/src/engine/core/vector.js";
 
 export default class GameObject {
   constructor() {
@@ -199,6 +200,37 @@ export default class GameObject {
 
   setRotation(degree) {
     this.matrix.rotation = degree;
+  }
+
+  getPos() {
+    return this.matrix.position;
+  }
+
+  /*
+   * css에서 html element의 position은 element의 좌상단을 의미한다.
+   * 만약 element의 좌상단 좌표값이 아닌, 중앙 좌표값을 알아야 한다면,
+   * getBoundingClientRect를 통해 element의 크기를 이용해 알 수 있다.
+   * TODO
+   * https://jsfiddle.net/pqtj87o1/
+   * 위 링크에서 볼 수 있듯이 함수의 호출 결과가
+   * GameObject와 똑같은 사각형이 아닌 내접하는 사각형을 반환한다.
+   * 그러므로 회전각도에 따른 사각형 길이를 매번 구하기보다
+   * 값을 저장해두고 활용하는 방법으로 진행하자.
+   */
+  getCenterPos() {
+    const size = this.cssManager.getElementSize();
+    return new Vector(
+      this.matrix.position.x + size.x / 2,
+      this.matrix.position.y + size.y / 2
+    );
+  }
+
+  getScale() {
+    return this.matrix.scale;
+  }
+
+  getRotation() {
+    return this.matrix.rotation;
   }
 
   destroy() {
