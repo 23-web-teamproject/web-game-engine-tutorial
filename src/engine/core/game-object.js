@@ -1,15 +1,13 @@
-import CSSManager from "/src/engine/core/css-manager.js";
-import HTMLFactory from "/src/engine/core/html-factory.js";
-import SceneManager from "/src/engine/core/scene-manager.js";
-import Matrix from "/src/engine/core/matrix.js";
-import Vector from "/src/engine/core/vector.js";
+import Transform from "/src/engine/core/transform.js";
+import CanvasManager from "/src/engine/core/canvas-manager.js";
 
 export default class GameObject {
   constructor() {
-    this.element = HTMLFactory.create();
-    this.cssManager = new CSSManager(this.element);
+    this.context2d = CanvasManager.getContext2D();
 
-    this.matrix = new Matrix();
+    this.transform = new Transform();
+    // 부모 matrix를 행렬곱한 결과를 담아 렌더링에 사용한다.
+    this.matrix = undefined;
     this.childGameObjs = new Array();
     this.parentGameObj = undefined;
   }
@@ -26,9 +24,19 @@ export default class GameObject {
 
   /*
    * 이 GameObject의 하위 GameObject들의 render를 실행시킨다.
+   * 부모의 matrix를 가져와 자신의 matrix와 행렬곱을 수행한다.
+   * 그 결과를 이용해 렌더링에 사용하고,
+   * 연결된 자식들의 렌더링을 수행하는데에 사용한다.
    */
   render() {
-    this.cssManager.updateMatrix(this.matrix);
+    this.context2d.save();
+
+    this.calculateMatrix();
+    // 계산한 matrix를 context에 넘겨 그릴 수 있게 한다.
+    this.setTransform();
+    this.draw();
+
+    this.context2d.restore();
 
     this.childGameObjs.forEach((child) => {
       child.render();
@@ -36,126 +44,82 @@ export default class GameObject {
   }
 
   /*
-   * 이 객체의 하위에 childGameObj를 넣는다.
-   * 자식 리스트에서 제일 뒤에 삽입된다.
-   *
-   * <!-- from -->
-   * <GameObject>         <-- this
-   *   ...
-   * </GameObject>
-   * ...
-   * <childGameObj>     <-- child
-   * </childGameObj>
-   *
-   * <!-- to -->
-   * <GameObject>         <-- this
-   *   ...
-   *   <childGameObj>     <-- child
-   *   </childGameObj>
-   * </GameObject>
-   * ...
+   * 현재 객체의 matrix를 계산할 때,
+   * 만약 부모 객체가 존재하면 부모의 matrix와 자신의 matrix를 곱하고,
+   * 부모 객체가 없다면 자신의 matrix만을 사용한다.
    */
+  calculateMatrix() {
+    if (this.isParentGameObjectExist()) {
+      this.multiplyParentMatrix();
+    } else {
+      this.convertTransformToMatrix();
+    }
+  }
+
+  isParentGameObjectExist() {
+    return this.parentGameObj !== undefined;
+  }
+
+  multiplyParentMatrix() {
+    const parentMatrix = this.parentGameObj.getMatrix();
+    this.matrix = parentMatrix.multiply(this.transform.toMatrix());
+  }
+
+  convertTransformToMatrix() {
+    this.matrix = this.transform.toMatrix();
+  }
+
+  /*
+   * 계산된 matrix를 context2d로 옮긴다.
+   */
+  setTransform() {
+    this.context2d.setTransform(
+      this.matrix.a,
+      this.matrix.b,
+      this.matrix.c,
+      this.matrix.d,
+      this.matrix.x,
+      this.matrix.y
+    );
+  }
+
+  /*
+   * 이 함수는 GameObject를 상속받은 객체마다 다르게 동작한다.
+   * GameObject 자체는 렌더링할 대상이 없지만 스프라이트나 도형, 텍스트 등
+   * GmaeObject를 상속받은 객체들은 명확히 렌더링할 대상이 존재한다.
+   * 그 때 이 함수안에서 어떻게 렌더링할건지 정의를 해 놓으면 된다.
+   * super.render()를 먼저 호출하고 대상을 렌더링할 경우
+   * 이미 렌더링된 자식 오브젝트를 덮어씌워 렌더링할 수 있으므로
+   * 렌더링만큼은 draw 함수 내에서만 정의를 하는게 좋다.
+   */
+  draw() {}
+
   addChild(childGameObj) {
     const index = this.childGameObjs.indexOf(childGameObj);
     if (index == -1) {
       // 하위 목록에 추가
       this.childGameObjs.push(childGameObj);
-      // child를 현재 GameObject의 html의 하위로 이동.
-      // 이동하면서 자동으로 element.parentElement도 현재 element로 변경된다.
-      this.element.appendChild(childGameObj.element);
+
       // childGameObj의 parentGameObj를 현재 GameObject로 변경.
       childGameObj.parentGameObj = this;
     }
   }
 
-  /*
-   * 현재 GameObject의 하위에서 childGameObj를 제거한다.
-   * 제거된 childGameObj는 currentRenderTarget으로 돌아간다.
-   *
-   * <!-- from -->
-   * <currentRenderTarget>
-   *   <GameObject>        <-- this
-   *     <childGameObj>    <-- child
-   *     </childGameObj>
-   *     ...
-   *   </GameObject>
-   *   ...
-   * </currentRenderTarget>
-   *
-   * <!-- to -->
-   * <currentRenderTarget>
-   *   <GameObject>        <-- this
-   *     ...
-   *   </GameObject>
-   *   ...
-   *   <childGameObj>      <-- child
-   *   </childGameObj>
-   * </currentRenderTarget>
-   */
   removeChild(childGameObj) {
     const index = this.childGameObjs.indexOf(childGameObj);
     if (index != -1) {
       // 현재 GameObject의 list에 있는 childGameObject제거.
       this.childGameObjs.splice(index, 1);
-      // childElement를 currentRenderTarget의 하위로 이동.
-      // 이동하면서 parentElement의 children과 childElement의 parentElement는
-      // 자동으로 변경된다.
-      SceneManager.getCurrentSceneElement().appendChild(childGameObj.element);
     }
   }
 
-  /*
-   * 이 GameObject의 부모를 parentGameObj로 설정한다.
-   * parentGameObj의 하위로 GameObject가 이동하게 된다.
-   *
-   * <!-- from -->
-   * <parentGameObj>      <-- parent
-   *   ...
-   * </parentGameObj>
-   * ...
-   * <GameObject>       <-- this
-   * </GameObject>
-   *
-   * <!-- to -->
-   * <parentGameObj>      <-- parent
-   *   ...
-   *   <GameObject>       <-- this
-   *   </GameObject>
-   * </parentGameObj>
-   */
   setParent(parentGameObj) {
     if (this.parentGameObj === undefined) {
       // 부모 GameObject를 등록.
       this.parentGameObj = parentGameObj;
-      // 현재 element를 부모 element의 하위로 이동.
-      this.parentGameObj.element.appendChild(this.element);
     }
   }
 
-  /*
-   * 이 GameObject를 부모로부터 분리한다.
-   * GameObject는 currentRenderTarget의 하위로 이동하게 된다.
-   *
-   * <!-- from -->
-   *
-   * <renderTarget>
-   *   <parentGameObj>     <-- parent
-   *     <GameObject>      <-- this
-   *     </GameObject>
-   *   </parentGameObj>
-   *   ...
-   * </renderTarget>
-   *
-   * <!-- to -->
-   *
-   * <renderTarget>
-   *   <parentGameObj>     <-- parent
-   *   </parentGameObj>
-   *   ...
-   *   <GameObject>        <-- this
-   *   </GameObject>
-   * </renderTarget>
-   */
   removeParent() {
     if (this.parentGameObj !== undefined) {
       // 부모 GameObject에서 현재 GameObject를 제거.
@@ -165,72 +129,62 @@ export default class GameObject {
       }
 
       this.parentGameObj = undefined;
-      // 현재 element를 currentRenderTarget하위로 이동.
-      // 이동하면서 자동으로 html속성을 변경시켜줌.
-      // addChild(), removeChild(), setParent() 참고.
-      if (this.element !== undefined) {
-        SceneManager.getCurrentSceneElement().appendChild(this.element);
-      }
     }
   }
 
   addPos(x, y) {
-    this.matrix.position.x += x;
-    this.matrix.position.y += y;
+    this.transform.position.x += x;
+    this.transform.position.y += y;
   }
 
   setPos(x, y) {
-    this.matrix.position.x = x;
-    this.matrix.position.y = y;
+    this.transform.position.x = x;
+    this.transform.position.y = y;
   }
 
   addScale(x, y) {
-    this.matrix.scale.x += x;
-    this.matrix.scale.y += y;
+    this.transform.scale.x += x;
+    this.transform.scale.y += y;
   }
 
   setScale(x, y) {
-    this.matrix.scale.x = x;
-    this.matrix.scale.y = y;
+    this.transform.scale.x = x;
+    this.transform.scale.y = y;
   }
 
   addRotation(degree) {
-    this.matrix.rotation += degree;
+    this.transform.rotation += degree;
   }
 
   setRotation(degree) {
-    this.matrix.rotation = degree;
+    this.transform.rotation = degree;
   }
 
   getPos() {
-    return this.matrix.position;
+    return this.transform.position;
   }
 
-  /*
-   * css에서 html element의 position은 element의 좌상단을 의미한다.
-   * 만약 element의 좌상단 좌표값이 아닌, 중앙 좌표값을 알아야 한다면,
-   * getBoundingClientRect를 통해 element의 크기를 이용해 알 수 있다.
-   * TODO
-   * https://jsfiddle.net/pqtj87o1/
-   * 위 링크에서 볼 수 있듯이 함수의 호출 결과가
-   * GameObject와 똑같은 사각형이 아닌 내접하는 사각형을 반환한다.
-   * 그러므로 회전각도에 따른 사각형 길이를 매번 구하기보다
-   * 값을 저장해두고 활용하는 방법으로 진행하자.
-   */
-  getCenterPos() {
-    const size = this.cssManager.getElementSize();
-    return new Vector(
-      this.matrix.position.x + size.x / 2,
-      this.matrix.position.y + size.y / 2
-    );
-  }
+  // TODO
+  // canvas rendering을 완성시키고 다시 작업하자.
+  // css를 이용해서 크기를 구하기 때문에 고쳐야 한다.
+  // getCenterPos() {
+  //   const size = this.cssManager.getElementSize();
+  //   return new Vector(
+  //     this.transform.position.x + size.x / 2,
+  //     this.transform.position.y + size.y / 2
+  //   );
+  // }
 
   getScale() {
-    return this.matrix.scale;
+    return this.transform.scale;
   }
 
   getRotation() {
-    return this.matrix.rotation;
+    return this.transform.rotation;
+  }
+
+  getMatrix() {
+    return this.matrix;
   }
 
   destroy() {
@@ -249,7 +203,6 @@ export default class GameObject {
     if (this.parentGameObj !== undefined) {
       this.removeParent();
     }
-    this.element.remove();
 
     while (this.childGameObjs.length) {
       this.childGameObjs[0].destroy();

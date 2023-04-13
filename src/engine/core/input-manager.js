@@ -1,4 +1,5 @@
 import Vector from "/src/engine/core/vector.js";
+import RenderManager from "/src/engine/core/render-manager.js";
 
 const KEY_STATUS = {
   UP: 0,
@@ -55,8 +56,9 @@ export default class InputManager {
     });
 
     document.addEventListener("mousemove", (event) => {
-      InputManager.mousePosition.x = event.clientX;
-      InputManager.mousePosition.y = event.clientY;
+      const canvasPos = RenderManager.getCurrentRenderTarget().getBoundingClientRect();
+      InputManager.mousePosition.x = event.clientX - canvasPos.x;
+      InputManager.mousePosition.y = event.clientY - canvasPos.y;
     });
   }
 
