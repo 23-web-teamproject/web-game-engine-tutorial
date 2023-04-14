@@ -27,4 +27,11 @@ export default class SceneManager {
   static LoadScene(targetScene) {
     SceneManager.engine.currentScene = new targetScene();
   }
+
+  /*
+   * 현재 엔진이 업데이트하고 있는 씬 객체를 반환한다.
+   */
+  static getCurrentScene() {
+    return SceneManager.engine.currentScene;
+  }
 }

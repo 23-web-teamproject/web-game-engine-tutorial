@@ -1,6 +1,6 @@
 import Transform from "/src/engine/data-structure/transform.js";
-import Matrix from "/src/engine/data-structure/matrix.js";
 import CanvasManager from "/src/engine/core/canvas-manager.js";
+import SceneManager from "/src/engine/core/scene-manager.js";
 
 export default class GameObject {
   constructor() {
@@ -98,11 +98,12 @@ export default class GameObject {
 
   addChild(childGameObj) {
     const index = this.childGameObjs.indexOf(childGameObj);
+    // 만약 이미 있는 자식 객체라면 추가하지 않음.
     if (index == -1) {
-      // 하위 목록에 추가
+      // 인자로 전달받은 객체를 자식 목록에 추가한다.
       this.childGameObjs.push(childGameObj);
 
-      // childGameObj의 parentGameObj를 현재 GameObject로 변경.
+      // 자식 객체의 부모를 이 객체로 변경한다.
       childGameObj.parentGameObj = this;
     }
   }
@@ -110,27 +111,35 @@ export default class GameObject {
   removeChild(childGameObj) {
     const index = this.childGameObjs.indexOf(childGameObj);
     if (index != -1) {
-      // 현재 GameObject의 list에 있는 childGameObject제거.
+      // 만약 인자로 전달받은 객체가 자식 객체라면 자식 목록에서 삭제한다.
       this.childGameObjs.splice(index, 1);
     }
+
+    // 자식 객체의 부모를 씬 객체로 변경한다.
+    SceneManager.getCurrentScene().addChild(childGameObj);
   }
 
   setParent(parentGameObj) {
-    if (this.parentGameObj === undefined) {
-      // 부모 GameObject를 등록.
-      this.parentGameObj = parentGameObj;
+    // 이 객체의 부모 객체가 있다면
+    // 부모 객체로부터 임시로 자식 객체를 제거하고,
+    // 자식 객체의 부모를 인자로 전달받은 부모 객체로 변경한다.
+    if (this.parentGameObj !== undefined) {
+      const index = this.parentGameObj.childGameObjs.indexOf(this);
+      if (index != -1) {
+        this.parentGameObj.childGameObjs.splice(index, 1);
+        this.parentGameObj = parentGameObj;
+        this.parentGameObj.addChild(this);
+      }
     }
   }
 
   removeParent() {
+    // 만약 이 객체의 부모가 있어야지만 부모 객체로부터 떨어져 나올 수 있다.
     if (this.parentGameObj !== undefined) {
-      // 부모 GameObject에서 현재 GameObject를 제거.
-      const index = this.parentGameObj.childGameObjs.indexOf(this);
-      if (index != -1) {
-        this.parentGameObj.childGameObjs.splice(index, 1);
-      }
-
-      this.parentGameObj = undefined;
+      // 부모 객체에게 자식을 삭제하라는 명령으로
+      // 자식 객체의 부모를 삭제하는 것과
+      // 부모 객체의 자식 목록에서 자식 객체를 삭제하라는 것을 해결할 수 있다.
+      this.parentGameObj.removeChild(this);
     }
   }
 
