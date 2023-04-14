@@ -1,4 +1,5 @@
 import Transform from "/src/engine/data-structure/transform.js";
+import Matrix from "/src/engine/data-structure/matrix.js";
 import CanvasManager from "/src/engine/core/canvas-manager.js";
 
 export default class GameObject {
@@ -6,6 +7,8 @@ export default class GameObject {
     this.context2d = CanvasManager.getContext2D();
 
     this.transform = new Transform();
+    this.transform.setPivotPositionToCenter();
+
     // 부모 matrix를 행렬곱한 결과를 담아 렌더링에 사용한다.
     this.matrix = undefined;
     this.childGameObjs = new Array();
@@ -32,7 +35,6 @@ export default class GameObject {
     this.context2d.save();
 
     this.calculateMatrix();
-    // 계산한 matrix를 context에 넘겨 그릴 수 있게 한다.
     this.setTransform();
     this.draw();
 
@@ -70,7 +72,7 @@ export default class GameObject {
   }
 
   /*
-   * 계산된 matrix를 context2d로 옮긴다.
+   * 계산된 matrix를 context2d에 적용한다.
    */
   setTransform() {
     this.context2d.setTransform(
@@ -163,17 +165,6 @@ export default class GameObject {
   getPos() {
     return this.transform.position;
   }
-
-  // TODO
-  // canvas rendering을 완성시키고 다시 작업하자.
-  // css를 이용해서 크기를 구하기 때문에 고쳐야 한다.
-  // getCenterPos() {
-  //   const size = this.cssManager.getElementSize();
-  //   return new Vector(
-  //     this.transform.position.x + size.x / 2,
-  //     this.transform.position.y + size.y / 2
-  //   );
-  // }
 
   getScale() {
     return this.transform.scale;

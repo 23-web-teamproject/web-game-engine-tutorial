@@ -12,34 +12,21 @@
  *   0 0 1
  *
  *   a = x크기 * cos(라디안)
- *   b = x크기 * -sin(라디안)
- *   c = y크기 * sin(라디안)
+ *   b = x크기 * sin(라디안)
+ *   c = y크기 * -sin(라디안)
  *   d = y크기 * cos(라디안)
  *   x = x좌표
  *   y = y좌표
  */
 
 export default class Matrix {
-  constructor(transform) {
-    if (transform === undefined) {
-      this.a = 1;
-      this.b = 0;
-      this.x = 0;
-      this.c = 0;
-      this.d = 1;
-      this.y = 0;
-    } else {
-      const rad = (transform.rotation * Math.PI) / 180;
-      const sin = Math.sin(rad);
-      const cos = Math.cos(rad);
-
-      this.a = transform.scale.x * cos;
-      this.b = transform.scale.x * -sin;
-      this.c = transform.scale.y * sin;
-      this.d = transform.scale.y * cos;
-      this.x = transform.position.x;
-      this.y = transform.position.y;
-    }
+  constructor() {
+    this.a = 1;
+    this.b = 0;
+    this.x = 0;
+    this.c = 0;
+    this.d = 1;
+    this.y = 0;
   }
 
   multiply(other) {
