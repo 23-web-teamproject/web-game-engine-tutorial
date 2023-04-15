@@ -10,7 +10,6 @@ import ExampleScene from "/src/example-scene/scene.js";
 class Engine {
   constructor() {
     this.inputManager = new InputManager();
-    this.SceneManager = new SceneManager();
 
     this.timer = new Timer();
   }
