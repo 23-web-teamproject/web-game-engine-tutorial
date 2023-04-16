@@ -1,7 +1,7 @@
 /*
  * 사운드를 제어하는 역할을 담당한다.
  */
-export default class SoundFx{
+export default class SoundEffect{
   constructor (src){
     this.source = new Audio(src);
   }

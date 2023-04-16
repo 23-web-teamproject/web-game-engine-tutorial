@@ -8,24 +8,24 @@
   여기에도 작성해주어야 한다.
  */
 
-import CSSManager from "/src/engine/core/css-manager.js";
+import Vector from "/src/engine/data-structure/vector.js";
+import Matrix from "/src/engine/data-structure/matrix.js";
 import InputManager from "/src/engine/core/input-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
-import HTMLFactory from "/src/engine/core/html-factory.js";
-import Vector from "/src/engine/core/vector.js";
-import Matrix from "/src/engine/core/matrix.js";
+import RenderManager from "/src/engine/core/render-manager.js";
 import GameObject from "/src/engine/core/game-object.js";
 import Sprite from "/src/engine/core/sprite.js";
-import SoundFx from "/src/engine/core/soundfx.js";
+import SoundEffect from "/src/engine/fx/sound-effect.js";
+import ParticleEffect from "/src/engine/fx/particle-effect.js";
 
 export {
-  CSSManager,
   InputManager,
   SceneManager,
-  HTMLFactory,
+  RenderManager,
   Vector,
   Matrix,
   GameObject,
   Sprite,
-  SoundFx
+  SoundEffect,
+  ParticleEffect
 }

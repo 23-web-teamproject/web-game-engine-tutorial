@@ -1,4 +1,8 @@
-import { InputManager, SceneManager } from "/src/engine/core.js";
+import {
+  InputManager,
+  SceneManager,
+  RenderManager,
+} from "/src/engine/module.js";
 import { Timer } from "/src/engine/utils.js";
 
 import ExampleScene from "/src/example-scene/scene.js";
@@ -6,7 +10,6 @@ import ExampleScene from "/src/example-scene/scene.js";
 class Engine {
   constructor() {
     this.inputManager = new InputManager();
-    this.SceneManager = new SceneManager();
 
     this.timer = new Timer();
   }
@@ -15,9 +18,8 @@ class Engine {
     // Initialize page resolution
     this.initializePageResolution();
 
-    SceneManager.RegisterEngine(this);
     // Load scene
-    SceneManager.LoadScene(ExampleScene);
+    SceneManager.changeScene(ExampleScene);
   }
 
   // TODO
@@ -33,12 +35,15 @@ class Engine {
 
       // Update input
       this.inputManager.update();
-            
+
       // Update game logic
-      this.currentScene.update(this.timer.deltaTime);
-      
-      // Update graphic logic
-      this.currentScene.render();
+      SceneManager.getCurrentScene().update(this.timer.deltaTime);
+
+      // Remove previous canvas
+      RenderManager.clearScreen();
+
+      // Render objects
+      RenderManager.render();
     }, 10);
   }
 }

@@ -1,25 +1,12 @@
 import GameObject from "/src/engine/core/game-object.js";
-import HTMLFactory from "/src/engine/core/html-factory.js";
+import Path from "/src/engine/utils/path.js";
 
-class Sprite extends GameObject {
-  constructor(src) {
+export default class Sprite extends GameObject {
+  constructor(imagePath) {
     super();
-    this.src = src;
-    this.findWidthAndHeightFromImage();
-    this.insertImage();
-  }
-  
-  findWidthAndHeightFromImage() {
-    const img = HTMLFactory.createImg(this.src);
-    this.imgWidth = img.naturalWidth;
-    this.imgHeight = img.naturalHeight;
-    img.remove();
-  }
-  
-  insertImage(){
-    this.element.style.backgroundImage = `url(${this.src})`;
-    this.element.style.width = this.imgWidth;
-    this.element.style.height = this.imgHeight;
+    this.image = new Image();
+    this.image.src = Path.convertAbsoluteAssetPath(imagePath);
+    this.updateSize();
   }
 
   update(deltaTime) {
@@ -29,6 +16,13 @@ class Sprite extends GameObject {
   render() {
     super.render();
   }
-}
 
-export default Sprite;
+  draw() {
+    this.context2d.drawImage(this.image, 0, 0);
+  }
+
+  updateSize() {
+    this.transform.size.x = this.image.naturalWidth;
+    this.transform.size.y = this.image.naturalHeight;
+  }
+}

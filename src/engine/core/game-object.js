@@ -1,16 +1,37 @@
-import CSSManager from "/src/engine/core/css-manager.js";
-import HTMLFactory from "/src/engine/core/html-factory.js";
+import Transform from "/src/engine/data-structure/transform.js";
+import CanvasManager from "/src/engine/core/canvas-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
-import Matrix from "/src/engine/core/matrix.js";
 
 export default class GameObject {
+  /*
+   * 하위 클래스에서 몇 가지 정보를 얻기 위해서 meta 인자를 받는다.
+   */
   constructor() {
-    this.element = HTMLFactory.create();
-    this.cssManager = new CSSManager(this.element);
+    /*
+     * canvas에 이 객체를 렌더링할 때 사용할 context다.
+     */
+    this.context2d = CanvasManager.getContext2D();
 
-    this.matrix = new Matrix();
-    this.childGameObjs = new Array();
-    this.parentGameObj = undefined;
+    /*
+     * 이 객체의 좌표, 크기, 각도 등을 담고 있다.
+     */
+    this.transform = new Transform();
+    this.transform.setPivotPositionToCenter();
+
+    /*
+     * 객체의 자식들을 저장할 테이블이다.
+     */
+    this.childTable = new Object();
+    /*
+     * 객체의 부모를 기억한다.
+     * 부모의 matrix를 이용해 자신을 렌더링하기 때문에 기억해야 한다.
+     */
+    this.parent = undefined;
+
+    /*
+     * 부모 matrix를 행렬곱한 결과를 담아 렌더링에 사용할 때 필요하다.
+     */
+    this.matrix = undefined;
   }
 
   /*
@@ -18,184 +39,222 @@ export default class GameObject {
    * 하위 GameObject들의 update를 실행시킨다.
    */
   update(deltaTime) {
-    this.childGameObjs.forEach((child) => {
+    for (const child of Object.values(this.childTable)) {
       child.update(deltaTime);
-    });
+    }
   }
 
   /*
    * 이 GameObject의 하위 GameObject들의 render를 실행시킨다.
+   * 부모의 matrix를 가져와 자신의 matrix와 행렬곱을 수행한다.
+   * 그 결과를 이용해 렌더링에 사용하고,
+   * 연결된 자식들의 렌더링을 수행하는데에 사용한다.
    */
   render() {
-    this.cssManager.updateMatrix(this.matrix);
+    this.context2d.save();
 
-    this.childGameObjs.forEach((child) => {
+    this.calculateMatrix();
+    this.setTransform();
+    this.draw();
+
+    this.context2d.restore();
+
+    for (const child of Object.values(this.childTable)) {
       child.render();
-    });
-  }
-
-  /*
-   * 이 객체의 하위에 childGameObj를 넣는다.
-   * 자식 리스트에서 제일 뒤에 삽입된다.
-   *
-   * <!-- from -->
-   * <GameObject>         <-- this
-   *   ...
-   * </GameObject>
-   * ...
-   * <childGameObj>     <-- child
-   * </childGameObj>
-   *
-   * <!-- to -->
-   * <GameObject>         <-- this
-   *   ...
-   *   <childGameObj>     <-- child
-   *   </childGameObj>
-   * </GameObject>
-   * ...
-   */
-  addChild(childGameObj) {
-    const index = this.childGameObjs.indexOf(childGameObj);
-    if (index == -1) {
-      // 하위 목록에 추가
-      this.childGameObjs.push(childGameObj);
-      // child를 현재 GameObject의 html의 하위로 이동.
-      // 이동하면서 자동으로 element.parentElement도 현재 element로 변경된다.
-      this.element.appendChild(childGameObj.element);
-      // childGameObj의 parentGameObj를 현재 GameObject로 변경.
-      childGameObj.parentGameObj = this;
     }
   }
 
   /*
-   * 현재 GameObject의 하위에서 childGameObj를 제거한다.
-   * 제거된 childGameObj는 currentRenderTarget으로 돌아간다.
-   *
-   * <!-- from -->
-   * <currentRenderTarget>
-   *   <GameObject>        <-- this
-   *     <childGameObj>    <-- child
-   *     </childGameObj>
-   *     ...
-   *   </GameObject>
-   *   ...
-   * </currentRenderTarget>
-   *
-   * <!-- to -->
-   * <currentRenderTarget>
-   *   <GameObject>        <-- this
-   *     ...
-   *   </GameObject>
-   *   ...
-   *   <childGameObj>      <-- child
-   *   </childGameObj>
-   * </currentRenderTarget>
+   * 현재 객체의 matrix를 계산할 때,
+   * 만약 부모 객체가 존재하면 부모의 matrix와 자신의 matrix를 곱하고,
+   * 부모 객체가 없다면 자신의 matrix만을 사용한다.
    */
-  removeChild(childGameObj) {
-    const index = this.childGameObjs.indexOf(childGameObj);
-    if (index != -1) {
-      // 현재 GameObject의 list에 있는 childGameObject제거.
-      this.childGameObjs.splice(index, 1);
-      // childElement를 currentRenderTarget의 하위로 이동.
-      // 이동하면서 parentElement의 children과 childElement의 parentElement는
-      // 자동으로 변경된다.
-      SceneManager.getCurrentSceneElement().appendChild(childGameObj.element);
+  calculateMatrix() {
+    if (this.isParentGameObjectExist()) {
+      this.multiplyParentMatrix();
+    } else {
+      this.convertTransformToMatrix();
     }
   }
 
-  /*
-   * 이 GameObject의 부모를 parentGameObj로 설정한다.
-   * parentGameObj의 하위로 GameObject가 이동하게 된다.
-   *
-   * <!-- from -->
-   * <parentGameObj>      <-- parent
-   *   ...
-   * </parentGameObj>
-   * ...
-   * <GameObject>       <-- this
-   * </GameObject>
-   *
-   * <!-- to -->
-   * <parentGameObj>      <-- parent
-   *   ...
-   *   <GameObject>       <-- this
-   *   </GameObject>
-   * </parentGameObj>
-   */
-  setParent(parentGameObj) {
-    if (this.parentGameObj === undefined) {
-      // 부모 GameObject를 등록.
-      this.parentGameObj = parentGameObj;
-      // 현재 element를 부모 element의 하위로 이동.
-      this.parentGameObj.element.appendChild(this.element);
-    }
+  isParentGameObjectExist() {
+    return this.parent !== undefined;
+  }
+
+  multiplyParentMatrix() {
+    const parentMatrix = this.parent.getMatrix();
+    this.matrix = parentMatrix.multiply(this.transform.toMatrix());
+  }
+
+  convertTransformToMatrix() {
+    this.matrix = this.transform.toMatrix();
   }
 
   /*
-   * 이 GameObject를 부모로부터 분리한다.
-   * GameObject는 currentRenderTarget의 하위로 이동하게 된다.
-   *
-   * <!-- from -->
-   * 
-   * <renderTarget>
-   *   <parentGameObj>     <-- parent
-   *     <GameObject>      <-- this
-   *     </GameObject>
-   *   </parentGameObj>
-   *   ...
-   * </renderTarget>
-   *
-   * <!-- to -->
-   * 
-   * <renderTarget>
-   *   <parentGameObj>     <-- parent
-   *   </parentGameObj>
-   *   ...
-   *   <GameObject>        <-- this
-   *   </GameObject>
-   * </renderTarget>
+   * 계산된 matrix를 context2d에 적용한다.
    */
+  setTransform() {
+    this.context2d.setTransform(
+      this.matrix.a,
+      this.matrix.b,
+      this.matrix.c,
+      this.matrix.d,
+      this.matrix.x,
+      this.matrix.y
+    );
+  }
+
+  /*
+   * 이 함수는 GameObject를 상속받은 객체마다 다르게 동작한다.
+   * GameObject 자체는 렌더링할 대상이 없지만 스프라이트나 도형, 텍스트 등
+   * GmaeObject를 상속받은 객체들은 명확히 렌더링할 대상이 존재한다.
+   * 그 때 이 함수안에서 어떻게 렌더링할건지 정의를 해 놓으면 된다.
+   * super.render()를 먼저 호출하고 대상을 렌더링할 경우
+   * 이미 렌더링된 자식 오브젝트를 덮어씌워 렌더링할 수 있으므로
+   * 렌더링만큼은 draw 함수 내에서만 정의를 하는게 좋다.
+   */
+  draw() {}
+
+  setParent(parent) {
+    // 이 객체의 부모 객체가 있다면
+    // 부모 객체로부터 임시로 자식 객체를 제거한다.
+    if (this.parent !== undefined) {
+      const childName = this.parent.getChildNameByChildGameObj(this);
+      delete this.parent.childGameObjDict[childName];
+    }
+
+    this.parent = parent;
+    this.parent.addChild(this);
+  }
+
   removeParent() {
-    if (this.parentGameObj !== undefined) {
-      // 부모 GameObject에서 현재 GameObject를 제거.
-      const index = this.parentGameObj.childGameObjs.indexOf(this);
-      if (index != -1) {
-        this.parentGameObj.childGameObjs.splice(index, 1);
-      }
-
-      this.parentGameObj = undefined;
-      // 현재 element를 currentRenderTarget하위로 이동.
-      // 이동하면서 자동으로 html속성을 변경시켜줌.
-      // addChild(), removeChild(), setParent() 참고.
-      SceneManager.getCurrentSceneElement().appendChild(this.element);
+    // 만약 이 객체의 부모가 있어야지만 부모 객체로부터 떨어져 나올 수 있다.
+    if (this.parent !== undefined) {
+      // 부모 객체에게 자식을 삭제하라는 명령으로
+      // 자식 객체의 부모를 삭제하는 것과
+      // 부모 객체의 자식 목록에서 자식 객체를 삭제하라는 것을 해결할 수 있다.
+      this.parent.removeChild(this);
     }
+  }
+
+  removeChild(child) {
+    const childName = this.getChildNameByChildGameObj(child);
+    delete this.childGameObjDict[childName];
+
+    // 자식 객체의 부모를 씬 객체로 변경한다.
+    SceneManager.getCurrentScene().addChild(child);
+  }
+
+  /*
+   * 자식 목록에 객체를 추가한다.
+   * 일반적으로 자식 객체에 대한 key를 무조건 갖고 있어야 한다.
+   * key를 따로 지정해주지 않았으므로 겹치지 않도록
+   * 현재 시간에 해시 함수를 적용해 얻은 값을 key로 사용한다.
+   * TODO
+   * 해시 함수를 사용하면 충돌될 경우를 따로 처리해야한다.
+   */
+  addChild(child) {
+    const childName = this.getChildNameByChildGameObj(child);
+    // 만약 이미 있는 자식 객체라면 추가하지 않음.
+    if (childName === undefined) {
+      // 인자로 전달받은 객체를 자식 목록에 추가한다.
+
+      const djb2 = (string) => {
+        const TABLE_SIZE = 100000009;
+        let hash = 5381,
+          i = 0;
+        while (i < string.length) {
+          hash = ((hash << 5) + hash + string.charCodeAt(i++)) % TABLE_SIZE;
+        }
+        return hash;
+      };
+
+      const hash = djb2(new Date().getTime().toString());
+
+      this.createChild(hash, child);
+    }
+  }
+
+  createChild(childName, gameObject) {
+    if (childName in Object.keys(this.childTable) == false) {
+      this.childTable[childName] = gameObject;
+      gameObject.setParent(this);
+    }
+  }
+
+  getChildNameByChildGameObj(child) {
+    return Object.keys(this.childTable).find(
+      (key) => child === this.childTable[key]
+    );
+  }
+
+  getChild(childName) {
+    return this.childTable[childName];
   }
 
   addPos(x, y) {
-    this.matrix.position.x += x;
-    this.matrix.position.y += y;
+    this.transform.position.x += x;
+    this.transform.position.y += y;
   }
 
   setPos(x, y) {
-    this.matrix.position.x = x;
-    this.matrix.position.y = y;
+    this.transform.position.x = x;
+    this.transform.position.y = y;
   }
 
   addScale(x, y) {
-    this.matrix.scale.x += x;
-    this.matrix.scale.y += y;
+    this.transform.scale.x += x;
+    this.transform.scale.y += y;
   }
 
   setScale(x, y) {
-    this.matrix.scale.x = x;
-    this.matrix.scale.y = y;
+    this.transform.scale.x = x;
+    this.transform.scale.y = y;
   }
 
   addRotation(degree) {
-    this.matrix.rotation += degree;
+    this.transform.rotation += degree;
   }
 
   setRotation(degree) {
-    this.matrix.rotation = degree;
+    this.transform.rotation = degree;
+  }
+
+  getPos() {
+    return this.transform.position;
+  }
+
+  getScale() {
+    return this.transform.scale;
+  }
+
+  getRotation() {
+    return this.transform.rotation;
+  }
+
+  getMatrix() {
+    return this.matrix;
+  }
+
+  destroy() {
+    /* JS에는 클래스를 삭제하는 예약어가 따로 없다.
+     * 단지 어떤 변수를 아무도 참조하지 않을 때 가비지 컬렉터(GC)가
+     * 자동으로 수집해 제거한다.
+     *
+     * 그러므로 이 GameObject를 제거하기 위해서는 이 GameObject를
+     * 아무도 참조하지 않으면 된다.
+     * 따라서 부모가 이 GameObject를 참조하지 않도록 removeParent를 호출하고,
+     * 이 GameObject의 자식객체들도 연쇄적으로 삭제하면 된다.
+     */
+    if (this.parent !== undefined) {
+      // 부모의 자식 목록에서 이 객체를 삭제한다.
+      const childName = this.parent.getChildNameByChildGameObj(this);
+      delete this.parent.childTable[childName];
+    }
+
+    // 이 객체를 참조하는 자식 객체들도 삭제한다.
+    for (const child of Object.values(this.childTable)) {
+      child.destroy();
+    }
   }
 }
