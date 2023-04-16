@@ -3,16 +3,35 @@ import CanvasManager from "/src/engine/core/canvas-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 
 export default class GameObject {
+  /*
+   * 하위 클래스에서 몇 가지 정보를 얻기 위해서 meta 인자를 받는다.
+   */
   constructor() {
+    /*
+     * canvas에 이 객체를 렌더링할 때 사용할 context다.
+     */
     this.context2d = CanvasManager.getContext2D();
 
+    /*
+     * 이 객체의 좌표, 크기, 각도 등을 담고 있다.
+     */
     this.transform = new Transform();
     this.transform.setPivotPositionToCenter();
 
-    // 부모 matrix를 행렬곱한 결과를 담아 렌더링에 사용한다.
-    this.matrix = undefined;
+    /*
+     * 객체의 자식들을 저장할 테이블이다.
+     */
     this.childTable = new Object();
+    /*
+     * 객체의 부모를 기억한다.
+     * 부모의 matrix를 이용해 자신을 렌더링하기 때문에 기억해야 한다.
+     */
     this.parent = undefined;
+
+    /*
+     * 부모 matrix를 행렬곱한 결과를 담아 렌더링에 사용할 때 필요하다.
+     */
+    this.matrix = undefined;
   }
 
   /*
