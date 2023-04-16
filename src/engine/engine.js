@@ -42,8 +42,8 @@ class Engine {
       // Remove previous canvas
       RenderManager.clearScreen();
 
-      // Render updated objects
-      SceneManager.getCurrentScene().render();
+      // Render objects
+      RenderManager.render();
     }, 10);
   }
 }
