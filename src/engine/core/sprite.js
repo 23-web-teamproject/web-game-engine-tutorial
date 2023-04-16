@@ -1,12 +1,11 @@
 import GameObject from "/src/engine/core/game-object.js";
+import Path from "/src/engine/utils/path.js";
 
 export default class Sprite extends GameObject {
-  constructor(src) {
+  constructor(imagePath) {
     super();
-    // TODO
-    // src가 상대경로일 때도 처리해야함.
     this.image = new Image();
-    this.image.src = src;
+    this.image.src = Path.convertAbsoluteAssetPath(imagePath);
     this.updateSize();
   }
 
