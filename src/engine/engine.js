@@ -27,24 +27,24 @@ class Engine {
   initializePageResolution() {}
 
   run() {
-    // 매 프레임마다 실행시키는 함수를 못찾아서
-    // 어쩔 수 없이 특정 시간마다 함수를 호출하도록 함
-    setInterval(() => {
-      // Calculate delta time
-      this.timer.update();
+    // Calculate delta time
+    this.timer.update();
 
-      // Update input
-      this.inputManager.update();
+    // Update input
+    this.inputManager.update();
 
-      // Update game logic
-      SceneManager.getCurrentScene().update(this.timer.deltaTime);
+    // Update game logic
+    SceneManager.getCurrentScene().update(this.timer.deltaTime);
 
-      // Remove previous canvas
-      RenderManager.clearScreen();
+    // Remove previous canvas
+    RenderManager.clearScreen();
 
-      // Render objects
-      RenderManager.render();
-    }, 10);
+    // Render objects
+    RenderManager.render();
+
+    requestAnimationFrame(() => {
+      this.run();
+    });
   }
 }
 
@@ -52,5 +52,7 @@ window.onload = () => {
   const engine = new Engine();
 
   engine.init();
-  engine.run();
+  requestAnimationFrame(() => {
+    engine.run();
+  });
 };
