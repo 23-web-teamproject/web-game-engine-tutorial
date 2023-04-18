@@ -1,3 +1,4 @@
+import Color from "/src/engine/data-structure/color.js";
 import Transform from "/src/engine/data-structure/transform.js";
 import CanvasManager from "/src/engine/core/canvas-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
@@ -17,6 +18,11 @@ export default class GameObject {
      */
     this.transform = new Transform();
     this.transform.setPivotPositionToCenter();
+
+    /*
+     * 렌더링에 사용될 색상값을 담고 있다.
+     */
+    this.color = new Color();
 
     /*
      * 객체의 자식들을 저장할 테이블이다.
@@ -51,13 +57,11 @@ export default class GameObject {
    * 연결된 자식들의 렌더링을 수행하는데에 사용한다.
    */
   render() {
-    this.context2d.save();
-
+    this.beforeDraw();
     this.calculateMatrix();
     this.setTransform();
     this.draw();
-
-    this.context2d.restore();
+    this.afterDraw();
 
     for (const child of Object.values(this.childTable)) {
       child.render();
@@ -105,6 +109,17 @@ export default class GameObject {
   }
 
   /*
+   * 렌더링 전에 색상값을 갱신한다거나 다른 작업이 미리 처리되어야 하는 경우
+   * 이 함수를 오버라이드해서 사용하면 된다.
+   *
+   * 이 객체에서는 기본적으로 색상값을 적용시키기 위해 globalAlpha값을 조절한다.
+   */
+  beforeDraw() {
+    this.context2d.save();
+    this.context2d.globalAlpha = this.color.a;
+  }
+
+  /*
    * 이 함수는 GameObject를 상속받은 객체마다 다르게 동작한다.
    * GameObject 자체는 렌더링할 대상이 없지만 스프라이트나 도형, 텍스트 등
    * GmaeObject를 상속받은 객체들은 명확히 렌더링할 대상이 존재한다.
@@ -114,6 +129,19 @@ export default class GameObject {
    * 렌더링만큼은 draw 함수 내에서만 정의를 하는게 좋다.
    */
   draw() {}
+
+  /*
+   * 일반적으로 beforeDraw()에서 전처리했던 것을 원래대로 돌리는 작업을 한다.
+   * beforeDraw()를 오버라이드했다면 이 함수도 오버라이드하여
+   * 수정된 context2d를 원래대로 돌려놓아야 한다.
+   *
+   * 이 객체에서는 색상값을 적용시키기 위해 globalAlpha값을 조절했었으므로
+   * 원래대로 되돌려 놓는 작업을 한다.
+   */
+  afterDraw() {
+    this.context2d.globalAlpha = 1;
+    this.context2d.restore();
+  }
 
   setParent(parent) {
     // 이 객체의 부모 객체가 있다면
