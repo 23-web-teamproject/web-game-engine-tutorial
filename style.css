@@ -21,3 +21,8 @@ body{
 ::-webkit-scrollbar {
   display: none;
 }
+
+#buffer-render-target{
+  background-color: white;
+  display: none;
+}
