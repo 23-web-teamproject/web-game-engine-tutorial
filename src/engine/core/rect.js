@@ -19,7 +19,6 @@ export default class Rect extends GameObject {
         ${this.strokeColor.g},
         ${this.strokeColor.b}
         )`;
-        // ${this.strokeColor.a}
       this.context2d.strokeRect(
         0,
         0,
@@ -34,7 +33,6 @@ export default class Rect extends GameObject {
         ${this.color.g}, 
         ${this.color.b}
         )`;
-        // ${this.color.a}
       this.context2d.fillRect(
         0,
         0,
