@@ -9,7 +9,7 @@ export default class Sprite extends GameObject {
     this.image.src = Path.convertAbsoluteAssetPath(imagePath);
     this.updateSize();
 
-    this.isColorBlendingEnable = true;
+    this.isColorBlendingEnable = false;
   }
 
   update(deltaTime) {
@@ -35,8 +35,7 @@ export default class Sprite extends GameObject {
       // 버퍼 캔버스의 크기를 현재 이미지의 크기로 설정한다.
       const buffer = RenderManager.getBufferRenderTarget();
       const size = this.transform.size;
-      buffer.width = size.x;
-      buffer.height = size.y;
+      RenderManager.changeBufferRenderTargetResolution(size.x, size.y);
 
       // 버퍼 캔버스를 초기화한다.
       const bufferCtx = buffer.getContext("2d");
