@@ -1,7 +1,7 @@
 import Color from "/src/engine/data-structure/color.js";
 import Transform from "/src/engine/data-structure/transform.js";
-import CanvasManager from "/src/engine/core/canvas-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
+import RenderManager from "/src/engine/core/render-manager.js";
 
 export default class GameObject {
   /*
@@ -11,7 +11,7 @@ export default class GameObject {
     /*
      * canvas에 이 객체를 렌더링할 때 사용할 context다.
      */
-    this.context2d = CanvasManager.getContext2D();
+    this.context2d = RenderManager.getRenderCanvas().getContext("2d");
 
     /*
      * 이 객체의 좌표, 크기, 각도 등을 담고 있다.

@@ -55,11 +55,13 @@ export default class InputManager {
       InputManager.keyTable[buttonName][0] = false;
     });
 
-    document.addEventListener("mousemove", (event) => {
-      const canvasPos = RenderManager.getCurrentRenderTarget().getBoundingClientRect();
+    const mousePositionHandler = (event) => {
+      const canvasPos = RenderManager.getRenderCanvas().getBoundingClientRect();
       InputManager.mousePosition.x = event.clientX - canvasPos.x;
       InputManager.mousePosition.y = event.clientY - canvasPos.y;
-    });
+    };
+
+    document.addEventListener("mousemove", mousePositionHandler);
   }
 
   update() {

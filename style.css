@@ -10,7 +10,7 @@ body{
   align-items: center;
 }
 
-#render-target{
+#render-canvas{
   background-color: white;
 }
 
@@ -22,7 +22,7 @@ body{
   display: none;
 }
 
-#buffer-render-target{
+#buffer-canvas{
   background-color: white;
   display: none;
 }

@@ -39,7 +39,7 @@ export default class Sprite extends GameObject {
       const size = this.transform.size;
       try {
         // 버퍼 캔버스를 초기화한다.
-        const buffer = RenderManager.getBufferRenderTarget();
+        const buffer = RenderManager.getBufferCanvas();
         const bufferCtx = buffer.getContext("2d");
         bufferCtx.clearRect(0, 0, buffer.width, buffer.height);
 
