@@ -36,27 +36,29 @@ export default class Sprite extends GameObject {
   draw() {
     if (this.isColorBlendingEnable) {
       // 버퍼 캔버스의 크기를 현재 이미지의 크기로 설정한다.
-      const buffer = RenderManager.getBufferRenderTarget();
       const size = this.transform.size;
-      RenderManager.changeBufferRenderTargetResolution(size.x, size.y);
+      try {
+        // 버퍼 캔버스를 초기화한다.
+        const buffer = RenderManager.getBufferRenderTarget();
+        const bufferCtx = buffer.getContext("2d");
+        bufferCtx.clearRect(0, 0, buffer.width, buffer.height);
 
-      // 버퍼 캔버스를 초기화한다.
-      const bufferCtx = buffer.getContext("2d");
-      bufferCtx.clearRect(0, 0, buffer.width, buffer.height);
+        // 버퍼 캔버스에 이미지를 렌더링한다.
+        bufferCtx.drawImage(this.image, 0, 0);
+        bufferCtx.globalCompositeOperation = "source-atop";
 
-      // 버퍼 캔버스에 이미지를 렌더링한다.
-      bufferCtx.drawImage(this.image, 0, 0);
-      bufferCtx.globalCompositeOperation = "source-atop";
+        // 버퍼 캔버스에 source-atop 방식으로 오버레이를 입힌다.
+        const color = this.color.toArray();
+        const alpha = 0.5;
+        bufferCtx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
+        bufferCtx.fillRect(0, 0, size.x, size.y);
+        bufferCtx.globalCompositeOperation = "source-over";
 
-      // 버퍼 캔버스에 source-atop 방식으로 오버레이를 입힌다.
-      const color = this.color.toArray();
-      const alpha = 0.5;
-      bufferCtx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
-      bufferCtx.fillRect(0, 0, size.x, size.y);
-      bufferCtx.globalCompositeOperation = "source-over";
-
-      // 버퍼 캔버스에 그려진 이미지를 주 캔버스에 렌더링한다.
-      this.context2d.drawImage(buffer, 0, 0);
+        // 버퍼 캔버스에 그려진 이미지를 주 캔버스에 렌더링한다.
+        this.context2d.drawImage(buffer, 0, 0);
+      } catch (error) {
+        throw error;
+      }
     } else {
       this.context2d.drawImage(this.image, 0, 0);
     }
