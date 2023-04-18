@@ -1,5 +1,6 @@
 import GameObject from "/src/engine/core/game-object.js";
 import RenderManager from "/src/engine/core/render-manager.js";
+import Color from "/src/engine/data-structure/color.js";
 import Path from "/src/engine/utils/path.js";
 
 export default class Sprite extends GameObject {
@@ -10,6 +11,7 @@ export default class Sprite extends GameObject {
     this.updateSize();
 
     this.isColorOverlayEnable = false;
+    this.overlayColor = new Color(0, 0, 0, 0.5);
   }
 
   update(deltaTime) {
@@ -48,9 +50,11 @@ export default class Sprite extends GameObject {
         bufferCtx.globalCompositeOperation = "source-atop";
 
         // 버퍼 캔버스에 source-atop 방식으로 오버레이를 입힌다.
-        const color = this.color.toArray();
-        const alpha = 0.5;
-        bufferCtx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
+        // TODO
+        // alpha를 고정값으로 준 이유는 color.a가 이미 렌더링에 사용되고 있어서다.
+        // 도형과는 다르게 스프라이트는 색상값이 오버레이로 작용하고 있기 때문에
+        // 다르게 적용해야한다.
+        bufferCtx.fillStyle = `rgba(${this.overlayColor.r},${this.overlayColor.g},${this.overlayColor.b},${this.overlayColor.a})`;
         bufferCtx.fillRect(0, 0, size.x, size.y);
         bufferCtx.globalCompositeOperation = "source-over";
 
@@ -68,7 +72,7 @@ export default class Sprite extends GameObject {
     this.image.onload = () => {
       this.transform.size.x = this.image.naturalWidth;
       this.transform.size.y = this.image.naturalHeight;
-    }
+    };
   }
 
   enableColorOverlay() {
@@ -77,5 +81,9 @@ export default class Sprite extends GameObject {
 
   disableColorOverlay() {
     this.isColorOverlayEnable = false;
+  }
+
+  setOverlayColor(color) {
+    this.overlayColor = color;
   }
 }

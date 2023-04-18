@@ -8,6 +8,7 @@
   여기에도 작성해주어야 한다.
  */
 
+import Color from "/src/engine/data-structure/color.js";
 import Vector from "/src/engine/data-structure/vector.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
 import InputManager from "/src/engine/core/input-manager.js";
@@ -22,6 +23,7 @@ export {
   InputManager,
   SceneManager,
   RenderManager,
+  Color,
   Vector,
   Matrix,
   GameObject,
