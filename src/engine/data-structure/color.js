@@ -6,14 +6,9 @@ export default class Color {
     this.a = 1;
   }
 
-  toRGBA() {
+  toArray() {
     const clamped = this.clamp();
-    return `rgba(${clamped.r}, ${clamped.g}, ${clamped.b}, ${clamped.a})`;
-  }
-
-  toRGB() {
-    const clamped = this.clamp();
-    return `rgb(${clamped.r}, ${clamped.g}, ${clamped.b})`;
+    return [clamped.r, clamped.g, clamped.b, clamped.a];
   }
 
   clamp() {

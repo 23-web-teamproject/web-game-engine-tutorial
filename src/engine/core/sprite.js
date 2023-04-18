@@ -28,7 +28,10 @@ export default class Sprite extends GameObject {
    * 완성된 버퍼 캔버스를 주 캔버스에 렌더링한다.
    *
    * TODO
-   * 색깔을 입힐 수는 있지만 rgb(255, 0, 0)
+   * 색깔을 입힐 수는 있지만 rgb(255, 0, 0) 처럼 빨간색만 씌운다고 할 때
+   * 이미지 전체가 빨갛게 변해버린다.
+   * 알파값을 조절해서 빨간색 오버레이를 씌운 것처럼 보이게 할 수 있지만
+   * 물빠진 색감이 되어버린다.
    */
   draw() {
     if (this.isColorBlendingEnable) {
@@ -44,13 +47,15 @@ export default class Sprite extends GameObject {
       // 버퍼 캔버스에 이미지를 렌더링한다.
       bufferCtx.drawImage(this.image, 0, 0);
       bufferCtx.globalCompositeOperation = "source-atop";
+
       // 버퍼 캔버스에 source-atop 방식으로 오버레이를 입힌다.
-      bufferCtx.fillStyle = this.color.toRGBA();
+      const color = this.color.toArray();
+      const alpha = 0.5;
+      bufferCtx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
       bufferCtx.fillRect(0, 0, size.x, size.y);
       bufferCtx.globalCompositeOperation = "source-over";
 
       // 버퍼 캔버스에 그려진 이미지를 주 캔버스에 렌더링한다.
-      this.context2d.globalAlpha = this.color.a;
       this.context2d.drawImage(buffer, 0, 0);
     } else {
       this.context2d.drawImage(this.image, 0, 0);
