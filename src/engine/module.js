@@ -16,6 +16,7 @@ import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
 import GameObject from "/src/engine/core/game-object.js";
 import Sprite from "/src/engine/core/sprite.js";
+import Rect from "/src/engine/core/rect.js";
 import SoundEffect from "/src/engine/fx/sound-effect.js";
 import ParticleEffect from "/src/engine/fx/particle-effect.js";
 
@@ -28,6 +29,7 @@ export {
   Matrix,
   GameObject,
   Sprite,
+  Rect,
   SoundEffect,
   ParticleEffect
 }
