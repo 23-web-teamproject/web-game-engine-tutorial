@@ -7,6 +7,21 @@ export default class Color {
   }
 
   toRGBA() {
-    return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
+    const clamped = this.clamp();
+    return `rgba(${clamped.r}, ${clamped.g}, ${clamped.b}, ${clamped.a})`;
+  }
+
+  toRGB() {
+    const clamped = this.clamp();
+    return `rgb(${clamped.r}, ${clamped.g}, ${clamped.b})`;
+  }
+
+  clamp() {
+    const clamped = new Color();
+    clamped.r = Math.max(0, Math.min(255, this.r));
+    clamped.g = Math.max(0, Math.min(255, this.g));
+    clamped.b = Math.max(0, Math.min(255, this.b));
+    clamped.a = Math.max(0, Math.min(1, this.a));
+    return clamped;
   }
 }
