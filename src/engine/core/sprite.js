@@ -65,8 +65,10 @@ export default class Sprite extends GameObject {
   }
 
   updateSize() {
-    this.transform.size.x = this.image.naturalWidth;
-    this.transform.size.y = this.image.naturalHeight;
+    this.image.onload = () => {
+      this.transform.size.x = this.image.naturalWidth;
+      this.transform.size.y = this.image.naturalHeight;
+    }
   }
 
   enableColorBlending() {
