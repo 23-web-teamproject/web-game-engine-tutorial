@@ -41,7 +41,7 @@ export default class InputManager {
 
     document.addEventListener("mousedown", (event) => {
       const buttonName = this.buttonNameList[event.button];
-      if(!InputManager.isKeyInKeyTable()){
+      if(!InputManager.isKeyInKeyTable(buttonName)){
         InputManager.keyTable[buttonName] = new Array(false, false);
       }
       InputManager.keyTable[buttonName][0] = true;
