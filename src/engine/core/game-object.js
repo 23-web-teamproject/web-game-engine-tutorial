@@ -22,7 +22,7 @@ export default class GameObject {
     /*
      * 렌더링에 사용될 색상값을 담고 있다.
      */
-    this.color = new Color();
+    this.color = new Color(0, 0, 0, 1);
 
     /*
      * 객체의 자식들을 저장할 테이블이다.
@@ -61,11 +61,12 @@ export default class GameObject {
     this.calculateMatrix();
     this.setTransform();
     this.draw();
-    this.afterDraw();
 
     for (const child of Object.values(this.childTable)) {
       child.render();
     }
+
+    this.afterDraw();
   }
 
   /*
@@ -113,10 +114,13 @@ export default class GameObject {
    * 이 함수를 오버라이드해서 사용하면 된다.
    *
    * 이 객체에서는 기본적으로 색상값을 적용시키기 위해 globalAlpha값을 조절한다.
+   * context2d.save()를 통해 현재 설정값을 저장해두었으므로,
+   * 마음대로 변경 후 context2d.restore()로 되돌리게 된다.
+   * 따라서 현재 설정값이 자식들의 렌더링에 사용된다.
    */
   beforeDraw() {
     this.context2d.save();
-    this.context2d.globalAlpha = this.color.a;
+    this.context2d.globalAlpha *= this.color.a;
   }
 
   /*
@@ -134,12 +138,8 @@ export default class GameObject {
    * 일반적으로 beforeDraw()에서 전처리했던 것을 원래대로 돌리는 작업을 한다.
    * beforeDraw()를 오버라이드했다면 이 함수도 오버라이드하여
    * 수정된 context2d를 원래대로 돌려놓아야 한다.
-   *
-   * 이 객체에서는 색상값을 적용시키기 위해 globalAlpha값을 조절했었으므로
-   * 원래대로 되돌려 놓는 작업을 한다.
    */
   afterDraw() {
-    this.context2d.globalAlpha = 1;
     this.context2d.restore();
   }
 
