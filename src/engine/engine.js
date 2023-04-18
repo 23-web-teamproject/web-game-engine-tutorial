@@ -15,16 +15,12 @@ class Engine {
   }
 
   init() {
-    // Initialize page resolution
-    this.initializePageResolution();
+    // Set resolution
+    RenderManager.changeResolution(1280, 760);
 
     // Load scene
     SceneManager.changeScene(ExampleScene);
   }
-
-  // TODO
-  // 게임화면의 해상도를 특정 해상도로 변경할 수 있게 한다.
-  initializePageResolution() {}
 
   run() {
     // Calculate delta time
