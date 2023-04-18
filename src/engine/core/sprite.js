@@ -50,10 +50,6 @@ export default class Sprite extends GameObject {
         bufferCtx.globalCompositeOperation = "source-atop";
 
         // 버퍼 캔버스에 source-atop 방식으로 오버레이를 입힌다.
-        // TODO
-        // alpha를 고정값으로 준 이유는 color.a가 이미 렌더링에 사용되고 있어서다.
-        // 도형과는 다르게 스프라이트는 색상값이 오버레이로 작용하고 있기 때문에
-        // 다르게 적용해야한다.
         bufferCtx.fillStyle = `rgba(${this.overlayColor.r},${this.overlayColor.g},${this.overlayColor.b},${this.overlayColor.a})`;
         bufferCtx.fillRect(0, 0, size.x, size.y);
         bufferCtx.globalCompositeOperation = "source-over";
