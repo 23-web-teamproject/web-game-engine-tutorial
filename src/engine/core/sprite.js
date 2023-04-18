@@ -9,7 +9,7 @@ export default class Sprite extends GameObject {
     this.image.src = Path.convertAbsoluteAssetPath(imagePath);
     this.updateSize();
 
-    this.isColorBlendingEnable = false;
+    this.isColorOverlayEnable = false;
   }
 
   update(deltaTime) {
@@ -34,7 +34,7 @@ export default class Sprite extends GameObject {
    * 물빠진 색감이 되어버린다.
    */
   draw() {
-    if (this.isColorBlendingEnable) {
+    if (this.isColorOverlayEnable) {
       // 버퍼 캔버스의 크기를 현재 이미지의 크기로 설정한다.
       const size = this.transform.size;
       try {
@@ -71,11 +71,11 @@ export default class Sprite extends GameObject {
     }
   }
 
-  enableColorBlending() {
-    this.isColorBlendingEnable = true;
+  enableColorOverlay() {
+    this.isColorOverlayEnable = true;
   }
 
-  disableColorBlending() {
-    this.isColorBlendingEnable = false;
+  disableColorOverlay() {
+    this.isColorOverlayEnable = false;
   }
 }
