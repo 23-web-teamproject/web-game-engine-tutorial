@@ -10,6 +10,33 @@ export default class RenderManager {
 
   constructor() {}
 
+  static render() {
+    SceneManager.getCurrentScene().render();
+    const canvas = RenderManager.getRenderCanvas();
+  }
+
+  static clearScreen() {
+    const canvas = RenderManager.getRenderCanvas();
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  static changeResolution(width, height) {
+    RenderManager.renderCanvasWidth = width;
+    RenderManager.renderCanvasHeight = height;
+
+    const renderCanvas = RenderManager.getRenderCanvas();
+    renderCanvas.width = RenderManager.renderCanvasWidth;
+    renderCanvas.height = RenderManager.renderCanvasHeight;
+
+    RenderManager.changeBufferCanvasResolution(width, height);
+  }
+
+  static changeBufferCanvasResolution(width, height) {
+    const bufferCanvas = RenderManager.getBufferCanvas();
+    bufferCanvas.width = width;
+    bufferCanvas.height = height;
+  }
+
   static getRenderCanvas() {
     if (RenderManager.renderCanvas === undefined) {
       RenderManager.renderCanvas = document.getElementById(
@@ -23,16 +50,6 @@ export default class RenderManager {
     }
 
     return RenderManager.renderCanvas;
-  }
-
-  static clearScreen() {
-    const canvas = RenderManager.getRenderCanvas();
-    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-  }
-
-  static render() {
-    SceneManager.getCurrentScene().render();
-    const canvas = RenderManager.getRenderCanvas();
   }
 
   static getBufferCanvas() {
@@ -51,22 +68,5 @@ export default class RenderManager {
       RenderManager.bufferCanvas = bufferCanvas;
     }
     return RenderManager.bufferCanvas;
-  }
-
-  static changeResolution(width, height) {
-    RenderManager.renderCanvasWidth = width;
-    RenderManager.renderCanvasHeight = height;
-
-    const renderCanvas = RenderManager.getRenderCanvas();
-    renderCanvas.width = RenderManager.renderCanvasWidth;
-    renderCanvas.height = RenderManager.renderCanvasHeight;
-
-    RenderManager.changeBufferCanvasResolution(width, height);
-  }
-
-  static changeBufferCanvasResolution(width, height) {
-    const bufferCanvas = RenderManager.getBufferCanvas();
-    bufferCanvas.width = width;
-    bufferCanvas.height = height;
   }
 }
