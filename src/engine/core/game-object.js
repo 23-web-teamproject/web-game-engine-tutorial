@@ -162,7 +162,7 @@ export default class GameObject {
     // 부모 객체로부터 자식 객체를 제거한다.
     if (this.parent !== undefined) {
       const childName = this.parent.getChildNameByChildGameObj(this);
-      delete this.parent.childGameObjDict[childName];
+      delete this.parent.childTable[childName];
     }
 
     this.parent = parent;
@@ -191,9 +191,9 @@ export default class GameObject {
    */
   removeChild(child) {
     const childName = this.getChildNameByChildGameObj(child);
-    const isChildExist = this.childGameObjDict[childName];
+    const isChildExist = this.childTable[childName];
     if (isChildExist) {
-      delete this.childGameObjDict[childName];
+      delete this.childTable[childName];
 
       // 자식 객체의 부모를 씬 객체로 변경한다.
       SceneManager.getCurrentScene().addChild(child);
