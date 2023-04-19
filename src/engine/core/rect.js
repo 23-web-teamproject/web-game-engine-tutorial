@@ -12,21 +12,6 @@ export default class Rect extends GameObject {
   }
 
   draw() {
-    if (this.isStroke) {
-      this.context2d.lineWidth = 15;
-      this.context2d.strokeStyle = `rgb(
-        ${this.strokeColor.r},
-        ${this.strokeColor.g},
-        ${this.strokeColor.b}
-        )`;
-      this.context2d.strokeRect(
-        0,
-        0,
-        this.transform.size.x,
-        this.transform.size.y
-      );
-    }
-
     if (this.isFill) {
       this.context2d.fillStyle = `rgba(
         ${this.color.r}, 
@@ -40,14 +25,31 @@ export default class Rect extends GameObject {
         this.transform.size.y
       );
     }
+
+    if (this.isStroke) {
+      this.context2d.lineWidth = this.strokeWidth;
+      this.context2d.strokeStyle = `rgb(
+        ${this.strokeColor.r},
+        ${this.strokeColor.g},
+        ${this.strokeColor.b},
+        ${this.strokeColor.a}
+        )`;
+      this.context2d.strokeRect(
+        this.strokeWidth / 2,
+        this.strokeWidth / 2,
+        this.transform.size.x - this.strokeWidth,
+        this.transform.size.y - this.strokeWidth
+      );
+    }
   }
 
   registerOptions(options) {
-    this.color = options.color;
-    this.strokeColor = options.strokeColor;
     this.transform.size.x = options.width || 0;
     this.transform.size.y = options.height || 0;
     this.isFill = options.hasOwnProperty("color");
+    this.color = options.color || this.color;
     this.isStroke = options.hasOwnProperty("strokeColor");
+    this.strokeColor = options.strokeColor;
+    this.strokeWidth = options.strokeWidth || 0;
   }
 }
