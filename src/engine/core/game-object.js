@@ -82,15 +82,24 @@ export default class GameObject {
     }
   }
 
+  /*
+   * 객체의 부모가 존재하는지 확인한다.
+   */
   isParentGameObjectExist() {
     return this.parent !== undefined;
   }
 
+  /*
+   * 자신의 transform을 matrix로 변환한 것과 부모의 matrix를 행렬곱한다.
+   */
   multiplyParentMatrix() {
     const parentMatrix = this.parent.getMatrix();
     this.matrix = parentMatrix.multiply(this.transform.toMatrix());
   }
 
+  /*
+   * 자신의  transform을 matrix로 변환한다.
+   */
   convertTransformToMatrix() {
     this.matrix = this.transform.toMatrix();
   }
@@ -143,9 +152,14 @@ export default class GameObject {
     this.context2d.restore();
   }
 
+  /*
+   * 인자로 받은 객체와 이 객체 사이에 부모-자식 관계를 만든다.
+   * 만약 이 객체의 부모가 이미 있다면, 그 부모의 자식 테이블에서 이 객체를
+   * 제거하고, 새로운 부모의 자식 테이블에 이 객체를 추가한다.
+   */
   setParent(parent) {
     // 이 객체의 부모 객체가 있다면
-    // 부모 객체로부터 임시로 자식 객체를 제거한다.
+    // 부모 객체로부터 자식 객체를 제거한다.
     if (this.parent !== undefined) {
       const childName = this.parent.getChildNameByChildGameObj(this);
       delete this.parent.childGameObjDict[childName];
@@ -155,6 +169,11 @@ export default class GameObject {
     this.parent.addChild(this);
   }
 
+  /*
+   * 이 객체의 부모와 이 객체 사이의 관계를 끊는다.
+   * 이 객체는 부모로부터 떨어져 나오게 되는데,
+   * 이 때 씬 객체를 새로운 부모로 설정한다.
+   */
   removeParent() {
     // 만약 이 객체의 부모가 있어야지만 부모 객체로부터 떨어져 나올 수 있다.
     if (this.parent !== undefined) {
@@ -211,6 +230,10 @@ export default class GameObject {
     }
   }
 
+  /*
+   * 인자로 주어진 childName을 key로 하고,
+   * 객체의 자식 테이블에 gameObject를 자식 객체로 추가한다.
+   */
   createChild(childName, gameObject) {
     if (childName in Object.keys(this.childTable) == false) {
       this.childTable[childName] = gameObject;
@@ -218,60 +241,103 @@ export default class GameObject {
     }
   }
 
+  /*
+   * 이 객체의 자식 테이블에 인자로 전달받은 객체가 자식으로 존재한다면
+   * 그 객체의 key값(childName)을 반환한다.
+   */
   getChildNameByChildGameObj(child) {
     return Object.keys(this.childTable).find(
       (key) => child === this.childTable[key]
     );
   }
 
+  /*
+   * 인자로 전달받은 childName을 key로 하여
+   * 자식 테이블에 있는 자식 객체를 반환한다.
+   */
   getChild(childName) {
     return this.childTable[childName];
   }
 
+  /*
+   * 이 객체의 좌표값을 특정값만큼 변경한다.
+   */
   addPos(x, y) {
     this.transform.position.x += x;
     this.transform.position.y += y;
   }
 
+  /*
+   * 이 객체의 좌표값을 특정값으로 설정한다.
+   */
   setPos(x, y) {
     this.transform.position.x = x;
     this.transform.position.y = y;
   }
 
+  /*
+   * 이 객체의 크기를 특정값만큼 변경한다.
+   */
   addScale(x, y) {
     this.transform.scale.x += x;
     this.transform.scale.y += y;
   }
 
+  /*
+   * 이 객체의 크기를 특정값으로 설정한다.
+   */
   setScale(x, y) {
     this.transform.scale.x = x;
     this.transform.scale.y = y;
   }
 
+  /*
+   * 이 객체의 각도를 특정값만큼 변경한다.
+   */
   addRotation(degree) {
     this.transform.rotation += degree;
   }
 
+  /*
+   * 이 객체의 각도를 특정값으로 설정한다.
+   */
   setRotation(degree) {
     this.transform.rotation = degree;
   }
 
+  /*
+   * 이 객체의 좌표값을 반환한다.
+   */
   getPos() {
     return this.transform.position;
   }
 
+  /*
+   * 이 객체의 크기(스케일값)를 반환한다.
+   * 크기(size)를 반환하는게 아니다!
+   */
   getScale() {
     return this.transform.scale;
   }
 
+  /*
+   * 이 객체의 각도(degree)를 반환한다.
+   */
   getRotation() {
     return this.transform.rotation;
   }
 
+  /*
+   * 이 객체의 matrix를 반환한다.
+   */
   getMatrix() {
     return this.matrix;
   }
 
+  /*
+   * 이 객체를 씬으로부터 제거한다.
+   * 이 객체의 자식 테이블에 있는 모든 객체들도 연달아 제거된다.
+   */
   destroy() {
     /* JS에는 클래스를 삭제하는 예약어가 따로 없다.
      * 단지 어떤 변수를 아무도 참조하지 않을 때 가비지 컬렉터(GC)가

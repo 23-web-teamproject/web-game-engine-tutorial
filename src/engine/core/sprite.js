@@ -1,3 +1,6 @@
+/*
+ * 화면에 이미지를 가진 객체를 보여지게 하고 싶으면 이 객체를 사용한다.
+ */
 import GameObject from "/src/engine/core/game-object.js";
 import RenderManager from "/src/engine/core/render-manager.js";
 import Color from "/src/engine/data-structure/color.js";
@@ -6,11 +9,25 @@ import Path from "/src/engine/utils/path.js";
 export default class Sprite extends GameObject {
   constructor(imagePath) {
     super();
+    /*
+     * 화면에 보여질 이미지이다.
+     */
     this.image = new Image();
     this.image.src = Path.convertAbsoluteAssetPath(imagePath);
+
     this.updateSize();
 
+    /*
+     * 색상 오버레이를 씌울 것인지를 나타낸다.
+     * 기본값으로는 false다.
+     */
     this.isColorOverlayEnable = false;
+
+    /*
+     * 색상 오버레이를 씌울 때 어떤 색을 씌울 것인지를 나타낸다.
+     * 만약 이 색의 Alpha가 1이면 이미지 전체에 불투명한 색을 덧입히기 때문에
+     * 완전히 다른 색으로 덮히게 되어 이미지가 보이지 않는다.
+     */
     this.overlayColor = new Color(0, 0, 0, 0.5);
   }
 
@@ -39,6 +56,10 @@ export default class Sprite extends GameObject {
     if (this.isColorOverlayEnable) {
       // 버퍼 캔버스의 크기를 현재 이미지의 크기로 설정한다.
       const size = this.transform.size;
+
+      // 만약 이미지의 size가 0x0일 경우 drawImage()를 실행할 때
+      // 크기가 0인 이미지를 그린다는 에러가 일어난다.
+      // 그럴 경우를 위해 try-catch로 감싸주어 에러를 숨겼다.
       try {
         // 버퍼 캔버스를 초기화한다.
         const buffer = RenderManager.getBufferCanvas();
@@ -64,6 +85,9 @@ export default class Sprite extends GameObject {
     }
   }
 
+  /*
+   * 이 객체의 물리적인 크기를 이미지의 크기로 설정한다.
+   */
   updateSize() {
     this.image.onload = () => {
       this.transform.size.x = this.image.naturalWidth;
@@ -71,14 +95,23 @@ export default class Sprite extends GameObject {
     };
   }
 
+  /*
+   * 색상 오버레이를 켠다.
+   */
   enableColorOverlay() {
     this.isColorOverlayEnable = true;
   }
 
+  /*
+   * 색상 오버레이를 끈다.
+   */
   disableColorOverlay() {
     this.isColorOverlayEnable = false;
   }
 
+  /*
+   * 색상 오버레이의 색을 설정한다.
+   */
   setOverlayColor(color) {
     this.overlayColor = color;
   }

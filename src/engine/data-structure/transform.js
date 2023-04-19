@@ -1,16 +1,48 @@
+/*
+ * GameObject의 좌표, 회전, 축척 등을 나타내기 위해 사용한다.
+ * 좌표, 회전, 축척을 한 번에 나타낼 수 있게 matrix형태로 바꾸는 기능도 갖고 있다.
+ */
 import Vector from "/src/engine/data-structure/vector.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
 
 export default class Transform {
   constructor() {
+    /*
+     * 좌표값을 나타낸다.
+     */
     this.position = new Vector(0, 0);
-    this.scale = new Vector(1, 1);
-    this.rotation = 0; // degree
 
+    /*
+     * 축척을 나타낸다.
+     */
+    this.scale = new Vector(1, 1);
+
+    /*
+     * 각도를 나타낸다. 라디안이 아닌 degree를 쓴다.
+     */
+    this.rotation = 0;
+
+    /*
+     * 물리적인 크기를 나타낸다.
+     * GameObject를 상속받은 이미지나 도형들은
+     * 이 값도 필수적으로 변경해야한다.
+     */
     this.size = new Vector(0, 0);
+
+    /*
+     * 객체의 회전이나 축척을 변형할 때 기본적으로는
+     * 객체의 좌상단을 기준으로 변형한다.
+     * 특정 좌표를 기준으로 변형하려고 하면 이 값을 변경하면 된다.
+     */
     this.pivotPosition = new Vector(0, 0);
   }
 
+  /*
+   * Transform의 좌표, 회전, 축척을 한 번에 나타낼 수 있게
+   * matrix형태로 변환한다.
+   * 변환한 matrix는 행렬곱을 통해 부모-자식간의 상대좌표를
+   * 화면 상의 절대좌표로 변환할 수 있게 해준다.
+   */
   toMatrix() {
     let matrix = new Matrix();
     matrix.x = this.position.x;
@@ -47,6 +79,10 @@ export default class Transform {
     return matrix;
   }
 
+  /*
+   * 회전이나 축척 변형의 기준좌표를 size의 절반으로 설정한다.
+   * 이렇게 하면 GameObject의 가운데를 기준으로 회전하거나 스케일이 늘어난다.
+   */
   setPivotPositionToCenter() {
     this.pivotPosition.x = this.size.x / 2;
     this.pivotPosition.y = this.size.y / 2;

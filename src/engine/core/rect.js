@@ -1,3 +1,6 @@
+/*
+ * 사각형이 렌더링되는 GameObject다.
+ */
 import GameObject from "/src/engine/core/game-object.js";
 
 export default class Rect extends GameObject {

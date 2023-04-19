@@ -23,16 +23,22 @@ export default class Vector {
   }
 
   /*
-   * 이 벡터의 크기를 반환한다.
+   * 이 벡터의 물리적인 크기(다른 말로는 norm, magnitude)를 반환한다.
    */
   length() {
     return Math.sqrt(this.x * this.x + this.y * this.y);
   }
 
+  /*
+   * 이 벡터에 다른 벡터를 더한 벡터를 반환한다.
+   */
   add(other) {
     return new Vector(this.x + other.x, this.y + other.y);
   }
 
+  /*
+   * 이 벡터에 다른 벡터를 뺀 벡터를 반환한다.
+   */
   minus(other) {
     return new Vector(this.x - other.x, this.y - other.y);
   }
