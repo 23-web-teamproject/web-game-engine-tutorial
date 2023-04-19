@@ -165,12 +165,20 @@ export default class GameObject {
     }
   }
 
+  /*
+   * 인자로 전달받은 객체가 자식 테이블에 존재한다면,
+   * 그 객체를 자식 테이블에서 제거하고,
+   * 씬 객체의 자식 테이블에 추가한다.
+   */
   removeChild(child) {
     const childName = this.getChildNameByChildGameObj(child);
-    delete this.childGameObjDict[childName];
+    const isChildExist = this.childGameObjDict[childName];
+    if (isChildExist) {
+      delete this.childGameObjDict[childName];
 
-    // 자식 객체의 부모를 씬 객체로 변경한다.
-    SceneManager.getCurrentScene().addChild(child);
+      // 자식 객체의 부모를 씬 객체로 변경한다.
+      SceneManager.getCurrentScene().addChild(child);
+    }
   }
 
   /*
