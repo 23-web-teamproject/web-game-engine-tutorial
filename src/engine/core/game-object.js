@@ -45,6 +45,8 @@ export default class GameObject {
    * 하위 GameObject들의 update를 실행시킨다.
    */
   update(deltaTime) {
+    this.calculateMatrix();
+
     for (const child of Object.values(this.childTable)) {
       child.update(deltaTime);
     }
@@ -58,7 +60,6 @@ export default class GameObject {
    */
   render() {
     this.beforeDraw();
-    this.calculateMatrix();
     this.setTransform();
     this.draw();
 
