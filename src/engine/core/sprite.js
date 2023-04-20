@@ -13,7 +13,7 @@ export default class Sprite extends GameObject {
      * 화면에 보여질 이미지이다.
      */
     this.image = new Image();
-    this.image.src = Path.convertAbsoluteAssetPath(imagePath);
+    this.image.src = Path.convertToAbsoluteAssetPath(imagePath);
 
     this.updateSize();
 
