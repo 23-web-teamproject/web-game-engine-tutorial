@@ -5,21 +5,27 @@ import {
 } from "/src/engine/module.js";
 import { Timer } from "/src/engine/utils.js";
 
-import ExampleScene from "/src/example-scene/scene.js";
+window.onload = () => {
+  const engine = new Engine();
 
-class Engine {
+  requestAnimationFrame(() => {
+    engine.run();
+  });
+};
+
+export default class Engine {
   constructor() {
     this.inputManager = new InputManager();
 
     this.timer = new Timer();
   }
 
-  init() {
+  static registerInitialScene(newScene) {
     // Set resolution
-    RenderManager.changeResolution(1280, 760);
+    RenderManager.changeResolution(1280, 720);
 
     // Load scene
-    SceneManager.changeScene(ExampleScene);
+    SceneManager.changeScene(newScene);
   }
 
   run() {
@@ -43,12 +49,3 @@ class Engine {
     });
   }
 }
-
-window.onload = () => {
-  const engine = new Engine();
-
-  engine.init();
-  requestAnimationFrame(() => {
-    engine.run();
-  });
-};
