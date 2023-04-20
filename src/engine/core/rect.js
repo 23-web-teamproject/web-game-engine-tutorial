@@ -24,8 +24,8 @@ export default class Rect extends GameObject {
       this.context2d.fillRect(
         0,
         0,
-        this.transform.size.x,
-        this.transform.size.y
+        this.getSize().x,
+        this.getSize().y
       );
     }
 
@@ -40,8 +40,8 @@ export default class Rect extends GameObject {
       this.context2d.strokeRect(
         this.strokeWidth / 2,
         this.strokeWidth / 2,
-        this.transform.size.x - this.strokeWidth,
-        this.transform.size.y - this.strokeWidth
+        this.getSize().x - this.strokeWidth,
+        this.getSize().y - this.strokeWidth
       );
     }
   }

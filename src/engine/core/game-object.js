@@ -327,6 +327,10 @@ export default class GameObject {
     return this.transform.rotation;
   }
 
+  getSize() {
+    return this.transform.size;
+  }
+
   /*
    * 이 객체의 matrix를 반환한다.
    */
