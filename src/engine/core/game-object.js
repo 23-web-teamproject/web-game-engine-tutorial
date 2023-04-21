@@ -76,7 +76,7 @@ export default class GameObject {
    * 부모 객체가 없다면 자신의 matrix만을 사용한다.
    */
   calculateMatrix() {
-    if (this.isParentGameObjectExist()) {
+    if (this.hasParentGameObject()) {
       this.multiplyParentMatrix();
     } else {
       this.convertTransformToMatrix();
@@ -86,7 +86,7 @@ export default class GameObject {
   /*
    * 객체의 부모가 존재하는지 확인한다.
    */
-  isParentGameObjectExist() {
+  hasParentGameObject() {
     return this.parent !== undefined;
   }
 
