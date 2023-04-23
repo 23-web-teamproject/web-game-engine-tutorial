@@ -12,6 +12,7 @@ import Color from "/src/engine/data-structure/color.js";
 import Vector from "/src/engine/data-structure/vector.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
 import InputManager from "/src/engine/core/input-manager.js";
+import PhysicsManager from "/src/engine/core/physics-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
 import GameObject from "/src/engine/core/game-object.js";
@@ -23,6 +24,7 @@ import ParticleEffect from "/src/engine/fx/particle-effect.js";
 
 export {
   InputManager,
+  PhysicsManager,
   SceneManager,
   RenderManager,
   Color,

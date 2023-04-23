@@ -1,10 +1,12 @@
 import GameObject from "/src/engine/core/game-object.js";
+import { CircleCollider } from "/src/engine/data-structure/collider.js";
 
 export default class Circle extends GameObject {
   constructor(options) {
     super();
     this.registerOptions(options);
     this.transform.setPivotPositionToCenter();
+    this.collider = new CircleCollider();
   }
 
   update(deltaTime) {

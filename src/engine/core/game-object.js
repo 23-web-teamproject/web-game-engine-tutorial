@@ -2,6 +2,8 @@ import Color from "/src/engine/data-structure/color.js";
 import Vector from "/src/engine/data-structure/vector.js";
 import Transform from "/src/engine/data-structure/transform.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
+import RigidBody from "/src/engine/data-structure/rigidbody.js";
+import { BoxCollider } from "/src/engine/data-structure/collider.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
 
@@ -21,7 +23,9 @@ export default class GameObject {
     this.transform = new Transform();
     this.transform.setPivotPositionToCenter();
 
-    this.isPhysicsEnable = false;
+    this.isPhysicsEnable = true;
+    this.rigidbody = new RigidBody();
+    this.collider = new BoxCollider(0, 0);
 
     this.mass = 1;
     if (this.mass == 0) {
@@ -60,13 +64,6 @@ export default class GameObject {
    * 하위 GameObject들의 update를 실행시킨다.
    */
   update(deltaTime) {
-    if (this.isStatic) {
-      this.velocity = new Vector(0, -1);
-      this.inverseMass = 0;
-    } else {
-      this.velocity = this.velocity.add(this.acceleration);
-      this.addPos(this.velocity.x * deltaTime, this.velocity.y * deltaTime);
-    }
     this.calculateMatrix();
 
     for (const child of Object.values(this.childTable)) {
@@ -139,231 +136,6 @@ export default class GameObject {
       this.matrix.x,
       this.matrix.y
     );
-  }
-
-  isAABBCollide(other) {
-    if (
-      this.matrix.x + this.getSize().x < other.matrix.x ||
-      other.matrix.x + other.getSize().x < this.matrix.x ||
-      this.matrix.y + this.getSize().y < other.matrix.y ||
-      other.matrix.y + other.getSize().y < this.matrix.y
-    ) {
-      return false;
-    }
-    return true;
-  }
-
-  isCircleCollideCircle(circleA, circleB) {
-    const posDiff = circleA.getWorldPos().minus(circleB.getWorldPos());
-    // const posDiff = new Vector(
-    //   circleA.matrix.x - circleB.matrix.x,
-    //   circleA.matrix.y - circleB.matrix.y
-    // );
-
-    // 두 원의 반지름을 더한 값을 제곱하되 정확한 값을 위해서
-    // 제곱근을 씌우진 않는다.
-    const squareRadius =
-      (circleA.radius + circleB.radius) * (circleA.radius + circleB.radius);
-
-    // 두 원의 중심간 거리가 두 원의 반지름을 더한 값의 제곱보다 크면
-    // 충돌하지 않았음을 의미한다.
-    if (posDiff.squareLength() > squareRadius) {
-      return;
-    }
-
-    const distance = posDiff.length();
-
-    // 두 원의 중심이 같은 경우를 생각해 임의로 방향과 충돌깊이를 설정한다.
-    let penetrationDepth = circleA.radius;
-    let normal = new Vector(1, 0);
-    if (distance != 0) {
-      // 두 원의 중심간 거리가 0이 아니라면
-      // 충돌했으되 중심이 일치하지 않은 상황이다.
-      // 반지름을 더한 값 - 중심간의 거리가 충돌한 깊이를 의미한다.
-      penetrationDepth = circleA.radius + circleB.radius - distance;
-      // 중심간의 거리를 단위벡터화하면 힘(반작용)이 작용할 방향이 된다.
-      normal = posDiff.normalize();
-    }
-    circleA.resolveCollision(circleB, normal, penetrationDepth);
-  }
-
-  isRectCollideRect(rect1, rect2) {
-    const posDiff = rect1.getWorldPos().minus(rect2.getWorldPos());
-    // const posDiff = new Vector(
-    //   rect1.matrix.x - rect2.matrix.x,
-    //   rect1.matrix.y - rect2.matrix.y
-    // );
-
-    // 충돌된 영역을 구함
-    const lt = new Vector(
-      Math.max(rect1.matrix.x, rect2.matrix.x),
-      Math.max(rect1.matrix.y, rect2.matrix.y)
-    );
-    const rb = new Vector(
-      Math.min(
-        rect1.matrix.x + rect1.getSize().x,
-        rect2.matrix.x + rect2.getSize().x
-      ),
-      Math.min(
-        rect1.matrix.y + rect1.getSize().y,
-        rect2.matrix.y + rect2.getSize().y
-      )
-    );
-
-    let normal = new Vector(1, 0);
-    let penetrationDepth = 0;
-
-    // 충돌된 영역의 가로 길이
-    const xOverlap = rb.x - lt.x;
-
-    if (xOverlap > 0) {
-      // 충돌된 영역의 세로 길이
-      const yOverlap = rb.y - lt.y;
-
-      if (yOverlap > 0) {
-        // 가로 길이가 세로 길이보다 크다면
-        // 위->아래방향 또는
-        // 아래->위방향으로 진행한 물체가 충돌한 것이다.
-        if (xOverlap > yOverlap) {
-          // rect1이 rect2보다 아래에 있으면 위에서 아래로 충돌했다는 말이므로
-          // 힘(반작용)은 위로 작용해야한다.
-          // 그렇지 않으면 힘이 아래로 작용해야한다.
-          if (posDiff.y < 0) {
-            normal = new Vector(0, -1);
-          } else {
-            normal = new Vector(0, 1);
-          }
-          penetrationDepth = xOverlap;
-        } else {
-          // 세로 길이가 가로 길이보다 크다는 말은
-          // 왼쪽->오른쪽방향 또는
-          // 오른쪽->왼쪽방향으로 진행한 물체가 충돌한 것이다.
-          // rect1이 rect2보다 왼쪽에 있으면
-          // 힘(반작용)은 왼쪽으로 작용해야한다.
-          // 반대의 경우 오른쪽으로 작용해야한다.
-          if (posDiff.x < 0) {
-            normal = new Vector(-1, 0);
-          } else {
-            normal = new Vector(1, 0);
-          }
-          penetrationDepth = yOverlap;
-        }
-      }
-    }
-    rect1.resolveCollision(rect2, normal, penetrationDepth);
-  }
-
-  isRectCollideCircle(circle, rect) {
-    const rectCenter = new Vector(
-      rect.getWorldPos().x + rect.getSize().x / 2,
-      rect.getWorldPos().y + rect.getSize().y / 2
-    );
-    const posDiff = new Vector(
-      circle.getWorldPos().x - rectCenter.x,
-      circle.getWorldPos().y - rectCenter.y
-    );
-
-    const closest = new Vector(
-      Math.min(
-        rect.getWorldPos().x + rect.getSize().x,
-        Math.max(rect.getWorldPos().x, circle.getWorldPos().x)
-      ),
-      Math.min(
-        rect.getWorldPos().y + rect.getSize().y,
-        Math.max(rect.getWorldPos().y, circle.getWorldPos().y)
-      )
-    );
-
-    let inside = false;
-
-    // 만약 원의 중심이 사각형의 안에 들어와 있다면...
-    // closest는 항상 사각형 내로 clamp되어 있기 때문에
-    // posDiff + rectCenter와 똑같아지게 된다.
-    if (posDiff.isEquals(closest.minus(rectCenter))) {
-      inside = true;
-
-      // 중심에서 어떤 축이 더 가까운지 찾는다.
-      if (Math.abs(posDiff.x) < Math.abs(posDiff.y)) {
-        // y편차가 더 작다는 말은?
-
-        // 사각형에서 원과 가장 가까운 점을 찾아야 하므로
-        // 가장 가까운 사각형의 경계를 점으로 선택한다.
-        if (rectCenter.x - closest.x > 0) {
-          closest.x = rect.getWorldPos().x;
-        } else {
-          closest.x = rect.getWorldPos().x + rect.getSize().x;
-        }
-      } else {
-        if (rectCenter.y - closest.y > 0) {
-          closest.y = rect.getWorldPos().y;
-        } else {
-          closest.y = rect.getWorldPos().y + rect.getSize().y;
-        }
-      }
-    }
-
-    let penetrationDepth = 0;
-    let normal = posDiff.minus(closest.minus(rectCenter));
-    const d = normal.squareLength();
-
-    //
-    if (d > circle.radius * circle.radius && !inside) {
-      return;
-    }
-
-    if (inside) {
-      normal = normal.multiply(1).normalize();
-      penetrationDepth =
-        circle.radius + circle.getWorldPos().minus(closest).length(); // ???
-    } else {
-      normal = normal.multiply(-1).normalize();
-      penetrationDepth =
-        circle.getWorldPos().minus(closest).length() - circle.radius; // ???
-    }
-    rect.resolveCollision(circle, normal, penetrationDepth);
-  }
-
-  resolveCollision(other, normal, penetrationDepth) {
-    const diff = this.velocity.minus(other.velocity);
-    const dot = diff.dot(normal);
-
-    if (dot > 0) {
-      return;
-    }
-
-    const e = Math.min(this.bounceness, other.bounceness);
-
-    let j = -(1 + e) * dot;
-    j /= this.inverseMass + other.inverseMass;
-
-    const impulse = new Vector(j * normal.x, j * normal.y);
-
-    this.velocity = this.velocity.add(
-      new Vector(this.inverseMass * impulse.x, this.inverseMass * impulse.y)
-    );
-
-    other.velocity = other.velocity.minus(
-      new Vector(other.inverseMass * impulse.x, other.inverseMass * impulse.y)
-    );
-    this.positionalCorrection(other, normal, penetrationDepth);
-  }
-
-  positionalCorrection(other, normal, penetrationDepth) {
-    // 충돌처리가 되었지만 서서히 빠져버리는 버그를 해결하기 위해
-    // 충돌된 위치에서 정해진 값만큼 강제로 떨어지게 하는 연산
-    const percentage = 0.05;
-    const slop = 0.1; // ???
-    const correction = normal.multiply(
-      (Math.max(penetrationDepth - slop, 0) /
-        (this.inverseMass + other.inverseMass)) *
-        percentage
-    );
-
-    this.matrix.x += this.inverseMass * correction.x;
-    this.matrix.y += this.inverseMass * correction.y;
-
-    other.matrix.x -= other.inverseMass * correction.x;
-    other.matrix.y -= other.inverseMass * correction.y;
   }
 
   /*
@@ -553,6 +325,14 @@ export default class GameObject {
     this.transform.rotation = degree;
   }
 
+  addVelocity(velocity) {
+    this.velocity = this.velocity.add(velocity);
+  }
+
+  addAcceleration(acceleration) {
+    this.acceleration = this.acceleration.add(acceleration);
+  }
+
   /*
    * 이 객체의 좌표값을 반환한다.
    */
@@ -593,6 +373,14 @@ export default class GameObject {
    */
   getMatrix() {
     return this.matrix;
+  }
+
+  getAcceleration() {
+    return this.acceleration;
+  }
+
+  getVelocity() {
+    return this.velocity;
   }
 
   /*
