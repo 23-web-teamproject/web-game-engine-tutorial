@@ -7,28 +7,43 @@ import Color from "/src/engine/data-structure/color.js";
 import Path from "/src/engine/utils/path.js";
 
 export default class Sprite extends GameObject {
-  constructor(imagePath) {
-    super();
+  constructor(options = {}) {
+    super(options);
     /*
      * 화면에 보여질 이미지이다.
      */
     this.image = new Image();
-    this.image.src = Path.convertToAbsoluteAssetPath(imagePath);
-
-    this.updateSize();
+    if (typeof options.imagePath === "string") {
+      this.image.src = Path.convertToAbsoluteAssetPath(options.imagePath);
+    } else {
+      Path.setAssetFolderPath("/src/engine/assets/");
+      this.image.src = Path.convertToAbsoluteAssetPath(
+        "defaultSpriteImage.png"
+      );
+    }
 
     /*
      * 색상 오버레이를 씌울 것인지를 나타낸다.
      * 기본값으로는 false다.
      */
-    this.isColorOverlayEnable = false;
+    if (typeof options.colorOverlayEnable === "boolean") {
+      this.isColorOverlayEnable = options.colorOverlayEnable;
+    } else {
+      this.isColorOverlayEnable = false;
+    }
 
     /*
      * 색상 오버레이를 씌울 때 어떤 색을 씌울 것인지를 나타낸다.
      * 만약 이 색의 Alpha가 1이면 이미지 전체에 불투명한 색을 덧입히기 때문에
      * 완전히 다른 색으로 덮히게 되어 이미지가 보이지 않는다.
      */
-    this.overlayColor = new Color(0, 0, 0, 0.5);
+    if (options.overlayColor instanceof Color) {
+      this.overlayColor = options.overlayColor;
+    } else {
+      this.overlayColor = new Color(0, 0, 0, 0.5);
+    }
+
+    this.updateSize();
   }
 
   update(deltaTime) {

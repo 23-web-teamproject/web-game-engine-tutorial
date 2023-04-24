@@ -1,11 +1,41 @@
+import Color from "/src/engine/data-structure/color.js";
 import GameObject from "/src/engine/core/game-object.js";
 import { CircleCollider } from "/src/engine/data-structure/collider.js";
 
 export default class Circle extends GameObject {
-  constructor(options) {
-    super();
-    this.registerOptions(options);
-    this.transform.setPivotPositionToCenter();
+  constructor(options = {}) {
+    super(options);
+
+    if (typeof options.radius === "number") {
+      this.radius = options.radius;
+    } else {
+      this.radius = 5;
+    }
+
+    this.isFill = options.hasOwnProperty("color");
+    if (this.isFill) {
+      if (options.color instanceof Color) {
+        this.color = options.color;
+      } else {
+        this.color = new Color(255, 255, 255, 1);
+      }
+    }
+
+    this.isStroke = options.hasOwnProperty("strokeColor");
+    if (this.isStroke) {
+      if (options.strokeColor instanceof Color) {
+        this.strokeColor = options.strokeColor;
+      } else {
+        this.strokeColor = new Color(255, 255, 255, 1);
+      }
+
+      if (typeof options.strokeWidth === "number") {
+        this.strokeWidth = options.strokeWidth;
+      } else {
+        this.strokeWidth = 1;
+      }
+    }
+
     this.collider = new CircleCollider();
   }
 
@@ -41,14 +71,5 @@ export default class Circle extends GameObject {
         )`;
       this.context2d.stroke();
     }
-  }
-
-  registerOptions(options) {
-    this.radius = options.radius || 5;
-    this.isFill = options.hasOwnProperty("color");
-    this.color = options.color || this.color;
-    this.isStroke = options.hasOwnProperty("strokeColor");
-    this.strokeColor = options.strokeColor;
-    this.strokeWidth = options.strokeWidth || 0;
   }
 }

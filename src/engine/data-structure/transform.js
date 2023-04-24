@@ -6,21 +6,33 @@ import Vector from "/src/engine/data-structure/vector.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
 
 export default class Transform {
-  constructor() {
+  constructor(options = {}) {
     /*
      * 좌표값을 나타낸다.
      */
-    this.position = new Vector(0, 0);
+    if (options.position instanceof Vector) {
+      this.position = options.position;
+    } else {
+      this.position = new Vector(0, 0);
+    }
 
     /*
      * 축척을 나타낸다.
      */
-    this.scale = new Vector(1, 1);
+    if (options.scale instanceof Vector) {
+      this.scale = options.scale;
+    } else {
+      this.scale = new Vector(1, 1);
+    }
 
     /*
      * 각도를 나타낸다. 라디안이 아닌 degree를 쓴다.
      */
-    this.rotation = 0;
+    if (typeof options.rotation === "number") {
+      this.rotation = options.rotation;
+    } else {
+      this.rotation = 0;
+    }
 
     /*
      * 물리적인 크기를 나타낸다.
@@ -84,7 +96,6 @@ export default class Transform {
    * 이렇게 하면 GameObject의 가운데를 기준으로 회전하거나 스케일이 늘어난다.
    */
   setPivotPositionToCenter() {
-    this.pivotPosition.x = this.size.x / 2;
-    this.pivotPosition.y = this.size.y / 2;
+    this.pivotPosition = this.size.multiply(0.5);
   }
 }

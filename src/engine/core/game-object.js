@@ -8,10 +8,7 @@ import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
 
 export default class GameObject {
-  /*
-   * 하위 클래스에서 몇 가지 정보를 얻기 위해서 meta 인자를 받는다.
-   */
-  constructor() {
+  constructor(options = {}) {
     /*
      * canvas에 이 객체를 렌더링할 때 사용할 context다.
      */
@@ -20,22 +17,44 @@ export default class GameObject {
     /*
      * 이 객체의 좌표, 크기, 각도 등을 담고 있다.
      */
-    this.transform = new Transform();
+    this.transform = new Transform(options.transform);
     this.transform.setPivotPositionToCenter();
 
-    this.isPhysicsEnable = true;
-    this.rigidbody = new RigidBody();
+    /*
+     * 이 객체에 물리효과를 적용할건지를 의미한다.
+     * 기본적으론 적용하지 않는다.
+     */
+    if (options.hasOwnProperty("enablePhysics")) {
+      this.isPhysicsEnable = options.enablePhysics;
+    } else {
+      this.isPhysicsEnable = false;
+    }
+
+    /*
+     * 물리효과를 위한 강체를 의미한다.
+     */
+    this.rigidbody = new RigidBody(options.rigidbody);
+
+    /*
+     * 이 객체의 Collision 타입을 나타낸다.
+     * 기본값으로는 상자형태를 사용한다.
+     */
     this.collider = new BoxCollider(0, 0);
 
     /*
      * 렌더링에 사용될 색상값을 담고 있다.
      */
-    this.color = new Color(0, 0, 0, 1);
+    if (options.color instanceof Color) {
+      this.color = options.color;
+    } else {
+      this.color = new Color(0, 0, 0, 1);
+    }
 
     /*
      * 객체의 자식들을 저장할 테이블이다.
      */
     this.childTable = new Object();
+
     /*
      * 객체의 부모를 기억한다.
      * 부모의 matrix를 이용해 자신을 렌더링하기 때문에 기억해야 한다.
@@ -389,9 +408,10 @@ export default class GameObject {
 
   /*
    * 이 객체의 크기를 반환한다.
+   * 이 때 초기에 지정된 크기와 축척을 곱한 값이 실제 크기가 된다.
    */
   getSize() {
-    return this.transform.size;
+    return this.transform.size.elementMultiply(this.getScale());
   }
 
   /*

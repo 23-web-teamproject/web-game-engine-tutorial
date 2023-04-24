@@ -70,4 +70,11 @@ export default class Vector {
   isEquals(other) {
     return this.x === other.x && this.y === other.y;
   }
+
+  /*
+   * 이 벡터와 다른 벡터와 성분끼리 곱해 만든 벡터를 반환한다.
+   */
+  elementMultiply(other) {
+    return new Vector(this.x * other.x, this.y * other.y);
+  }
 }
