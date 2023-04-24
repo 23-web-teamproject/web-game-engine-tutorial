@@ -22,8 +22,8 @@ export default class RenderManager {
   /*
    * 현재 씬을 렌더링한다.
    */
-  static render() {
-    SceneManager.getCurrentScene().render();
+  static render(alpha) {
+    SceneManager.getCurrentScene().render(alpha);
     const canvas = RenderManager.getRenderCanvas();
   }
 

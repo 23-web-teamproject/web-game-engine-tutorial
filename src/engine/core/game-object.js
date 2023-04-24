@@ -18,7 +18,8 @@ export default class GameObject {
      */
     this.transform = new Transform(options.transform);
     this.transform.setPivotPositionToCenter();
-
+    this.previousTransform = new Transform(options.transform);
+    this.previousTransform.setPivotPositionToCenter();
     /*
      * 이 객체에 물리효과를 적용할건지를 의미한다.
      * 기본적으론 적용하지 않는다.
@@ -62,6 +63,9 @@ export default class GameObject {
 
     /*
      * 부모 matrix를 행렬곱한 결과를 담아 렌더링에 사용할 때 필요하다.
+     * 부모 matrix를 행렬곱하여 이 객체의 matrix를 만들 때,
+     * 이전 프레임의 transform과 현재 프레임의 transform을 선형보간하여
+     * 새로운 transform을 만들고, 그 transform을 matrix로 바꾸어 적용한다.
      */
     this.matrix = this.transform.toMatrix();
   }
@@ -71,8 +75,6 @@ export default class GameObject {
    * 하위 GameObject들의 update를 실행시킨다.
    */
   update(deltaTime) {
-    this.calculateMatrix();
-
     for (const child of Object.values(this.childTable)) {
       child.update(deltaTime);
     }
@@ -95,29 +97,42 @@ export default class GameObject {
    * 그 결과를 이용해 렌더링에 사용하고,
    * 연결된 자식들의 렌더링을 수행하는데에 사용한다.
    */
-  render() {
+  render(alpha) {
     this.beforeDraw();
+
+    this.createMatrixWithInterpolatedTransform(alpha);
+    if (this.hasParentGameObject()) {
+      this.multiplyParentMatrix();
+    }
     this.setTransform();
+
     this.draw();
 
     for (const child of Object.values(this.childTable)) {
-      child.render();
+      child.render(alpha);
     }
 
     this.afterDraw();
   }
 
-  /*
-   * 현재 객체의 matrix를 계산할 때,
-   * 만약 부모 객체가 존재하면 부모의 matrix와 자신의 matrix를 곱하고,
-   * 부모 객체가 없다면 자신의 matrix만을 사용한다.
-   */
-  calculateMatrix() {
-    if (this.hasParentGameObject()) {
-      this.multiplyParentMatrix();
-    } else {
-      this.convertTransformToMatrix();
-    }
+  createMatrixWithInterpolatedTransform(alpha) {
+    const interpolatedTransform = new Transform({
+      position: this.previousTransform.position
+        .multiply(alpha)
+        .add(this.transform.position.multiply(1 - alpha)),
+      scale: this.previousTransform.scale
+        .multiply(alpha)
+        .add(this.transform.scale.multiply(1 - alpha)),
+      rotation:
+        this.previousTransform.rotation * alpha +
+        this.transform.rotation * (1 - alpha),
+    });
+
+    interpolatedTransform.size = this.transform.size;
+    interpolatedTransform.pivotPosition =this.transform.pivotPosition;
+
+    this.previousTransform = this.transform.copy();
+    this.matrix = interpolatedTransform.toMatrix();
   }
 
   /*
@@ -133,13 +148,6 @@ export default class GameObject {
   multiplyParentMatrix() {
     const parentMatrix = this.parent.getMatrix();
     this.matrix = parentMatrix.multiply(this.transform.toMatrix());
-  }
-
-  /*
-   * 자신의  transform을 matrix로 변환한다.
-   */
-  convertTransformToMatrix() {
-    this.matrix = this.transform.toMatrix();
   }
 
   /*

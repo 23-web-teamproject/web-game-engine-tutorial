@@ -58,7 +58,8 @@ export default class Engine {
     RenderManager.clearScreen();
 
     // Render objects
-    RenderManager.render();
+    const alpha = this.timer.accumulatedTime / this.timer.deltaTimeLimit;
+    RenderManager.render(alpha);
 
     requestAnimationFrame(() => {
       this.run();

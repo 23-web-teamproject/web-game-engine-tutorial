@@ -116,4 +116,22 @@ export default class Transform {
   setPivotPositionToCenter() {
     this.pivotPosition = this.size.multiply(0.5);
   }
+
+  copy() {
+    const transform = new Transform({
+      position: new Vector(this.position.x, this.position.y),
+      scale: new Vector(this.scale.x, this.scale.y),
+      rotation: this.rotation,
+      velocity: new Vector(this.velocity.x, this.velocity.y),
+      acceleration: new Vector(this.acceleration.x, this.acceleration.y),
+    });
+
+    transform.size = new Vector(this.size.x, this.size.y);
+    transform.pivotPosition = new Vector(
+      this.pivotPosition.x,
+      this.pivotPosition.y
+    );
+
+    return transform;
+  }
 }
