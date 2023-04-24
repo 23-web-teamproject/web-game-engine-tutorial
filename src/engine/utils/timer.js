@@ -50,16 +50,15 @@ export default class Timer {
     this.currentTime = performance.now();
     this.previousTime = this.currentTime;
     this.accumulatedTime = 0;
-    this.deltaTimeLimit = 1 / 60;
+    this.fixedDeltaTime = 1 / 60;
   }
 
   update() {
     this.previousTime = this.currentTime;
     this.currentTime = performance.now();
-    this.deltaTime = (this.currentTime - this.previousTime) / 1000;
-    this.accumulatedTime += this.deltaTime;
-    // if (this.accumulatedTime > this.deltaTimeLimit) {
-    //   this.accumulatedTime = this.deltaTimeLimit;
-    // }
+    this.accumulatedTime += this.currentTime - this.previousTime;
+    if (this.accumulatedTime > 0.2) {
+      this.accumulatedTime = 0.2;
+    }
   }
 }
