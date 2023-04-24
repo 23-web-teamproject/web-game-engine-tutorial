@@ -35,6 +35,24 @@ export default class Transform {
     }
 
     /*
+     * 속도를 나타낸다.
+     */
+    if (options.velocity instanceof Vector) {
+      this.velocity = options.velocity;
+    } else {
+      this.velocity = new Vector(0, 0);
+    }
+
+    /*
+     * 가속도를 나타낸다.
+     */
+    if (options.acceleration instanceof Vector) {
+      this.acceleration = options.acceleration;
+    } else {
+      this.acceleration = new Vector(0, 0);
+    }
+
+    /*
      * 물리적인 크기를 나타낸다.
      * GameObject를 상속받은 이미지나 도형들은
      * 이 값도 필수적으로 변경해야한다.

@@ -14,8 +14,6 @@ export default class RigidBody {
     } else {
       this.inverseMass = 1 / this.mass;
     }
-    this.velocity = new Vector(0, 0);
-    this.acceleration = new Vector(0, 0);
 
     if (typeof options.bounceness === "number") {
       this.bounceness = clamp(options.bounceness, 0, 1);

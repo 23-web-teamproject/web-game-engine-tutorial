@@ -1,7 +1,6 @@
 import Color from "/src/engine/data-structure/color.js";
 import Vector from "/src/engine/data-structure/vector.js";
 import Transform from "/src/engine/data-structure/transform.js";
-import Matrix from "/src/engine/data-structure/matrix.js";
 import RigidBody from "/src/engine/data-structure/rigidbody.js";
 import { BoxCollider } from "/src/engine/data-structure/collider.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
@@ -64,7 +63,7 @@ export default class GameObject {
     /*
      * 부모 matrix를 행렬곱한 결과를 담아 렌더링에 사용할 때 필요하다.
      */
-    this.matrix = new Matrix();
+    this.matrix = this.transform.toMatrix();
   }
 
   /*
@@ -382,28 +381,28 @@ export default class GameObject {
    * 이 객체의 속도를 증가시킨다.
    */
   addVelocity(velocity) {
-    this.rigidbody.velocity = this.rigidbody.velocity.add(velocity);
+    this.transform.velocity = this.transform.velocity.add(velocity);
   }
 
   /*
    * 이 객체의 속도를 반환한다.
    */
   getVelocity() {
-    return this.rigidbody.velocity;
+    return this.transform.velocity;
   }
 
   /*
    * 이 객체의 가속도를 증가시킨다.
    */
   addAcceleration(acceleration) {
-    this.rigidbody.acceleration = this.rigidbody.acceleration.add(acceleration);
+    this.transform.acceleration = this.transform.acceleration.add(acceleration);
   }
 
   /*
    * 이 객체의 가속도를 반환한다.
    */
   getAcceleration() {
-    return this.rigidbody.acceleration;
+    return this.transform.acceleration;
   }
 
   /*
