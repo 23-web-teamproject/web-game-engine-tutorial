@@ -27,17 +27,6 @@ export default class GameObject {
     this.rigidbody = new RigidBody();
     this.collider = new BoxCollider(0, 0);
 
-    this.mass = 1;
-    if (this.mass == 0) {
-      this.inverseMass = 0;
-    } else {
-      this.inverseMass = 1 / this.mass;
-    }
-    this.velocity = new Vector(0, 0);
-    this.acceleration = new Vector(0, 0);
-    this.bounceness = 0.5;
-    this.isStatic = false;
-
     /*
      * 렌더링에 사용될 색상값을 담고 있다.
      */
@@ -69,6 +58,14 @@ export default class GameObject {
     for (const child of Object.values(this.childTable)) {
       child.update(deltaTime);
     }
+  }
+
+  updatePhysics(deltaTime) {
+    this.addVelocity(this.getAcceleration().multiply(deltaTime));
+    this.addPos(
+      this.getVelocity().x * deltaTime,
+      this.getVelocity().y * deltaTime
+    );
   }
 
   /*
@@ -326,11 +323,11 @@ export default class GameObject {
   }
 
   addVelocity(velocity) {
-    this.velocity = this.velocity.add(velocity);
+    this.rigidbody.velocity = this.rigidbody.velocity.add(velocity);
   }
 
   addAcceleration(acceleration) {
-    this.acceleration = this.acceleration.add(acceleration);
+    this.rigidbody.acceleration = this.rigidbody.acceleration.add(acceleration);
   }
 
   /*
@@ -376,11 +373,23 @@ export default class GameObject {
   }
 
   getAcceleration() {
-    return this.acceleration;
+    return this.rigidbody.acceleration;
   }
 
   getVelocity() {
-    return this.velocity;
+    return this.rigidbody.velocity;
+  }
+
+  getBounceness() {
+    return this.rigidbody.bounceness;
+  }
+
+  getInverseMass() {
+    return this.rigidbody.inverseMass;
+  }
+
+  getMass() {
+    return this.rigidbody.mass;
   }
 
   /*

@@ -35,23 +35,16 @@ class CollisionResolver {
 
     // 유니티에서는 탄성값을 적용할 때 avg, min, max 중 하나를 적용한다.
     // 여기서는 일단 min으로 적용한다.
-    const e = Math.min(this.obj.bounceness, other.bounceness);
+    const e = Math.min(this.obj.getBounceness(), other.getBounceness());
 
     // 충격량을 구하는 방정식을 통해 충격량을 계산한다.
     // 저도 잘 몰라요.
     let j = -(1 + e) * dot;
-    j /= this.obj.inverseMass + other.inverseMass;
+    j /= this.obj.getInverseMass() + other.getInverseMass();
     const impulse = normal.multiply(j);
-    //new Vector(j * normal.x, j * normal.y);
-    // this.obj.addVelocity(impulse.multiply(this.obj.inverseMass));
-    // other.addVelocity(impulse.multiply(other.inverseMass));
-    this.obj.velocity = this.obj.velocity.add(
-      new Vector(this.obj.inverseMass * impulse.x, this.obj.inverseMass * impulse.y)
-    );
 
-    other.velocity = other.velocity.minus(
-      new Vector(other.inverseMass * impulse.x, other.inverseMass * impulse.y)
-    );
+    this.obj.addVelocity(impulse.multiply(this.obj.getInverseMass()));
+    other.addVelocity(impulse.multiply(-1 * other.getInverseMass()));
 
     this.positionalCorrection(other, normal, penetrationDepth);
   }
@@ -61,19 +54,19 @@ class CollisionResolver {
    * 충돌된 위치에서 정해진 값만큼 강제로 떨어지게 한다.
    */
   positionalCorrection(other, normal, penetrationDepth) {
-    const percentage = 0.05; // ??? 0.2 ~ 0.8
+    const percentage = 0.2; // ??? 0.2 ~ 0.8
     const slop = 0.1; // ??? 0.01 ~ 0.1
     const correction = normal.multiply(
       (Math.max(penetrationDepth - slop, 0) /
-        (this.obj.inverseMass + other.inverseMass)) *
+        (this.obj.getInverseMass() + other.getInverseMass())) *
         percentage
     );
 
-    this.obj.matrix.x += this.obj.inverseMass * correction.x;
-    this.obj.matrix.y += this.obj.inverseMass * correction.y;
+    this.obj.matrix.x += this.obj.getInverseMass() * correction.x;
+    this.obj.matrix.y += this.obj.getInverseMass() * correction.y;
 
-    other.matrix.x -= other.inverseMass * correction.x;
-    other.matrix.y -= other.inverseMass * correction.y;
+    other.matrix.x -= other.getInverseMass() * correction.x;
+    other.matrix.y -= other.getInverseMass() * correction.y;
   }
 
   /*
@@ -92,10 +85,6 @@ class BoxCollisionResolver extends CollisionResolver {
 
   resolveBoxCollision(box) {
     const posDiff = this.box.getWorldPos().minus(box.getWorldPos());
-    // const posDiff = new Vector(
-    //   this.box.getWorldPos().x - box.getWorldPos().x,
-    //   this.box.getWorldPos().y - box.getWorldPos().y
-    // );
 
     // 충돌된 영역을 구함
     const lt = new Vector(
@@ -307,10 +296,6 @@ class CircleCollisionResolver extends CollisionResolver {
 
   resolveCircleCollision(circle) {
     const posDiff = this.circle.getWorldPos().minus(circle.getWorldPos());
-    // const posDiff = new Vector(
-    //   this.circle.matrix.x - circle.matrix.x,
-    //   this.circle.matrix.y - circle.matrix.y
-    // );
 
     // 두 원의 반지름을 더한 값을 제곱하되 정확한 값을 위해서
     // 제곱근을 씌우진 않는다.

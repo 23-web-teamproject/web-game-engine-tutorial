@@ -40,11 +40,7 @@ export default class PhysicsManager {
         obj.velocity = new Vector(0, -1);
         obj.inverseMass = 0;
       } else {
-        obj.addVelocity(obj.getAcceleration().multiply(deltaTime));
-        obj.addPos(
-          obj.getVelocity().x * deltaTime,
-          obj.getVelocity().y * deltaTime
-        );
+        obj.updatePhysics(deltaTime);
       }
     });
 
