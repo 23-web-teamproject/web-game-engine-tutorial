@@ -12,6 +12,14 @@ class CollisionResolver {
     this.obj = obj;
   }
 
+  isCollideWith(other, otherType) {
+    if (otherType === "box") {
+      return this.isCollideWithBox(other);
+    } else if (otherType === "circle") {
+      return this.isCollideWithCircle(other);
+    }
+  }
+
   resolveCollision(other, otherType) {
     if (otherType === "box") {
       this.resolveBoxCollision(other);
@@ -72,15 +80,60 @@ class CollisionResolver {
   /*
    * 이 객체를 상속받으면 이 밑으로 등장하는 모든 메서드들을 재정의해야한다.
    */
-  resolveBoxCollision(other) {}
 
-  resolveCircleCollision(other) {}
+  isCollideWithBox(box) {}
+
+  isCollideWithCircle(circle) {}
+
+  resolveBoxCollision(box) {}
+
+  resolveCircleCollision(circle) {}
 }
 
 class BoxCollisionResolver extends CollisionResolver {
   constructor(box) {
     super(box);
     this.box = box;
+  }
+
+  isCollideWithBox(box) {
+    if (
+      this.obj.getWorldPos().x > box.getWorldPos().x + box.getSize().x ||
+      this.obj.getWorldPos().x + this.obj.getSize().x < box.getWorldPos().x ||
+      this.obj.getWorldPos().y > box.getWorldPos().y + box.getSize().y ||
+      this.obj.getWorldPos().y + this.obj.getSize().y < box.getWorldPos().y
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  isCollideWithCircle(circle) {
+    // 원에서 사각형의 변까지의 거리를 절댓값으로 구한다.
+    const distance = circle
+      .getWorldPos()
+      .minus(this.box.getWorldPos().add(this.box.getSize().multiply(0.5)));
+
+    distance.x = Math.abs(distance.x);
+    distance.y = Math.abs(distance.y);
+
+    if (
+      distance.x > this.box.getSize().x / 2 + circle.radius ||
+      distance.y > this.box.getSize().y / 2 + circle.radius
+    ) {
+      return false;
+    }
+
+    if (
+      distance.x <= this.box.getSize().x / 2 ||
+      distance.y <= this.box.getSize().y / 2
+    ) {
+      return true;
+    }
+
+    // 꼭짓점부분에서 충돌이 될 가능성을 검사한다.
+    const d = distance.minus(this.box.getSize().multiply(0.5));
+    return d.squareLength() <= circle.radius * circle.radius;
   }
 
   resolveBoxCollision(box) {
@@ -221,6 +274,44 @@ class CircleCollisionResolver extends CollisionResolver {
   constructor(circle) {
     super(circle);
     this.circle = circle;
+  }
+
+  isCollideWithBox(box) {
+    // 원에서 사각형의 변까지의 거리를 절댓값으로 구한다.
+    const distance = this.circle
+      .getWorldPos()
+      .minus(box.getWorldPos().add(box.getSize().multiply(0.5)))
+      .minus(box.getSize().multiply(0.5));
+
+    distance.x = Math.abs(distance.x);
+    distance.y = Math.abs(distance.y);
+
+    if (
+      distance.x > box.getSize().x / 2 + this.circle.radius ||
+      distance.y > box.getSize().y / 2 + this.circle.radius
+    ) {
+      return false;
+    }
+
+    if (
+      distance.x <= box.getSize().x / 2 ||
+      distance.y <= box.getSize().y / 2
+    ) {
+      return true;
+    }
+
+    // 꼭짓점부분에서 충돌이 될 가능성을 검사한다.
+    const d = distance.minus(box.getSize().multiply(0.5));
+    return d.squareLength() <= this.circle.radius * this.circle.radius;
+  }
+
+  isCollideWithCircle(circle) {
+    const posDiff = this.circle.getWorldPos().minus(circle.getWorldPos());
+    return (
+      (this.circle.radius + circle.radius) *
+        (this.circle.radius + circle.radius) >
+      posDiff.squareLength()
+    );
   }
 
   resolveBoxCollision(box) {
