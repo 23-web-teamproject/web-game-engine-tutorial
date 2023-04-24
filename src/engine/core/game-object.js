@@ -60,6 +60,12 @@ export default class GameObject {
     }
   }
 
+  /*
+   * 이 객체에 물리효과를 적용한다.
+   * v = 속도, a = 가속도
+   * v += a * dt
+   * x += v * dt
+   */
   updatePhysics(deltaTime) {
     this.addVelocity(this.getAcceleration().multiply(deltaTime));
     this.addPos(
@@ -293,44 +299,6 @@ export default class GameObject {
   }
 
   /*
-   * 이 객체의 크기를 특정값만큼 변경한다.
-   */
-  addScale(x, y) {
-    this.transform.scale.x += x;
-    this.transform.scale.y += y;
-  }
-
-  /*
-   * 이 객체의 크기를 특정값으로 설정한다.
-   */
-  setScale(x, y) {
-    this.transform.scale.x = x;
-    this.transform.scale.y = y;
-  }
-
-  /*
-   * 이 객체의 각도를 특정값만큼 변경한다.
-   */
-  addRotation(degree) {
-    this.transform.rotation += degree;
-  }
-
-  /*
-   * 이 객체의 각도를 특정값으로 설정한다.
-   */
-  setRotation(degree) {
-    this.transform.rotation = degree;
-  }
-
-  addVelocity(velocity) {
-    this.rigidbody.velocity = this.rigidbody.velocity.add(velocity);
-  }
-
-  addAcceleration(acceleration) {
-    this.rigidbody.acceleration = this.rigidbody.acceleration.add(acceleration);
-  }
-
-  /*
    * 이 객체의 좌표값을 반환한다.
    */
   getPos() {
@@ -347,11 +315,41 @@ export default class GameObject {
   }
 
   /*
+   * 이 객체의 크기를 특정값만큼 변경한다.
+   */
+  addScale(x, y) {
+    this.transform.scale.x += x;
+    this.transform.scale.y += y;
+  }
+
+  /*
+   * 이 객체의 크기를 특정값으로 설정한다.
+   */
+  setScale(x, y) {
+    this.transform.scale.x = x;
+    this.transform.scale.y = y;
+  }
+
+  /*
    * 이 객체의 크기(스케일값)를 반환한다.
    * 크기(size)를 반환하는게 아니다!
    */
   getScale() {
     return this.transform.scale;
+  }
+
+  /*
+   * 이 객체의 각도를 특정값만큼 변경한다.
+   */
+  addRotation(degree) {
+    this.transform.rotation += degree;
+  }
+
+  /*
+   * 이 객체의 각도를 특정값으로 설정한다.
+   */
+  setRotation(degree) {
+    this.transform.rotation = degree;
   }
 
   /*
@@ -361,6 +359,37 @@ export default class GameObject {
     return this.transform.rotation;
   }
 
+  /*
+   * 이 객체의 속도를 증가시킨다.
+   */
+  addVelocity(velocity) {
+    this.rigidbody.velocity = this.rigidbody.velocity.add(velocity);
+  }
+
+  /*
+   * 이 객체의 속도를 반환한다.
+   */
+  getVelocity() {
+    return this.rigidbody.velocity;
+  }
+
+  /*
+   * 이 객체의 가속도를 증가시킨다.
+   */
+  addAcceleration(acceleration) {
+    this.rigidbody.acceleration = this.rigidbody.acceleration.add(acceleration);
+  }
+
+  /*
+   * 이 객체의 가속도를 반환한다.
+   */
+  getAcceleration() {
+    return this.rigidbody.acceleration;
+  }
+
+  /*
+   * 이 객체의 크기를 반환한다.
+   */
   getSize() {
     return this.transform.size;
   }
@@ -372,24 +401,25 @@ export default class GameObject {
     return this.matrix;
   }
 
-  getAcceleration() {
-    return this.rigidbody.acceleration;
-  }
-
-  getVelocity() {
-    return this.rigidbody.velocity;
-  }
-
+  /*
+   * 이 객체의 탄성값을 반환한다.
+   */
   getBounceness() {
     return this.rigidbody.bounceness;
   }
 
-  getInverseMass() {
-    return this.rigidbody.inverseMass;
-  }
-
+  /*
+   * 이 객체의 질량값을 반환한다.
+   */
   getMass() {
     return this.rigidbody.mass;
+  }
+
+  /*
+   * 이 객체의 질량값의 역수를 반환한다.
+   */
+  getInverseMass() {
+    return this.rigidbody.inverseMass;
   }
 
   /*
