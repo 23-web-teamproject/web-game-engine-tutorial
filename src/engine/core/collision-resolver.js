@@ -98,10 +98,14 @@ class BoxCollisionResolver extends CollisionResolver {
 
   isCollideWithBox(box) {
     if (
-      this.obj.getWorldPos().x > box.getWorldPos().x + box.getSize().x ||
-      this.obj.getWorldPos().x + this.obj.getSize().x < box.getWorldPos().x ||
-      this.obj.getWorldPos().y > box.getWorldPos().y + box.getSize().y ||
-      this.obj.getWorldPos().y + this.obj.getSize().y < box.getWorldPos().y
+      this.obj.getWorldPosition().x >
+        box.getWorldPosition().x + box.getSize().x ||
+      this.obj.getWorldPosition().x + this.obj.getSize().x <
+        box.getWorldPosition().x ||
+      this.obj.getWorldPosition().y >
+        box.getWorldPosition().y + box.getSize().y ||
+      this.obj.getWorldPosition().y + this.obj.getSize().y <
+        box.getWorldPosition().y
     ) {
       return false;
     }
@@ -111,8 +115,8 @@ class BoxCollisionResolver extends CollisionResolver {
   isCollideWithCircle(circle) {
     // 원에서 사각형의 변까지의 거리를 절댓값으로 구한다.
     const distance = circle
-      .getWorldPos()
-      .minus(this.box.getWorldPos().add(this.box.getSize().multiply(0.5)));
+      .getWorldPosition()
+      .minus(this.box.getWorldPosition().add(this.box.getSize().multiply(0.5)));
 
     distance.x = Math.abs(distance.x);
     distance.y = Math.abs(distance.y);
@@ -137,21 +141,21 @@ class BoxCollisionResolver extends CollisionResolver {
   }
 
   resolveBoxCollision(box) {
-    const posDiff = this.box.getWorldPos().minus(box.getWorldPos());
+    const posDiff = this.box.getWorldPosition().minus(box.getWorldPosition());
 
     // 충돌된 영역을 구함
     const lt = new Vector(
-      Math.max(this.box.getWorldPos().x, box.getWorldPos().x),
-      Math.max(this.box.getWorldPos().y, box.getWorldPos().y)
+      Math.max(this.box.getWorldPosition().x, box.getWorldPosition().x),
+      Math.max(this.box.getWorldPosition().y, box.getWorldPosition().y)
     );
     const rb = new Vector(
       Math.min(
-        this.box.getWorldPos().x + this.box.getSize().x,
-        box.getWorldPos().x + box.getSize().x
+        this.box.getWorldPosition().x + this.box.getSize().x,
+        box.getWorldPosition().x + box.getSize().x
       ),
       Math.min(
-        this.box.getWorldPos().y + this.box.getSize().y,
-        box.getWorldPos().y + box.getSize().y
+        this.box.getWorldPosition().y + this.box.getSize().y,
+        box.getWorldPosition().y + box.getSize().y
       )
     );
 
@@ -200,22 +204,22 @@ class BoxCollisionResolver extends CollisionResolver {
 
   resolveCircleCollision(circle) {
     const rectCenter = new Vector(
-      this.box.getWorldPos().x + this.box.getSize().x / 2,
-      this.box.getWorldPos().y + this.box.getSize().y / 2
+      this.box.getWorldPosition().x + this.box.getSize().x / 2,
+      this.box.getWorldPosition().y + this.box.getSize().y / 2
     );
     const posDiff = new Vector(
-      circle.getWorldPos().x - rectCenter.x,
-      circle.getWorldPos().y - rectCenter.y
+      circle.getWorldPosition().x - rectCenter.x,
+      circle.getWorldPosition().y - rectCenter.y
     );
 
     const closest = new Vector(
       Math.min(
-        this.box.getWorldPos().x + this.box.getSize().x,
-        Math.max(this.box.getWorldPos().x, circle.getWorldPos().x)
+        this.box.getWorldPosition().x + this.box.getSize().x,
+        Math.max(this.box.getWorldPosition().x, circle.getWorldPosition().x)
       ),
       Math.min(
-        this.box.getWorldPos().y + this.box.getSize().y,
-        Math.max(this.box.getWorldPos().y, circle.getWorldPos().y)
+        this.box.getWorldPosition().y + this.box.getSize().y,
+        Math.max(this.box.getWorldPosition().y, circle.getWorldPosition().y)
       )
     );
 
@@ -234,15 +238,15 @@ class BoxCollisionResolver extends CollisionResolver {
         // 사각형에서 원과 가장 가까운 점을 찾아야 하므로
         // 가장 가까운 사각형의 경계를 점으로 선택한다.
         if (rectCenter.x - closest.x > 0) {
-          closest.x = this.box.getWorldPos().x;
+          closest.x = this.box.getWorldPosition().x;
         } else {
-          closest.x = this.box.getWorldPos().x + this.box.getSize().x;
+          closest.x = this.box.getWorldPosition().x + this.box.getSize().x;
         }
       } else {
         if (rectCenter.y - closest.y > 0) {
-          closest.y = this.box.getWorldPos().y;
+          closest.y = this.box.getWorldPosition().y;
         } else {
-          closest.y = this.box.getWorldPos().y + this.box.getSize().y;
+          closest.y = this.box.getWorldPosition().y + this.box.getSize().y;
         }
       }
     }
@@ -259,11 +263,11 @@ class BoxCollisionResolver extends CollisionResolver {
     if (inside) {
       normal = normal.multiply(1).normalize();
       penetrationDepth =
-        circle.radius + circle.getWorldPos().minus(closest).length(); // ???
+        circle.radius + circle.getWorldPosition().minus(closest).length(); // ???
     } else {
       normal = normal.multiply(-1).normalize();
       penetrationDepth =
-        circle.getWorldPos().minus(closest).length() - circle.radius; // ???
+        circle.getWorldPosition().minus(closest).length() - circle.radius; // ???
     }
 
     this.applyImpulse(circle, normal, penetrationDepth);
@@ -279,8 +283,8 @@ class CircleCollisionResolver extends CollisionResolver {
   isCollideWithBox(box) {
     // 원에서 사각형의 변까지의 거리를 절댓값으로 구한다.
     const distance = this.circle
-      .getWorldPos()
-      .minus(box.getWorldPos().add(box.getSize().multiply(0.5)))
+      .getWorldPosition()
+      .minus(box.getWorldPosition().add(box.getSize().multiply(0.5)))
       .minus(box.getSize().multiply(0.5));
 
     distance.x = Math.abs(distance.x);
@@ -306,7 +310,9 @@ class CircleCollisionResolver extends CollisionResolver {
   }
 
   isCollideWithCircle(circle) {
-    const posDiff = this.circle.getWorldPos().minus(circle.getWorldPos());
+    const posDiff = this.circle
+      .getWorldPosition()
+      .minus(circle.getWorldPosition());
     return (
       (this.circle.radius + circle.radius) *
         (this.circle.radius + circle.radius) >
@@ -316,22 +322,22 @@ class CircleCollisionResolver extends CollisionResolver {
 
   resolveBoxCollision(box) {
     const rectCenter = new Vector(
-      box.getWorldPos().x + box.getSize().x / 2,
-      box.getWorldPos().y + box.getSize().y / 2
+      box.getWorldPosition().x + box.getSize().x / 2,
+      box.getWorldPosition().y + box.getSize().y / 2
     );
     const posDiff = new Vector(
-      this.circle.getWorldPos().x - rectCenter.x,
-      this.circle.getWorldPos().y - rectCenter.y
+      this.circle.getWorldPosition().x - rectCenter.x,
+      this.circle.getWorldPosition().y - rectCenter.y
     );
 
     const closest = new Vector(
       Math.min(
-        box.getWorldPos().x + box.getSize().x,
-        Math.max(box.getWorldPos().x, this.circle.getWorldPos().x)
+        box.getWorldPosition().x + box.getSize().x,
+        Math.max(box.getWorldPosition().x, this.circle.getWorldPosition().x)
       ),
       Math.min(
-        box.getWorldPos().y + box.getSize().y,
-        Math.max(box.getWorldPos().y, this.circle.getWorldPos().y)
+        box.getWorldPosition().y + box.getSize().y,
+        Math.max(box.getWorldPosition().y, this.circle.getWorldPosition().y)
       )
     );
 
@@ -350,15 +356,15 @@ class CircleCollisionResolver extends CollisionResolver {
         // 사각형에서 원과 가장 가까운 점을 찾아야 하므로
         // 가장 가까운 사각형의 경계를 점으로 선택한다.
         if (rectCenter.x - closest.x > 0) {
-          closest.x = box.getWorldPos().x;
+          closest.x = box.getWorldPosition().x;
         } else {
-          closest.x = box.getWorldPos().x + box.getSize().x;
+          closest.x = box.getWorldPosition().x + box.getSize().x;
         }
       } else {
         if (rectCenter.y - closest.y > 0) {
-          closest.y = box.getWorldPos().y;
+          closest.y = box.getWorldPosition().y;
         } else {
-          closest.y = box.getWorldPos().y + box.getSize().y;
+          closest.y = box.getWorldPosition().y + box.getSize().y;
         }
       }
     }
@@ -375,18 +381,22 @@ class CircleCollisionResolver extends CollisionResolver {
     if (inside) {
       normal = normal.multiply(1).normalize();
       penetrationDepth =
-        this.circle.radius + this.circle.getWorldPos().minus(closest).length(); // ???
+        this.circle.radius +
+        this.circle.getWorldPosition().minus(closest).length(); // ???
     } else {
       normal = normal.multiply(-1).normalize();
       penetrationDepth =
-        this.circle.getWorldPos().minus(closest).length() - this.circle.radius; // ???
+        this.circle.getWorldPosition().minus(closest).length() -
+        this.circle.radius; // ???
     }
 
     this.applyImpulse(circle, normal, penetrationDepth);
   }
 
   resolveCircleCollision(circle) {
-    const posDiff = this.circle.getWorldPos().minus(circle.getWorldPos());
+    const posDiff = this.circle
+      .getWorldPosition()
+      .minus(circle.getWorldPosition());
 
     // 두 원의 반지름을 더한 값을 제곱하되 정확한 값을 위해서
     // 제곱근을 씌우진 않는다.

@@ -18,7 +18,6 @@ export default class Rect extends GameObject {
     }
 
     this.transform.size = size;
-    console.log(size);
     this.transform.setPivotPositionToCenter();
 
     this.isFill = options.hasOwnProperty("color");
