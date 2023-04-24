@@ -86,10 +86,7 @@ export default class GameObject {
    */
   updatePhysics(deltaTime) {
     this.addVelocity(this.getAcceleration().multiply(deltaTime));
-    this.addPos(
-      this.getVelocity().x * deltaTime,
-      this.getVelocity().y * deltaTime
-    );
+    this.addPosition(this.getVelocity().multiply(deltaTime));
   }
 
   /*
@@ -303,23 +300,21 @@ export default class GameObject {
   /*
    * 이 객체의 좌표값을 특정값만큼 변경한다.
    */
-  addPos(x, y) {
-    this.transform.position.x += x;
-    this.transform.position.y += y;
+  addPosition(position) {
+    this.transform.position = this.transform.position.add(position);
   }
 
   /*
    * 이 객체의 좌표값을 특정값으로 설정한다.
    */
-  setPos(x, y) {
-    this.transform.position.x = x;
-    this.transform.position.y = y;
+  setPosition(position) {
+    this.transform.position = position;
   }
 
   /*
    * 이 객체의 좌표값을 반환한다.
    */
-  getPos() {
+  getPosition() {
     return this.transform.position;
   }
 
@@ -328,24 +323,22 @@ export default class GameObject {
    * Canvas에 이 객체를 렌더링할 때 사용하는 matrix에서
    * x, y값을 벡터로 만들어 반환한다.
    */
-  getWorldPos() {
+  getWorldPosition() {
     return new Vector(this.matrix.x, this.matrix.y);
   }
 
   /*
    * 이 객체의 크기를 특정값만큼 변경한다.
    */
-  addScale(x, y) {
-    this.transform.scale.x += x;
-    this.transform.scale.y += y;
+  addScale(scale) {
+    this.transform.scale = this.transform.scale.add(scale);
   }
 
   /*
    * 이 객체의 크기를 특정값으로 설정한다.
    */
-  setScale(x, y) {
-    this.transform.scale.x = x;
-    this.transform.scale.y = y;
+  setScale(scale) {
+    this.transform.scale = scale;
   }
 
   /*
