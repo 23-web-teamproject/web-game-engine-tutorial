@@ -313,6 +313,12 @@ export default class GameObject {
   }
 
   /*
+   * 이 객체가 물리효과에 의해 다른 객체와 충돌했을 때
+   * 이 함수가 호출된다.
+   */
+  onCollision(other) {}
+
+  /*
    * 이 객체의 좌표값을 특정값만큼 변경한다.
    */
   addPosition(position) {
