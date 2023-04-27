@@ -14,12 +14,24 @@ export default class GameObject {
     this.context2d = RenderManager.getRenderCanvas().getContext("2d");
 
     /*
+     * 물리효과를 위한 강체를 의미한다.
+     */
+    this.rigidbody = new RigidBody(options.rigidbody);
+
+    /*
      * 이 객체의 좌표, 크기, 각도 등을 담고 있다.
      */
     this.transform = new Transform(options.transform);
     this.transform.setPivotPositionToCenter();
     this.previousTransform = new Transform(options.transform);
     this.previousTransform.setPivotPositionToCenter();
+    if (this.rigidbody.isStatic) {
+      this.transform.velocity = new Vector(0, -1);
+      this.rigidbody.inverseMass = 0;
+    }
+    if (this.rigidbody.isGravity) {
+      this.transform.acceleration.y = 9.8;
+    }
     /*
      * 이 객체에 물리효과를 적용할건지를 의미한다.
      * 기본적으론 적용하지 않는다.
@@ -29,11 +41,6 @@ export default class GameObject {
     } else {
       this.isPhysicsEnable = false;
     }
-
-    /*
-     * 물리효과를 위한 강체를 의미한다.
-     */
-    this.rigidbody = new RigidBody(options.rigidbody);
 
     /*
      * 이 객체의 Collision 타입을 나타낸다.
@@ -129,7 +136,7 @@ export default class GameObject {
     });
 
     interpolatedTransform.size = this.transform.size;
-    interpolatedTransform.pivotPosition =this.transform.pivotPosition;
+    interpolatedTransform.pivotPosition = this.transform.pivotPosition;
 
     this.previousTransform = this.transform.copy();
     this.matrix = interpolatedTransform.toMatrix();
@@ -326,6 +333,12 @@ export default class GameObject {
     return this.transform.position;
   }
 
+  getCenterPosition() {
+    return this.transform.position.add(
+      this.transform.pivotPosition.multiply(0.5)
+    );
+  }
+
   /*
    * 이 객체의 화면상 좌표값을 반환한다.
    * Canvas에 이 객체를 렌더링할 때 사용하는 matrix에서
@@ -333,6 +346,12 @@ export default class GameObject {
    */
   getWorldPosition() {
     return new Vector(this.matrix.x, this.matrix.y);
+  }
+
+  getWorldCenterPosition() {
+    return this.getWorldPosition().add(
+      this.transform.pivotPosition.multiply(0.5)
+    );
   }
 
   /*

@@ -4,6 +4,9 @@
  *
  * 이 객체를 상속받았다면 resolveCollision으로 시작하는
  * 모든 메서드를 재정의하여 어떤 상황에도 충돌체크를 할 수 있도록 만들어야 한다.
+ *
+ * 충돌체크에 사용한 공식은 아래 링크에서 참고했다.
+ * https://gamedevelopment.tutsplus.com/series/how-t-create-a-custom-physics-engnien--gamedev-12715
  */
 import Vector from "/src/engine/data-structure/vector.js";
 
@@ -12,18 +15,18 @@ class CollisionResolver {
     this.obj = obj;
   }
 
-  isCollideWith(other, otherType) {
-    if (otherType === "box") {
+  isCollideWith(other) {
+    if (other.collider.type === "box") {
       return this.isCollideWithBox(other);
-    } else if (otherType === "circle") {
+    } else if (other.collider.type === "circle") {
       return this.isCollideWithCircle(other);
     }
   }
 
-  resolveCollision(other, otherType) {
-    if (otherType === "box") {
+  resolveCollision(other) {
+    if (other.collider.type === "box") {
       this.resolveBoxCollision(other);
-    } else if (otherType === "circle") {
+    } else if (other.collider.type === "circle") {
       this.resolveCircleCollision(other);
     }
   }
@@ -330,8 +333,7 @@ class CircleCollisionResolver extends CollisionResolver {
     // 원에서 사각형의 변까지의 거리를 절댓값으로 구한다.
     const distance = this.circle
       .getWorldPosition()
-      .minus(box.getWorldPosition().add(box.getSize().multiply(0.5)))
-      .minus(box.getSize().multiply(0.5));
+      .minus(box.getWorldPosition().add(box.getSize().multiply(0.5)));
 
     distance.x = Math.abs(distance.x);
     distance.y = Math.abs(distance.y);
@@ -425,18 +427,26 @@ class CircleCollisionResolver extends CollisionResolver {
     }
 
     if (inside) {
-      normal = normal.multiply(1).normalize();
+      /*
+       * 충돌검사의 주체가 사각형이라면 normal벡터는 반작용으로 인해
+       * 원이 튕겨져 나갈 방향이다. 따라서 normal벡터에 -1을 곱해야
+       * 작용으로 인해 사각형이 튕겨져 나갈 방향이다.
+       * 그러나 충돌검사의 주체가 원이라면 normal벡터는 작용으로 인해
+       * 사각형이 튕겨져 나갈 방향이므로,
+       * normal벡터에 -1을 곱해야 반작용으로 인해 원이 튕겨져 나갈 방향이 된다.
+       */
+      normal = normal.multiply(-1).normalize();
       penetrationDepth =
         this.circle.radius +
         this.circle.getWorldPosition().minus(closest).length(); // ???
     } else {
-      normal = normal.multiply(-1).normalize();
+      normal = normal.multiply(1).normalize();
       penetrationDepth =
         this.circle.getWorldPosition().minus(closest).length() -
         this.circle.radius; // ???
     }
 
-    this.applyImpulse(circle, normal, penetrationDepth);
+    this.applyImpulse(box, normal, penetrationDepth);
   }
 
   resolveCircleCollision(circle) {

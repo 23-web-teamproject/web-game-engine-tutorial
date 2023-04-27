@@ -35,20 +35,17 @@ export default class PhysicsManager {
       // 만약 충돌했을 경우 이벤트함수를 실행하고 물리효과를 적용한다.
       for (let j = i + 1; j < length; j++) {
         const other = PhysicsManager.physicsEnableGameObjectList[j];
-        if (collisionResolver.isCollideWith(other, other.collider.type)) {
+        if (collisionResolver.isCollideWith(other)) {
           // TODO
           // 충돌했을 때 현재 객체가 어떤 작업을 수행해야할 수 있으므로
           // 여기에 GameObject내의 함수를 실행하게 만들면 된다.
-          collisionResolver.resolveCollision(other, other.collider.type);
+          collisionResolver.resolveCollision(other);
         }
       }
     }
 
     PhysicsManager.physicsEnableGameObjectList.forEach((obj) => {
-      if (obj.isStatic) {
-        obj.velocity = new Vector(0, -1);
-        obj.inverseMass = 0;
-      } else {
+      if (obj.rigidbody.isStatic === false) {
         obj.updatePhysics(deltaTime);
       }
     });

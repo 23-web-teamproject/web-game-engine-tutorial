@@ -1,4 +1,3 @@
-import Vector from "/src/engine/data-structure/vector.js";
 import { clamp } from "/src/engine/utils.js";
 
 export default class RigidBody {
@@ -37,6 +36,12 @@ export default class RigidBody {
       this.isStatic = options.isStatic;
     } else {
       this.isStatic = false;
+    }
+
+    if (typeof options.isGravity === "boolean") {
+      this.isGravity = options.isGravity;
+    } else {
+      this.isGravity = true;
     }
   }
 }
