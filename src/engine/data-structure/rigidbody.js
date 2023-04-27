@@ -21,6 +21,18 @@ export default class RigidBody {
       this.bounceness = 0.5;
     }
 
+    if (typeof options.staticFriction === "number") {
+      this.staticFriction = clamp(options.staticFriction, 0, 1);
+    } else {
+      this.staticFriction = 0.2;
+    }
+
+    if (typeof options.dynamicFriction === "number") {
+      this.dynamicFriction = clamp(options.dynamicFriction, 0, 1);
+    } else {
+      this.dynamicFriction = 0.1;
+    }
+
     if (typeof options.isStatic === "boolean") {
       this.isStatic = options.isStatic;
     } else {

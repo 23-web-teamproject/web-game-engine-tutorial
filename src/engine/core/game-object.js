@@ -429,6 +429,20 @@ export default class GameObject {
   }
 
   /*
+   * 이 객체의 정지 마찰계수를 반환한다.
+   */
+  getStaticFriction() {
+    return this.rigidbody.staticFriction;
+  }
+
+  /*
+   * 이 객체의 운동 마찰계수를 반환한다.
+   */
+  getDynamicFriction() {
+    return this.rigidbody.dynamicFriction;
+  }
+
+  /*
    * 이 객체의 질량값을 반환한다.
    */
   getMass() {

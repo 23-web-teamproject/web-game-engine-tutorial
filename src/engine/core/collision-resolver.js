@@ -54,7 +54,53 @@ class CollisionResolver {
     this.obj.addVelocity(impulse.multiply(this.obj.getInverseMass()));
     other.addVelocity(impulse.multiply(-1 * other.getInverseMass()));
 
+    this.applyFriction(other, normal, j);
+
     this.positionalCorrection(other, normal, penetrationDepth);
+  }
+
+  /*
+   * 정지 마찰 계수와 운동 마찰 계수를 통해 마찰력을 적용한다.
+   */
+  applyFriction(other, normal, j) {
+    // 충격이 전달된 후의 속도로 계산을 진행한다.
+    // 두 물체의 속도 벡터의 차로 마찰이 작용할 방향을 찾는다.
+    const relativeVelocity = other.getVelocity().minus(this.obj.getVelocity());
+
+    // relativeVelocity를 n에 정사영하여 normal방향 성분을 얻고,
+    // 그 성분값을 다시 relativeVelocity에 빼서 normal에
+    // 수직인 벡터를 구한다.
+    let tangent = relativeVelocity.minus(
+      normal.multiply(relativeVelocity.dot(normal))
+    );
+    tangent = tangent.normalize();
+
+    // 마찰력의 크기를 구한다.
+    let jt = -relativeVelocity.dot(tangent);
+    jt /= this.obj.getInverseMass() + other.getInverseMass();
+
+    // 두 물체 사이의 정지 마찰 계수를 구한다.
+    const staticFriction = Math.sqrt(
+      this.obj.getStaticFriction() * this.obj.getStaticFriction() +
+        other.getStaticFriction() * other.getStaticFriction()
+    );
+
+    // 정지 마찰 계수보다 큰 힘이 주어질 경우
+    // 운동 마찰 계수를 이용해 마찰력을 결정한다.
+    let frictionImpulse = undefined;
+    if (Math.abs(jt) < j * staticFriction) {
+      frictionImpulse = tangent.multiply(jt);
+    } else {
+      // 두 물체 사이의 운동 마찰 계수를 구한다.
+      const dynamicFriction = Math.sqrt(
+        this.obj.getDynamicFriction() * this.obj.getDynamicFriction() +
+          other.getDynamicFriction() * other.getDynamicFriction()
+      );
+      frictionImpulse = tangent.multiply(-j * dynamicFriction);
+    }
+
+    this.obj.addVelocity(frictionImpulse.multiply(-this.obj.getInverseMass()));
+    other.addVelocity(frictionImpulse.multiply(other.getInverseMass()));
   }
 
   /*
