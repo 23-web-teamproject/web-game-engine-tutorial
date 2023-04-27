@@ -13,6 +13,10 @@ export default class CollisionResolver {
     this.obj = obj;
   }
 
+  /*
+   * 다른 객체의 Collider 타입에 맞춰 충돌 감지 방법을 사용하여
+   * 충돌 유무를 반환한다.
+   */
   isCollideWith(other) {
     if (other.collider.type === "box") {
       return this.isCollideWithBox(other);
@@ -21,6 +25,9 @@ export default class CollisionResolver {
     }
   }
 
+  /*
+   * 객체의 Collider 타입에 맞춰 충돌효과를 적용한다.
+   */
   resolveCollision(other) {
     if (other.collider.type === "box") {
       this.resolveBoxCollision(other);
@@ -29,6 +36,9 @@ export default class CollisionResolver {
     }
   }
 
+  /*
+   * 두 객체에게 충격량을 적용한다.
+   */
   applyImpulse(other, normal, penetrationDepth) {
     const diff = this.obj.getVelocity().minus(other.getVelocity());
     const dot = diff.dot(normal);

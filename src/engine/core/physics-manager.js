@@ -42,6 +42,7 @@ export default class PhysicsManager {
       }
     }
 
+    // 모든 물리효과가 켜진 객체에게 물리효과를 적용한다.
     PhysicsManager.physicsEnableGameObjectList.forEach((obj) => {
       if (obj.rigidbody.isStatic) {
         obj.transform.velocity = new Vector(0, -1);

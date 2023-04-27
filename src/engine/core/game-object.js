@@ -119,6 +119,10 @@ export default class GameObject {
     this.afterDraw();
   }
 
+  /*
+   * 이전 프레임의 transform과 이후 프레임의 transform의
+   * position, scale, rotation값을 선형보간한 matrix를 만든다.
+   */
   createMatrixWithInterpolatedTransform(alpha) {
     const interpolatedTransform = new Transform({
       position: this.previousTransform.position
@@ -336,6 +340,10 @@ export default class GameObject {
     return this.transform.position;
   }
 
+  /*
+   * 이 객체의 중심 좌표값을 반환한다.
+   * 크기를 설정했을 경우 각 가로, 세로의 절반을 현재 좌표에 더해 반환한다.
+   */
   getCenterPosition() {
     return this.transform.position.add(
       this.transform.pivotPosition.multiply(0.5)
@@ -351,6 +359,11 @@ export default class GameObject {
     return new Vector(this.matrix.x, this.matrix.y);
   }
 
+  /*
+   * 이 객체의 화면상 중심 좌표값을 반환한다.
+   * getCenterPosition과 같이 화면상에서 크기를 이용해
+   * 중심좌표값을 계산하여 반환한다.
+   */
   getWorldCenterPosition() {
     return this.getWorldPosition().add(
       this.transform.pivotPosition.multiply(0.5)
