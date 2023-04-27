@@ -1,3 +1,4 @@
+import Vector from "/src/engine/data-structure/vector.js";
 import CollisionResolver from "/src/engine/core/collision-resolver.js";
 
 export default class BoxCollisionResolver extends CollisionResolver {
