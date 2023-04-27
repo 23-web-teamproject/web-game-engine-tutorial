@@ -131,11 +131,11 @@ export default class CollisionResolver {
         percentage
     );
 
-    this.obj.matrix.x += this.obj.getInverseMass() * correction.x;
-    this.obj.matrix.y += this.obj.getInverseMass() * correction.y;
+    this.obj.matrix.x -= this.obj.getInverseMass() * correction.x;
+    this.obj.matrix.y -= this.obj.getInverseMass() * correction.y;
 
-    other.matrix.x -= other.getInverseMass() * correction.x;
-    other.matrix.y -= other.getInverseMass() * correction.y;
+    other.matrix.x += other.getInverseMass() * correction.x;
+    other.matrix.y += other.getInverseMass() * correction.y;
   }
 
   /*
