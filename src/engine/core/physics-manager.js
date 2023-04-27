@@ -2,6 +2,7 @@
  * 씬 객체에 물리효과를 적용하려면 PhysicsManager를 사용하여야 한다.
  * 물리효과를 적용할 객체들에게만 물리효과를 적용한다.
  */
+import { CircleCollider } from "/src/engine/data-structure/collider.js";
 import BoxCollisionResolver from "/src/engine/core/box-collision-resolver.js";
 import CircleCollisionResolver from "/src/engine/core/circle-collision-resolver.js";
 
@@ -24,7 +25,7 @@ export default class PhysicsManager {
       // Resolver를 선택해 진행한다.
       // 기본적으로 BoxCollider를 사용해 충돌검사를 수행한다.
       let collisionResolver = new BoxCollisionResolver(obj);
-      if (obj.collider.type === "circle") {
+      if (obj.collider instanceof CircleCollider) {
         collisionResolver = new CircleCollisionResolver(obj);
       }
 
