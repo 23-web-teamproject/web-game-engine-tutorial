@@ -8,6 +8,10 @@
  * 충돌체크에 사용한 공식은 아래 링크에서 참고했다.
  * https://gamedevelopment.tutsplus.com/series/how-t-create-a-custom-physics-engnien--gamedev-12715
  */
+import {
+  BoxCollider,
+  CircleCollider,
+} from "/src/engine/data-structure/collider.js";
 export default class CollisionResolver {
   constructor(obj) {
     this.obj = obj;
@@ -18,9 +22,9 @@ export default class CollisionResolver {
    * 충돌 유무를 반환한다.
    */
   isCollideWith(other) {
-    if (other.collider.type === "box") {
+    if (other.collider instanceof BoxCollider) {
       return this.isCollideWithBox(other);
-    } else if (other.collider.type === "circle") {
+    } else if (other.collider instanceof CircleCollider) {
       return this.isCollideWithCircle(other);
     }
   }
@@ -29,9 +33,9 @@ export default class CollisionResolver {
    * 객체의 Collider 타입에 맞춰 충돌효과를 적용한다.
    */
   resolveCollision(other) {
-    if (other.collider.type === "box") {
+    if (other.collider instanceof BoxCollider) {
       this.resolveBoxCollision(other);
-    } else if (other.collider.type === "circle") {
+    } else if (other.collider instanceof CircleCollider) {
       this.resolveCircleCollision(other);
     }
   }
