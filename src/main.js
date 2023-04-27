@@ -9,4 +9,8 @@
 import Engine from "/src/engine/engine.js";
 import ExampleScene from "/src/example-scene/scene.js";
 
-Engine.registerInitialScene(ExampleScene);
+Engine.init({
+  width: 1280,
+  height: 720,
+  scene: ExampleScene
+});

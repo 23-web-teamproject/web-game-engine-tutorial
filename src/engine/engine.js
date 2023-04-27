@@ -21,12 +21,20 @@ export default class Engine {
     this.timer = new Timer();
   }
 
-  static registerInitialScene(newScene) {
+  static init(settings) {
+    let width = 1280;
+    if(settings.hasOwnProperty("width")){
+      width = settings.width;
+    }
+    let height = 720;
+    if(settings.hasOwnProperty("height")){
+      height = settings.height;
+    }
     // Set resolution
-    RenderManager.changeResolution(1280, 720);
+    RenderManager.changeResolution(width, height);
 
     // Load scene
-    SceneManager.changeScene(newScene);
+    SceneManager.changeScene(settings.scene);
   }
 
   run() {
