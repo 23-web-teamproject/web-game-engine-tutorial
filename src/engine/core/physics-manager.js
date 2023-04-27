@@ -5,6 +5,7 @@
 import { CircleCollider } from "/src/engine/data-structure/collider.js";
 import BoxCollisionResolver from "/src/engine/core/box-collision-resolver.js";
 import CircleCollisionResolver from "/src/engine/core/circle-collision-resolver.js";
+import Vector from "/src/engine/data-structure/vector.js";
 
 export default class PhysicsManager {
   static physicsEnableGameObjectList = new Array();
@@ -42,7 +43,9 @@ export default class PhysicsManager {
     }
 
     PhysicsManager.physicsEnableGameObjectList.forEach((obj) => {
-      if (obj.rigidbody.isStatic === false) {
+      if (obj.rigidbody.isStatic) {
+        obj.transform.velocity = new Vector(0, -1);
+      } else {
         obj.updatePhysics(deltaTime);
       }
     });

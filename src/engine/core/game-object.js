@@ -25,10 +25,7 @@ export default class GameObject {
     this.transform.setPivotPositionToCenter();
     this.previousTransform = new Transform(options.transform);
     this.previousTransform.setPivotPositionToCenter();
-    if (this.rigidbody.isStatic) {
-      this.transform.velocity = new Vector(0, -1);
-      this.rigidbody.inverseMass = 0;
-    }
+
     if (this.rigidbody.isGravity) {
       this.transform.acceleration.y = 9.8;
     }
