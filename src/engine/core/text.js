@@ -10,6 +10,7 @@ export default class Text extends GameObject {
       this.text = `다람쥐 헌쳇바퀴에 타고파\n
       The Quick Brown Fox Jumps Over The Lazy Dog
       `;
+      this.parseText();
     }
 
     if (typeof options.fontSize === "number") {
@@ -23,6 +24,12 @@ export default class Text extends GameObject {
     } else {
       this.font = "malgeun gothic";
     }
+
+    if (typeof options.lineHeight === "number") {
+      this.lineHeight = options.lineHeight;
+    } else {
+      this.setLineHeight(this.fontSize * 1.25);
+    }
   }
 
   draw() {
@@ -32,24 +39,41 @@ export default class Text extends GameObject {
       ${this.color.g}, 
       ${this.color.b}
       )`;
-    this.context2d.fillText(this.text, 0, 0);
+    for (let i = 0; i < this.textList.length; i++) {
+      this.context2d.fillText(this.textList[i], 0, i * this.lineHeight);
+    }
   }
 
   setText(text) {
-    if(typeof text === "string"){
+    if (typeof text === "string") {
       this.text = text;
+      this.parseText();
+    }
+  }
+
+  parseText() {
+    const parsedText = this.text.split("\n");
+    this.textList = new Array();
+    for (let i = 0; i < parsedText.length; i++) {
+      this.textList.push(parsedText[i]);
     }
   }
 
   setFontSize(fontSize) {
-    if(typeof fontSize === "number") {
+    if (typeof fontSize === "number") {
       this.fontSize = fontSize;
     }
   }
 
   setFont(font) {
-    if(typeof font === "string") {
+    if (typeof font === "string") {
       this.font = font;
+    }
+  }
+
+  setLineHeight(lineHeight) {
+    if (typeof lineHeight === "number") {
+      this.lineHeight = lineHeight;
     }
   }
 }
