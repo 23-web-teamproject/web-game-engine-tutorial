@@ -19,6 +19,7 @@ import GameObject from "/src/engine/core/game-object.js";
 import Sprite from "/src/engine/core/sprite.js";
 import Circle from "/src/engine/core/circle.js";
 import Rect from "/src/engine/core/rect.js";
+import Text from "/src/engine/core/text.js";
 import SoundEffect from "/src/engine/fx/sound-effect.js";
 import ParticleEffect from "/src/engine/fx/particle-effect.js";
 
@@ -34,6 +35,7 @@ export {
   Sprite,
   Circle,
   Rect,
+  Text,
   SoundEffect,
   ParticleEffect
 }
