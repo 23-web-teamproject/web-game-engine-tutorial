@@ -11,8 +11,8 @@ export default class Rect extends GameObject {
     super(options);
 
     const size = new Vector(0, 0);
-    size.x = typeCheck(options.width, "number", 0);
-    size.y = typeCheck(options.height, "number", 0);
+    size.x = typeCheck(options.width, "number", 50);
+    size.y = typeCheck(options.height, "number", 50);
 
     this.transform.size = size;
     this.transform.setPivotPositionToCenter();
