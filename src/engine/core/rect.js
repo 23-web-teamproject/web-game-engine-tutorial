@@ -44,7 +44,7 @@ export default class Rect extends GameObject {
 
   draw() {
     if (this.isFill) {
-      this.context2d.fillStyle = `rgba(
+      this.context2d.fillStyle = `rgb(
         ${this.color.r}, 
         ${this.color.g}, 
         ${this.color.b}
@@ -57,8 +57,7 @@ export default class Rect extends GameObject {
       this.context2d.strokeStyle = `rgb(
         ${this.strokeColor.r},
         ${this.strokeColor.g},
-        ${this.strokeColor.b},
-        ${this.strokeColor.a}
+        ${this.strokeColor.b}
         )`;
       this.context2d.strokeRect(
         this.strokeWidth / 2,
