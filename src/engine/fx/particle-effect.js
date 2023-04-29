@@ -138,7 +138,7 @@ export default class ParticleEffect extends GameObject {
       this.defaultParticleImage
     );
     /*
-     * 만약 enablePhysics가 true라면, 파티클에도 물리효과를 적용해야한다.
+     * 만약 isPhysicsEnabled가 true라면, 파티클에도 물리효과를 적용해야한다.
      * 기본값은 false다.
      */
     this.isParticlePhysicsEnable = typeCheck(
@@ -164,7 +164,7 @@ export default class ParticleEffect extends GameObject {
           diffuseness: this.diffuseness,
           speed: this.speed,
           lifeTime: this.lifeTime,
-          enablePhysics: this.isParticlePhysicsEnable,
+          isPhysicsEnabled: this.isParticlePhysicsEnable,
           isAlphaFade: this.isAlphaFade,
           isScaleFade: this.isScaleFade,
           imagePath: this.imagePath,

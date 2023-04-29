@@ -37,7 +37,7 @@ export default class GameObject {
      * 이 객체에 물리효과를 적용할건지를 의미한다.
      * 기본적으론 적용하지 않는다.
      */
-    this.isPhysicsEnable = typeCheck(options.enablePhysics, "boolean", false);
+    this.isPhysicsEnabled = typeCheck(options.isPhysicsEnabled, "boolean", false);
 
     /*
      * 이 객체의 Collision 타입을 나타낸다.
