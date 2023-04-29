@@ -1,39 +1,27 @@
 import Color from "/src/engine/data-structure/color.js";
 import GameObject from "/src/engine/core/game-object.js";
 import { CircleCollider } from "/src/engine/data-structure/collider.js";
+import { typeCheck } from "/src/engine/utils.js";
 
 export default class Circle extends GameObject {
   constructor(options = {}) {
     super(options);
 
-    if (typeof options.radius === "number") {
-      this.radius = options.radius;
-    } else {
-      this.radius = 5;
-    }
+    this.radius = typeCheck(options.radius, "number", 5);
 
     this.isFill = options.hasOwnProperty("color");
     if (this.isFill) {
-      if (options.color instanceof Color) {
-        this.color = options.color;
-      } else {
-        this.color = new Color(255, 255, 255, 1);
-      }
+      this.color = typeCheck(options.color, Color, new Color(255, 255, 255, 1));
     }
 
     this.isStroke = options.hasOwnProperty("strokeColor");
     if (this.isStroke) {
-      if (options.strokeColor instanceof Color) {
-        this.strokeColor = options.strokeColor;
-      } else {
-        this.strokeColor = new Color(255, 255, 255, 1);
-      }
-
-      if (typeof options.strokeWidth === "number") {
-        this.strokeWidth = options.strokeWidth;
-      } else {
-        this.strokeWidth = 1;
-      }
+      this.strokeColor = typeCheck(
+        options.strokeColor,
+        Color,
+        new Color(255, 255, 255, 1)
+      );
+      this.strokeWidth = typeCheck(options.strokeWidth, "number", 1);
     }
 
     this.collider = new CircleCollider();

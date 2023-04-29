@@ -5,6 +5,7 @@ import RigidBody from "/src/engine/data-structure/rigidbody.js";
 import { BoxCollider } from "/src/engine/data-structure/collider.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
+import { typeCheck } from "/src/engine/utils.js";
 
 export default class GameObject {
   constructor(options = {}) {
@@ -36,11 +37,7 @@ export default class GameObject {
      * 이 객체에 물리효과를 적용할건지를 의미한다.
      * 기본적으론 적용하지 않는다.
      */
-    if (options.hasOwnProperty("enablePhysics")) {
-      this.isPhysicsEnable = options.enablePhysics;
-    } else {
-      this.isPhysicsEnable = false;
-    }
+    this.isPhysicsEnable = typeCheck(options.enablePhysics, "boolean", false);
 
     /*
      * 이 객체의 Collision 타입을 나타낸다.
@@ -51,11 +48,7 @@ export default class GameObject {
     /*
      * 렌더링에 사용될 색상값을 담고 있다.
      */
-    if (options.color instanceof Color) {
-      this.color = options.color;
-    } else {
-      this.color = new Color(0, 0, 0, 1);
-    }
+    this.color = typeCheck(options.color, Color, new Color(255, 255, 255, 1));
 
     /*
      * 객체의 자식들을 저장할 테이블이다.

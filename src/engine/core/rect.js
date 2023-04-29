@@ -4,18 +4,15 @@
 import Vector from "/src/engine/data-structure/vector.js";
 import Color from "/src/engine/data-structure/color.js";
 import GameObject from "/src/engine/core/game-object.js";
+import { typeCheck } from "/src/engine/utils.js";
 
 export default class Rect extends GameObject {
   constructor(options = {}) {
     super(options);
 
     const size = new Vector(0, 0);
-    if (typeof options.width === "number") {
-      size.x = options.width;
-    }
-    if (typeof options.height === "number") {
-      size.y = options.height;
-    }
+    size.x = typeCheck(options.width, "number", 0);
+    size.y = typeCheck(options.height, "number", 0);
 
     this.transform.size = size;
     this.transform.setPivotPositionToCenter();
@@ -24,17 +21,12 @@ export default class Rect extends GameObject {
     this.isStroke = options.hasOwnProperty("strokeColor");
 
     if (this.isStroke) {
-      if (options.strokeColor instanceof Color) {
-        this.strokeColor = options.strokeColor;
-      } else {
-        this.strokeColor = new Color(255, 255, 255, 1);
-      }
-
-      if (typeof options.strokeWidth === "number") {
-        this.strokeWidth = options.strokeWidth;
-      } else {
-        this.strokeWidth = 1;
-      }
+      this.strokeColor = typeCheck(
+        options.strokeColor,
+        Color,
+        new Color(255, 255, 255, 1)
+      );
+      this.strokeWidth = typeCheck(options.strokeWidth, "number", 1);
     }
   }
 

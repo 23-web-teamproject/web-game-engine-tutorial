@@ -4,53 +4,38 @@
  */
 import Vector from "/src/engine/data-structure/vector.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
+import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
 
 export default class Transform {
   constructor(options = {}) {
     /*
      * 좌표값을 나타낸다.
      */
-    if (options.position instanceof Vector) {
-      this.position = options.position;
-    } else {
-      this.position = new Vector(0, 0);
-    }
+    this.position = typeCheck(options.position, Vector, new Vector(0, 0));
 
     /*
      * 축척을 나타낸다.
      */
-    if (options.scale instanceof Vector) {
-      this.scale = options.scale;
-    } else {
-      this.scale = new Vector(1, 1);
-    }
+    this.scale = typeCheck(options.scale, Vector, new Vector(1, 1));
 
     /*
      * 각도를 나타낸다. 라디안이 아닌 degree를 쓴다.
      */
-    if (typeof options.rotation === "number") {
-      this.rotation = options.rotation;
-    } else {
-      this.rotation = 0;
-    }
+    this.rotation = typeCheck(options.rotation, "number", 0);
 
     /*
      * 속도를 나타낸다.
      */
-    if (options.velocity instanceof Vector) {
-      this.velocity = options.velocity;
-    } else {
-      this.velocity = new Vector(0, 0);
-    }
+    this.velocity = typeCheck(options.velocity, Vector, new Vector(0, 0));
 
     /*
      * 가속도를 나타낸다.
      */
-    if (options.acceleration instanceof Vector) {
-      this.acceleration = options.acceleration;
-    } else {
-      this.acceleration = new Vector(0, 0);
-    }
+    this.acceleration = typeCheck(
+      options.acceleration,
+      Vector,
+      new Vector(0, 0)
+    );
 
     /*
      * 물리적인 크기를 나타낸다.

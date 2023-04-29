@@ -3,7 +3,11 @@ const clamp = (value, min, max) => {
 }
 
 const typeCheck = (value, Type, defaultValue) => {
-  if(typeof Type === "object") {
+  if(value === undefined) {
+    return defaultValue;
+  }
+
+  if(typeof Type === "function") {
     if(value instanceof Type) {
       return value;
     } else {
