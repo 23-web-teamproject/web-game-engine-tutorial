@@ -64,10 +64,10 @@ export default class PhysicsManager {
     for (const child of Object.values(scene.childTable)) {
       if (child.isPhysicsEnable) {
         PhysicsManager.physicsEnableGameObjectList.push(child);
+      }
 
-        if (Object.keys(child.childTable).length > 0) {
-          PhysicsManager.collectPhysicsEnabledGameObjectToList(child);
-        }
+      if (Object.keys(child.childTable).length > 0) {
+        PhysicsManager.collectPhysicsEnabledGameObjectToList(child);
       }
     }
   }
