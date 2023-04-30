@@ -56,8 +56,8 @@ export default class Rect extends GameObject {
         ${this.strokeColor.b}
         )`;
       this.context2d.strokeRect(
-        this.strokeWidth / 2,
-        this.strokeWidth / 2,
+        this.strokeWidth / 2 - this.getSize().x / 2,
+        this.strokeWidth / 2 - this.getSize().y / 2,
         this.getSize().x - this.strokeWidth,
         this.getSize().y - this.strokeWidth
       );
