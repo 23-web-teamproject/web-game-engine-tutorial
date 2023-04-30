@@ -23,9 +23,7 @@ export default class GameObject {
      * 이 객체의 좌표, 크기, 각도 등을 담고 있다.
      */
     this.transform = new Transform(options.transform);
-    this.transform.setPivotPositionToCenter();
     this.previousTransform = new Transform(options.transform);
-    this.previousTransform.setPivotPositionToCenter();
 
     if (this.rigidbody.isStatic) {
       this.rigidbody.inverseMass = 0;
@@ -133,7 +131,6 @@ export default class GameObject {
     });
 
     interpolatedTransform.size = this.transform.size;
-    interpolatedTransform.pivotPosition = this.transform.pivotPosition;
 
     this.previousTransform = this.transform.copy();
     this.matrix = interpolatedTransform.toMatrix();
@@ -341,9 +338,7 @@ export default class GameObject {
    * 크기를 설정했을 경우 각 가로, 세로의 절반을 현재 좌표에 더해 반환한다.
    */
   getCenterPosition() {
-    return this.transform.position.add(
-      this.transform.pivotPosition.multiply(0.5)
-    );
+    return this.getPosition().add(this.getSize().multiply(0.5));
   }
 
   /*
@@ -361,9 +356,7 @@ export default class GameObject {
    * 중심좌표값을 계산하여 반환한다.
    */
   getWorldCenterPosition() {
-    return this.getWorldPosition().add(
-      this.transform.pivotPosition.multiply(0.5)
-    );
+    return this.getWorldPosition().add(this.getSize().multiply(0.5));
   }
 
   /*

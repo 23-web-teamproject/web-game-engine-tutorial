@@ -15,7 +15,6 @@ export default class Rect extends GameObject {
     size.y = typeCheck(options.height, "number", 50);
 
     this.transform.size = size;
-    this.transform.setPivotPositionToCenter();
 
     this.isFill = options.hasOwnProperty("color");
     this.isStroke = options.hasOwnProperty("strokeColor");
@@ -41,7 +40,12 @@ export default class Rect extends GameObject {
         ${this.color.g}, 
         ${this.color.b}
         )`;
-      this.context2d.fillRect(0, 0, this.getSize().x, this.getSize().y);
+      this.context2d.fillRect(
+        -this.getSize().x / 2,
+        -this.getSize().y / 2,
+        this.getSize().x,
+        this.getSize().y
+      );
     }
 
     if (this.isStroke) {

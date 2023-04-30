@@ -71,7 +71,7 @@ export default class Sprite extends GameObject {
   draw() {
     if (this.isColorOverlayEnable) {
       // 버퍼 캔버스의 크기를 현재 이미지의 크기로 설정한다.
-      const size = this.transform.size;
+      const size = this.getSize();
 
       // 만약 이미지의 size가 0x0일 경우 drawImage()를 실행할 때
       // 크기가 0인 이미지를 그린다는 에러가 일어난다.
@@ -87,17 +87,26 @@ export default class Sprite extends GameObject {
         bufferCtx.globalCompositeOperation = "source-atop";
 
         // 버퍼 캔버스에 source-atop 방식으로 오버레이를 입힌다.
-        bufferCtx.fillStyle = `rgba(${this.overlayColor.r},${this.overlayColor.g},${this.overlayColor.b},${this.overlayColor.a})`;
+        bufferCtx.fillStyle = `rgba(
+          ${this.overlayColor.r},
+          ${this.overlayColor.g},
+          ${this.overlayColor.b},
+          ${this.overlayColor.a}
+        )`;
         bufferCtx.fillRect(0, 0, size.x, size.y);
         bufferCtx.globalCompositeOperation = "source-over";
 
         // 버퍼 캔버스에 그려진 이미지를 주 캔버스에 렌더링한다.
-        this.context2d.drawImage(buffer, 0, 0);
+        this.context2d.drawImage(buffer, -size.x / 2, -size.y / 2);
       } catch (error) {
         throw error;
       }
     } else {
-      this.context2d.drawImage(this.image, 0, 0);
+      this.context2d.drawImage(
+        this.image,
+        -this.getSize().x / 2,
+        -this.getSize().y / 2
+      );
     }
   }
 

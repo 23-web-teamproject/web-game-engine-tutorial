@@ -9,7 +9,7 @@ import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
 export default class Transform {
   constructor(options = {}) {
     /*
-     * 좌표값을 나타낸다.
+     * 좌표값을 나타낸다. 이 좌표값은 물체의 중심좌표를 말한다.
      */
     this.position = typeCheck(options.position, Vector, new Vector(0, 0));
 
@@ -43,13 +43,6 @@ export default class Transform {
      * 이 값도 필수적으로 변경해야한다.
      */
     this.size = new Vector(0, 0);
-
-    /*
-     * 객체의 회전이나 축척을 변형할 때 기본적으로는
-     * 객체의 좌상단을 기준으로 변형한다.
-     * 특정 좌표를 기준으로 변형하려고 하면 이 값을 변경하면 된다.
-     */
-    this.pivotPosition = new Vector(0, 0);
   }
 
   /*
@@ -59,17 +52,12 @@ export default class Transform {
    * 화면 상의 절대좌표로 변환할 수 있게 해준다.
    */
   toMatrix() {
+    // 먼저 현재 좌표를 행렬에 저장한다.
     let matrix = new Matrix();
     matrix.x = this.position.x;
     matrix.y = this.position.y;
 
-    // 먼저 회전변환과 크기변환을 할 때 중심이 되는 위치로 이동한다.
-    const translateToPivotMatrix = new Matrix();
-    translateToPivotMatrix.x = this.pivotPosition.x;
-    translateToPivotMatrix.y = this.pivotPosition.y;
-    matrix = matrix.multiply(translateToPivotMatrix);
-
-    // 그다음 회전변환과 크기변환을 한다.
+    // 회전변환을 한다.
     const rotateMatrix = new Matrix();
     const rad = (this.rotation * Math.PI) / 180;
     const sin = Math.sin(rad);
@@ -80,26 +68,13 @@ export default class Transform {
     rotateMatrix.d = cos;
     matrix = matrix.multiply(rotateMatrix);
 
+    // 크기변환을 한다.
     const scaleMatrix = new Matrix();
     scaleMatrix.a = this.scale.x;
     scaleMatrix.d = this.scale.y;
     matrix = matrix.multiply(scaleMatrix);
 
-    // 모든 변환이 끝난 후 다시 원점으로 돌아온다.
-    const translateToOriginMatrix = new Matrix();
-    translateToOriginMatrix.x = -this.pivotPosition.x;
-    translateToOriginMatrix.y = -this.pivotPosition.y;
-    matrix = matrix.multiply(translateToOriginMatrix);
-
     return matrix;
-  }
-
-  /*
-   * 회전이나 축척 변형의 기준좌표를 size의 절반으로 설정한다.
-   * 이렇게 하면 GameObject의 가운데를 기준으로 회전하거나 스케일이 늘어난다.
-   */
-  setPivotPositionToCenter() {
-    this.pivotPosition = this.size.multiply(0.5);
   }
 
   copy() {
@@ -112,10 +87,6 @@ export default class Transform {
     });
 
     transform.size = new Vector(this.size.x, this.size.y);
-    transform.pivotPosition = new Vector(
-      this.pivotPosition.x,
-      this.pivotPosition.y
-    );
 
     return transform;
   }
