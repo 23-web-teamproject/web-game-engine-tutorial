@@ -1,3 +1,4 @@
+import Manifold from "/src/engine/data-structure/manifold.js";
 import Vector from "/src/engine/data-structure/vector.js";
 import CollisionResolver from "/src/engine/core/collision-resolver.js";
 import { clamp } from "/src/engine/utils.js";
@@ -110,7 +111,7 @@ export default class BoxCollisionResolver extends CollisionResolver {
       penetrationDepth = xOverlap;
     }
 
-    this.applyImpulse(box, normal, penetrationDepth);
+    return new Manifold(this.box, box, normal, penetrationDepth);
   }
 
   resolveCircleCollision(circle) {
@@ -168,6 +169,6 @@ export default class BoxCollisionResolver extends CollisionResolver {
       penetrationDepth = circle.radius - Math.sqrt(d); // ???
     }
 
-    this.applyImpulse(circle, normal, penetrationDepth);
+    return new Manifold(this.box, circle, normal, penetrationDepth);
   }
 }

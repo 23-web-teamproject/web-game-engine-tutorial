@@ -1,3 +1,4 @@
+import Manifold from "/src/engine/data-structure/manifold.js";
 import Vector from "/src/engine/data-structure/vector.js";
 import CollisionResolver from "/src/engine/core/collision-resolver.js";
 import { clamp } from "/src/engine/utils.js";
@@ -95,14 +96,6 @@ export default class CircleCollisionResolver extends CollisionResolver {
     }
 
     if (inside) {
-      /*
-       * 충돌검사의 주체가 사각형이라면 normal벡터는 반작용으로 인해
-       * 원이 튕겨져 나갈 방향이다. 따라서 normal벡터에 -1을 곱해야
-       * 작용으로 인해 사각형이 튕겨져 나갈 방향이다.
-       * 그러나 충돌검사의 주체가 원이라면 normal벡터는 작용으로 인해
-       * 사각형이 튕겨져 나갈 방향이므로,
-       * normal벡터에 -1을 곱해야 반작용으로 인해 원이 튕겨져 나갈 방향이 된다.
-       */
       normal = normal.multiply(-1).normalize();
       penetrationDepth = 2 * this.circle.radius; // ???
     } else {
@@ -110,7 +103,7 @@ export default class CircleCollisionResolver extends CollisionResolver {
       penetrationDepth = this.circle.radius - Math.sqrt(d); // ???
     }
 
-    this.applyImpulse(box, normal, -penetrationDepth);
+    return new Manifold(box, this.circle, normal ,penetrationDepth);
   }
 
   resolveCircleCollision(circle) {
@@ -143,6 +136,6 @@ export default class CircleCollisionResolver extends CollisionResolver {
       normal = distance.multiply(1 / d).normalize();
     }
 
-    this.applyImpulse(circle, normal, penetrationDepth);
+    return new Manifold(this.circle, circle, normal ,penetrationDepth);
   }
 }

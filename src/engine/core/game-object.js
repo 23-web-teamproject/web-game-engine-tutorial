@@ -82,22 +82,30 @@ export default class GameObject {
     }
   }
 
-  /*
-   * 이 객체에 물리효과를 적용한다.
-   * v = 속도, a = 가속도
-   * v += a * dt
-   * x += v * dt
-   */
-  updatePhysics(deltaTime) {
+  integrateForce(deltaTime) {
+    if (this.getInverseMass() === 0) {
+      return;
+    }
     this.addVelocity(this.getAcceleration().multiply(deltaTime));
+  }
+
+  integrateVelocity(deltaTime) {
+    if (this.getInverseMass() === 0) {
+      return;
+    }
     this.addPosition(this.getVelocity().multiply(deltaTime));
+    if (this.hasParentGameObject()) {
+      this.multiplyParentMatrix();
+    } else {
+      this.matrix = this.transform.toMatrix();
+    }
   }
 
   calculateMatrix() {
-    this.matrix = this.transform.toMatrix();
-
     if (this.hasParentGameObject()) {
       this.multiplyParentMatrix();
+    } else {
+      this.matrix = this.transform.toMatrix();
     }
 
     for (const child of Object.values(this.childTable)) {
@@ -114,8 +122,6 @@ export default class GameObject {
   render(alpha) {
     this.beforeDraw();
 
-    // this.createMatrixWithInterpolatedTransform(alpha);
-    this.matrix = this.transform.toMatrix();
     this.setTransform();
 
     this.draw();

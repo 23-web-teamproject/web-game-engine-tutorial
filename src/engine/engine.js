@@ -66,8 +66,6 @@ export default class Engine {
       this.timer.accumulatedTime -= this.timer.fixedDeltaTime;
     }
 
-    SceneManager.getCurrentScene().calculateMatrix();
-
     // Remove previous canvas
     RenderManager.clearScreen();
 
