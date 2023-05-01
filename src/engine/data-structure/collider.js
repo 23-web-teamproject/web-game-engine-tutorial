@@ -1,18 +1,16 @@
 class Collider {
-  constructor(type) {
-    this.type = type;
-  }
+  constructor() {}
 }
 
 class BoxCollider extends Collider {
   constructor() {
-    super("box");
+    super();
   }
 }
 
 class CircleCollider extends Collider {
   constructor() {
-    super("circle");
+    super();
   }
 }
 
