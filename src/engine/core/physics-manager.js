@@ -1,8 +1,16 @@
 /*
  * 씬 객체에 물리효과를 적용하려면 PhysicsManager를 사용하여야 한다.
  * 물리효과를 적용할 객체들에게만 물리효과를 적용한다.
+ *
+ * 참고한 사이트
+ * https://github.com/tutsplus/ImpulseEngine/
+ * https://github.com/Kareus/SP2C/
+ * https://kareus.tistory.com/15
  */
-import { CircleCollider } from "/src/engine/data-structure/collider.js";
+import {
+  BoxCollider,
+  CircleCollider,
+} from "/src/engine/data-structure/collider.js";
 import BoxCollisionResolver from "/src/engine/core/box-collision-resolver.js";
 import CircleCollisionResolver from "/src/engine/core/circle-collision-resolver.js";
 
@@ -26,8 +34,10 @@ export default class PhysicsManager {
 
       // 충돌체크를 진행할 대상의 Collider 타입에 따라
       // Resolver를 선택해 진행한다.
-      // 기본적으로 BoxCollider를 사용해 충돌검사를 수행한다.
-      let collisionResolver = new BoxCollisionResolver(obj);
+      let collisionResolver = null;
+      if (obj.collider instanceof BoxCollider) {
+        collisionResolver = new BoxCollisionResolver(obj);
+      }
       if (obj.collider instanceof CircleCollider) {
         collisionResolver = new CircleCollisionResolver(obj);
       }
@@ -50,10 +60,16 @@ export default class PhysicsManager {
       }
     }
 
+    /*
+     * 물체의 가속도를 적분하여 속도에 누적한다.
+     */
     objectList.forEach((obj) => {
       obj.integrateForce(deltaTime);
     });
 
+    /*
+     * 물체의 충돌을 계산하여 속도를 변화시킨다.
+     */
     manifoldList.forEach((manifold) => {
       PhysicsManager.applyImpulse(
         manifold.objA,
@@ -62,10 +78,17 @@ export default class PhysicsManager {
       );
     });
 
+    /*
+     * 속도를 적분하여 좌표값에 누적한다.
+     */
     objectList.forEach((obj) => {
       obj.integrateVelocity(deltaTime);
     });
 
+    /*
+     * 서로 겹쳐지는 상황을 피하기 위해
+     * 겹친 도형끼리 멀어지는 연산을 한다.
+     */
     manifoldList.forEach((manifold) => {
       PhysicsManager.positionalCorrection(manifold);
     });
@@ -81,7 +104,7 @@ export default class PhysicsManager {
    */
   static collectPhysicsEnabledGameObjectToList(scene) {
     for (const child of Object.values(scene.childTable)) {
-      if (child.isPhysicsEnabled) {
+      if (child.isPhysicsEnable) {
         PhysicsManager.physicsEnableGameObjectList.push(child);
       }
 

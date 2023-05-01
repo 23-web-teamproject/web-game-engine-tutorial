@@ -35,11 +35,7 @@ export default class GameObject {
      * 이 객체에 물리효과를 적용할건지를 의미한다.
      * 기본적으론 적용하지 않는다.
      */
-    this.isPhysicsEnable = typeCheck(
-      options.isPhysicsEnable,
-      "boolean",
-      false
-    );
+    this.isPhysicsEnable = typeCheck(options.isPhysicsEnable, "boolean", false);
 
     /*
      * 이 객체의 Collision 타입을 나타낸다.
@@ -82,18 +78,28 @@ export default class GameObject {
     }
   }
 
+  /*
+   * 가속도를 적분하여 속도에 누적한다.
+   */
   integrateForce(deltaTime) {
+    // inverseMass가 0이라는 말은 static 객체임을 말한다.
     if (this.getInverseMass() === 0) {
       return;
     }
     this.addVelocity(this.getAcceleration().multiply(deltaTime));
   }
 
+  /*
+   * 속도를 적분하여 좌표값에 누적한다.
+   */
   integrateVelocity(deltaTime) {
+    // inverseMass가 0이라는 말은 static 객체임을 말한다.
     if (this.getInverseMass() === 0) {
       return;
     }
     this.addPosition(this.getVelocity().multiply(deltaTime));
+    // 변한 좌표값이 matrix에는 저장되지 않으므로
+    // 어쩔 수 없이 matrix로 바꾸는 연산을 수행한다.
     if (this.hasParentGameObject()) {
       this.multiplyParentMatrix();
     } else {
@@ -101,6 +107,10 @@ export default class GameObject {
     }
   }
 
+  /*
+   * transform을 matrix로 변환한다.
+   * 이 때 부모 객체가 있다면 행렬곱을 수행해 두 matrix를 결합한다.
+   */
   calculateMatrix() {
     if (this.hasParentGameObject()) {
       this.multiplyParentMatrix();

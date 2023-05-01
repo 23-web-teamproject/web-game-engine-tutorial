@@ -103,7 +103,7 @@ export default class CircleCollisionResolver extends CollisionResolver {
       penetrationDepth = this.circle.radius - Math.sqrt(d); // ???
     }
 
-    return new Manifold(box, this.circle, normal ,penetrationDepth);
+    return new Manifold(box, this.circle, normal, penetrationDepth);
   }
 
   resolveCircleCollision(circle) {
@@ -136,6 +136,6 @@ export default class CircleCollisionResolver extends CollisionResolver {
       normal = distance.multiply(1 / d).normalize();
     }
 
-    return new Manifold(this.circle, circle, normal ,penetrationDepth);
+    return new Manifold(this.circle, circle, normal, penetrationDepth);
   }
 }
