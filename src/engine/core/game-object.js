@@ -35,7 +35,11 @@ export default class GameObject {
      * 이 객체에 물리효과를 적용할건지를 의미한다.
      * 기본적으론 적용하지 않는다.
      */
-    this.isPhysicsEnabled = typeCheck(options.isPhysicsEnabled, "boolean", false);
+    this.isPhysicsEnabled = typeCheck(
+      options.isPhysicsEnabled,
+      "boolean",
+      false
+    );
 
     /*
      * 이 객체의 Collision 타입을 나타낸다.
@@ -89,6 +93,18 @@ export default class GameObject {
     this.addPosition(this.getVelocity().multiply(deltaTime));
   }
 
+  calculateMatrix() {
+    this.matrix = this.transform.toMatrix();
+
+    if (this.hasParentGameObject()) {
+      this.multiplyParentMatrix();
+    }
+
+    for (const child of Object.values(this.childTable)) {
+      child.calculateMatrix();
+    }
+  }
+
   /*
    * 이 GameObject의 하위 GameObject들의 render를 실행시킨다.
    * 부모의 matrix를 가져와 자신의 matrix와 행렬곱을 수행한다.
@@ -98,10 +114,8 @@ export default class GameObject {
   render(alpha) {
     this.beforeDraw();
 
-    this.createMatrixWithInterpolatedTransform(alpha);
-    if (this.hasParentGameObject()) {
-      this.multiplyParentMatrix();
-    }
+    // this.createMatrixWithInterpolatedTransform(alpha);
+    this.matrix = this.transform.toMatrix();
     this.setTransform();
 
     this.draw();
@@ -334,29 +348,12 @@ export default class GameObject {
   }
 
   /*
-   * 이 객체의 중심 좌표값을 반환한다.
-   * 크기를 설정했을 경우 각 가로, 세로의 절반을 현재 좌표에 더해 반환한다.
-   */
-  getCenterPosition() {
-    return this.getPosition().add(this.getSize().multiply(0.5));
-  }
-
-  /*
    * 이 객체의 화면상 좌표값을 반환한다.
    * Canvas에 이 객체를 렌더링할 때 사용하는 matrix에서
    * x, y값을 벡터로 만들어 반환한다.
    */
   getWorldPosition() {
     return new Vector(this.matrix.x, this.matrix.y);
-  }
-
-  /*
-   * 이 객체의 화면상 중심 좌표값을 반환한다.
-   * getCenterPosition과 같이 화면상에서 크기를 이용해
-   * 중심좌표값을 계산하여 반환한다.
-   */
-  getWorldCenterPosition() {
-    return this.getWorldPosition().add(this.getSize().multiply(0.5));
   }
 
   /*

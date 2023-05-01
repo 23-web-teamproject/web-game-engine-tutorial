@@ -32,7 +32,10 @@ export default class PhysicsManager {
 
       // 현재 객체가 다른 객체와 충돌했는지 검사한다.
       // 만약 충돌했을 경우 이벤트함수를 실행하고 물리효과를 적용한다.
-      for (let j = i + 1; j < length; j++) {
+      for (let j = 0; j < length; j++) {
+        if(i === j) {
+          continue;
+        }
         const other = PhysicsManager.physicsEnableGameObjectList[j];
         if (collisionResolver.isCollideWith(other)) {
           obj.onCollision(other);

@@ -61,7 +61,7 @@ export default class Vector {
    * 이 벡터를 단위벡터로 바꾸어 반환한다.
    */
   normalize() {
-    if(this.length() === 0){
+    if (this.length() === 0) {
       return new Vector(0, 0);
     }
     return new Vector(this.x / this.length(), this.y / this.length());

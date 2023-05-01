@@ -12,6 +12,7 @@ import {
   BoxCollider,
   CircleCollider,
 } from "/src/engine/data-structure/collider.js";
+import Matrix from "/src/engine/data-structure/matrix.js";
 export default class CollisionResolver {
   constructor(obj) {
     this.obj = obj;
@@ -123,19 +124,32 @@ export default class CollisionResolver {
    * 충돌된 위치에서 정해진 값만큼 강제로 떨어지게 한다.
    */
   positionalCorrection(other, normal, penetrationDepth) {
-    const percentage = 0.2; // ??? 0.2 ~ 0.8
-    const slop = 0.1; // ??? 0.01 ~ 0.1
+    const percentage = 0.4; // ??? 0.2 ~ 0.8
+    const slop = 0.01; // ??? 0.01 ~ 0.1
     const correction = normal.multiply(
-      (Math.max(penetrationDepth - slop, 0) /
-        (this.obj.getInverseMass() + other.getInverseMass())) *
-        percentage
+      Math.max(penetrationDepth - slop, 0) /
+        (this.obj.getInverseMass() + other.getInverseMass())
     );
 
-    this.obj.matrix.x -= this.obj.getInverseMass() * correction.x;
-    this.obj.matrix.y -= this.obj.getInverseMass() * correction.y;
+    const correctionMatrix = new Matrix();
 
-    other.matrix.x += other.getInverseMass() * correction.x;
-    other.matrix.y += other.getInverseMass() * correction.y;
+    let objCorrection = correction.multiply(-1 * this.obj.getInverseMass());
+    if (other.rigidbody.isStatic === false) {
+      objCorrection = objCorrection.multiply(percentage);
+    }
+    correctionMatrix.x = objCorrection.x;
+    correctionMatrix.y = objCorrection.y;
+    this.obj.addPosition(objCorrection);
+    this.obj.matrix = this.obj.matrix.multiply(correctionMatrix);
+
+    let otherCorrection = correction.multiply(other.getInverseMass());
+    if (this.obj.rigidbody.isStatic === false) {
+      otherCorrection = otherCorrection.multiply(percentage);
+    }
+    correctionMatrix.x = otherCorrection.x;
+    correctionMatrix.y = otherCorrection.y;
+    other.addPosition(otherCorrection);
+    other.matrix = other.matrix.multiply(correctionMatrix);
   }
 
   /*

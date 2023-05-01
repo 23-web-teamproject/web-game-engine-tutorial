@@ -23,11 +23,11 @@ export default class Engine {
 
   static init(settings) {
     let width = 1280;
-    if(settings.hasOwnProperty("width")){
+    if (settings.hasOwnProperty("width")) {
       width = settings.width;
     }
     let height = 720;
-    if(settings.hasOwnProperty("height")){
+    if (settings.hasOwnProperty("height")) {
       height = settings.height;
     }
     // Set resolution
@@ -37,12 +37,19 @@ export default class Engine {
     SceneManager.changeScene(settings.scene);
   }
 
+  /*
+   * 게임 파이프라인에 대해서는 이 게시글을 참고했다.
+   * https://developer.ibm.com/tutorials/wa-build2dphysicsengine/#physics-loop-step
+   */
   run() {
     // Calculate delta time
     this.timer.update();
 
     // Update input
     this.inputManager.update();
+
+    // Update game logic
+    SceneManager.getCurrentScene().update(this.timer.fixedDeltaTime);
 
     // TODO
     // 브라우저에서 다른 탭으로 이동했다가 다시 게임으로 돌아오면
@@ -59,8 +66,7 @@ export default class Engine {
       this.timer.accumulatedTime -= this.timer.fixedDeltaTime;
     }
 
-    // Update game logic
-    SceneManager.getCurrentScene().update(this.timer.fixedDeltaTime);
+    SceneManager.getCurrentScene().calculateMatrix();
 
     // Remove previous canvas
     RenderManager.clearScreen();

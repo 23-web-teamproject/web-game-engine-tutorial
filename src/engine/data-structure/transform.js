@@ -90,4 +90,9 @@ export default class Transform {
 
     return transform;
   }
+
+  setSize(size) {
+    this.size = size;
+    this.createVertextListFromSize();
+  }
 }

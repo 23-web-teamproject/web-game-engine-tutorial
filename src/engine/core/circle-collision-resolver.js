@@ -1,5 +1,6 @@
 import Vector from "/src/engine/data-structure/vector.js";
 import CollisionResolver from "/src/engine/core/collision-resolver.js";
+import { clamp } from "/src/engine/utils.js";
 
 export default class CircleCollisionResolver extends CollisionResolver {
   constructor(circle) {
@@ -11,7 +12,7 @@ export default class CircleCollisionResolver extends CollisionResolver {
     // 원에서 사각형의 변까지의 거리를 절댓값으로 구한다.
     const distance = this.circle
       .getWorldPosition()
-      .minus(box.getWorldPosition().add(box.getSize().multiply(0.5)));
+      .minus(box.getWorldPosition());
 
     distance.x = Math.abs(distance.x);
     distance.y = Math.abs(distance.y);
@@ -36,67 +37,56 @@ export default class CircleCollisionResolver extends CollisionResolver {
   }
 
   isCollideWithCircle(circle) {
-    const posDiff = this.circle
+    const distance = this.circle
       .getWorldPosition()
       .minus(circle.getWorldPosition());
     return (
       (this.circle.radius + circle.radius) *
         (this.circle.radius + circle.radius) >
-      posDiff.squareLength()
+      distance.squareLength()
     );
   }
 
   resolveBoxCollision(box) {
-    const rectCenter = new Vector(
-      box.getWorldPosition().x + box.getSize().x / 2,
-      box.getWorldPosition().y + box.getSize().y / 2
-    );
-    const posDiff = new Vector(
-      this.circle.getWorldPosition().x - rectCenter.x,
-      this.circle.getWorldPosition().y - rectCenter.y
-    );
+    const rectCenter = box.getWorldPosition();
+
+    const distance = this.circle.getWorldPosition().minus(rectCenter);
 
     const closest = new Vector(
-      Math.min(
-        box.getWorldPosition().x + box.getSize().x,
-        Math.max(box.getWorldPosition().x, this.circle.getWorldPosition().x)
-      ),
-      Math.min(
-        box.getWorldPosition().y + box.getSize().y,
-        Math.max(box.getWorldPosition().y, this.circle.getWorldPosition().y)
-      )
+      clamp(distance.x, -box.getSize().x / 2, box.getSize().x / 2),
+      clamp(distance.y, -box.getSize().y / 2, box.getSize().y / 2)
     );
 
     let inside = false;
 
     // 만약 원의 중심이 사각형의 안에 들어와 있다면...
     // closest는 항상 사각형 내로 clamp되어 있기 때문에
-    // posDiff + rectCenter와 똑같아지게 된다.
-    if (posDiff.isEquals(closest.minus(rectCenter))) {
+    // distance + rectCenter와 똑같아지게 된다.
+    if (distance.isEquals(closest)) {
       inside = true;
 
       // 중심에서 어떤 축이 더 가까운지 찾는다.
-      if (Math.abs(posDiff.x) < Math.abs(posDiff.y)) {
+      if (Math.abs(distance.x) < Math.abs(distance.y)) {
         // y편차가 더 작다는 말은?
 
         // 사각형에서 원과 가장 가까운 점을 찾아야 하므로
         // 가장 가까운 사각형의 경계를 점으로 선택한다.
-        if (rectCenter.x - closest.x > 0) {
-          closest.x = box.getWorldPosition().x;
+        if (closest.x > 0) {
+          closest.x = box.getSize().x / 2;
         } else {
-          closest.x = box.getWorldPosition().x + box.getSize().x;
+          closest.x = -box.getSize().x / 2;
         }
       } else {
-        if (rectCenter.y - closest.y > 0) {
-          closest.y = box.getWorldPosition().y;
+        if (closest.y > 0) {
+          closest.y = box.getSize().y / 2;
         } else {
-          closest.y = box.getWorldPosition().y + box.getSize().y;
+          closest.y = -box.getSize().y / 2;
         }
       }
     }
 
     let penetrationDepth = 0;
-    let normal = posDiff.minus(closest.minus(rectCenter));
+    let normal = distance.minus(closest);
     const d = normal.squareLength();
 
     //
@@ -114,48 +104,43 @@ export default class CircleCollisionResolver extends CollisionResolver {
        * normal벡터에 -1을 곱해야 반작용으로 인해 원이 튕겨져 나갈 방향이 된다.
        */
       normal = normal.multiply(-1).normalize();
-      penetrationDepth =
-        this.circle.radius +
-        this.circle.getWorldPosition().minus(closest).length(); // ???
+      penetrationDepth = 2 * this.circle.radius; // ???
     } else {
       normal = normal.multiply(1).normalize();
-      penetrationDepth =
-        this.circle.getWorldPosition().minus(closest).length() -
-        this.circle.radius; // ???
+      penetrationDepth = this.circle.radius - Math.sqrt(d); // ???
     }
 
-    this.applyImpulse(box, normal, penetrationDepth);
+    this.applyImpulse(box, normal, -penetrationDepth);
   }
 
   resolveCircleCollision(circle) {
-    const posDiff = this.circle
+    const distance = circle
       .getWorldPosition()
-      .minus(circle.getWorldPosition());
+      .minus(this.circle.getWorldPosition());
 
     // 두 원의 반지름을 더한 값을 제곱하되 정확한 값을 위해서
     // 제곱근을 씌우진 않는다.
-    const squareRadius =
-      (this.circle.radius + circle.radius) *
-      (this.circle.radius + circle.radius);
+    const sumOfRadius = this.circle.radius + circle.radius;
+    const squareOfRadius = sumOfRadius * sumOfRadius;
 
     // 두 원의 중심간 거리가 두 원의 반지름을 더한 값의 제곱보다 크면
     // 충돌하지 않았음을 의미한다.
-    if (posDiff.squareLength() > squareRadius) {
+    if (distance.squareLength() > squareOfRadius) {
       return;
     }
 
-    const distance = posDiff.length();
+    const d = distance.length();
 
     // 두 원의 중심이 같은 경우를 생각해 임의로 방향과 충돌깊이를 설정한다.
     let penetrationDepth = this.circle.radius;
-    let normal = new Vector(1, 0);
-    if (distance != 0) {
+    let normal = new Vector(-1, 0);
+    if (d != 0) {
       // 두 원의 중심간 거리가 0이 아니라면
       // 충돌했으되 중심이 일치하지 않은 상황이다.
       // 반지름을 더한 값 - 중심간의 거리가 충돌한 깊이를 의미한다.
-      penetrationDepth = this.circle.radius + circle.radius - distance;
+      penetrationDepth = sumOfRadius - d;
       // 중심간의 거리를 단위벡터화하면 힘(반작용)이 작용할 방향이 된다.
-      normal = posDiff.normalize();
+      normal = distance.multiply(1 / d).normalize();
     }
 
     this.applyImpulse(circle, normal, penetrationDepth);
