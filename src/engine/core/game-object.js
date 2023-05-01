@@ -35,8 +35,8 @@ export default class GameObject {
      * 이 객체에 물리효과를 적용할건지를 의미한다.
      * 기본적으론 적용하지 않는다.
      */
-    this.isPhysicsEnabled = typeCheck(
-      options.isPhysicsEnabled,
+    this.isPhysicsEnable = typeCheck(
+      options.isPhysicsEnable,
       "boolean",
       false
     );
