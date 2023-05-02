@@ -246,6 +246,14 @@ export default class GameObject {
     this.parent.addChild(this);
   }
 
+  removeChild(child) {
+    const childName = this.getChildNameByChildGameObj(child);
+    delete this.childGameObjDict[childName];
+
+    // 자식 객체의 부모를 씬 객체로 변경한다.
+    SceneManager.getCurrentScene().addChild(child);
+  }
+
   /*
    * 이 객체의 부모와 이 객체 사이의 관계를 끊는다.
    * 이 객체는 부모로부터 떨어져 나오게 되는데,

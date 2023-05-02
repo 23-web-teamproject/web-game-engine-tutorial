@@ -38,6 +38,7 @@ class Particle extends Sprite {
     this.fadeAway();
 
     this.lifeTime -= deltaTime;
+
     if (this.lifeTime < 0) {
       this.destroy();
     }
@@ -58,6 +59,7 @@ class Particle extends Sprite {
     }
     if (this.isAlphaFade) {
       this.color.a = this.lifeTime / this.initialLifeTime;
+
       // TODO
       // alpha값 조절할 방법 추가해야함.
     }
