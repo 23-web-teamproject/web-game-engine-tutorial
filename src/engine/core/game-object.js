@@ -394,6 +394,16 @@ export default class GameObject {
     return this.transform.scale;
   }
 
+  getWorldScale() {
+    const rad = (this.getWorldRotation() * Math.PI) / 180;
+
+    const x =
+      rad != 0 ? this.matrix.b / Math.sin(rad) : this.matrix.a / Math.cos(rad);
+    const y =
+      rad != 0 ? -this.matrix.c / Math.sin(rad) : this.matrix.d / Math.cos(rad);
+    return new Vector(x, y);
+  }
+
   /*
    * 이 객체의 각도를 특정값만큼 변경한다.
    */
@@ -413,6 +423,12 @@ export default class GameObject {
    */
   getRotation() {
     return this.transform.rotation;
+  }
+
+  getWorldRotation() {
+    const a = this.matrix.a;
+    const b = this.matrix.b;
+    return (Math.atan2(b, a) * 180) / Math.PI;
   }
 
   /*
@@ -445,10 +461,16 @@ export default class GameObject {
 
   /*
    * 이 객체의 크기를 반환한다.
-   * 이 때 초기에 지정된 크기와 축척을 곱한 값이 실제 크기가 된다.
    */
   getSize() {
-    return this.transform.size.elementMultiply(this.getScale());
+    return this.transform.size;
+  }
+
+  /*
+   * 행렬곱된 matrix에서 이 객체의 화면상 크기를 반환한다.
+   */
+  getWorldSize() {
+    return this.getSize().elementMultiply(this.getWorldScale());
   }
 
   /*

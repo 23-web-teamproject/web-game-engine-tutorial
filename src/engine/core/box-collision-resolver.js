@@ -11,14 +11,14 @@ export default class BoxCollisionResolver extends CollisionResolver {
 
   isCollideWithBox(box) {
     if (
-      this.box.getWorldPosition().x - box.getSize().x / 2 >
-        box.getWorldPosition().x + box.getSize().x / 2 ||
-      this.box.getWorldPosition().x + this.box.getSize().x / 2 <
-        box.getWorldPosition().x - box.getSize().x / 2 ||
-      this.box.getWorldPosition().y - box.getSize().y / 2 >
-        box.getWorldPosition().y + box.getSize().y / 2 ||
-      this.box.getWorldPosition().y + this.box.getSize().y / 2 <
-        box.getWorldPosition().y - box.getSize().y / 2
+      this.box.getWorldPosition().x - this.box.getWorldSize().x / 2 >
+        box.getWorldPosition().x + box.getWorldSize().x / 2 ||
+      this.box.getWorldPosition().x + this.box.getWorldSize().x / 2 <
+        box.getWorldPosition().x - box.getWorldSize().x / 2 ||
+      this.box.getWorldPosition().y - this.box.getWorldSize().y / 2 >
+        box.getWorldPosition().y + box.getWorldSize().y / 2 ||
+      this.box.getWorldPosition().y + this.box.getWorldSize().y / 2 <
+        box.getWorldPosition().y - box.getWorldSize().y / 2
     ) {
       return false;
     }
@@ -35,21 +35,21 @@ export default class BoxCollisionResolver extends CollisionResolver {
     distance.y = Math.abs(distance.y);
 
     if (
-      distance.x > this.box.getSize().x / 2 + circle.radius ||
-      distance.y > this.box.getSize().y / 2 + circle.radius
+      distance.x > this.box.getWorldSize().x / 2 + circle.radius ||
+      distance.y > this.box.getWorldSize().y / 2 + circle.radius
     ) {
       return false;
     }
 
     if (
-      distance.x <= this.box.getSize().x / 2 ||
-      distance.y <= this.box.getSize().y / 2
+      distance.x <= this.box.getWorldSize().x / 2 ||
+      distance.y <= this.box.getWorldSize().y / 2
     ) {
       return true;
     }
 
     // 꼭짓점부분에서 충돌이 될 가능성을 검사한다.
-    const d = distance.minus(this.box.getSize().multiply(0.5));
+    const d = distance.minus(this.box.getWorldSize().multiply(0.5));
     return d.squareLength() <= circle.radius * circle.radius;
   }
 
@@ -71,10 +71,14 @@ export default class BoxCollisionResolver extends CollisionResolver {
 
     // 충돌된 영역의 가로 길이
     const xOverlap =
-      this.box.getSize().x / 2 + box.getSize().x / 2 - Math.abs(distance.x);
+      this.box.getWorldSize().x / 2 +
+      box.getWorldSize().x / 2 -
+      Math.abs(distance.x);
     // 충돌된 영역의 세로 길이
     const yOverlap =
-      this.box.getSize().y / 2 + box.getSize().y / 2 - Math.abs(distance.y);
+      this.box.getWorldSize().y / 2 +
+      box.getWorldSize().y / 2 -
+      Math.abs(distance.y);
 
     if (xOverlap < 0 || yOverlap < 0) {
       return;
@@ -120,8 +124,16 @@ export default class BoxCollisionResolver extends CollisionResolver {
     const distance = circle.getWorldPosition().minus(rectCenter);
 
     const closest = new Vector(
-      clamp(distance.x, -this.box.getSize().x / 2, this.box.getSize().x / 2),
-      clamp(distance.y, -this.box.getSize().y / 2, this.box.getSize().y / 2)
+      clamp(
+        distance.x,
+        -this.box.getWorldSize().x / 2,
+        this.box.getWorldSize().x / 2
+      ),
+      clamp(
+        distance.y,
+        -this.box.getWorldSize().y / 2,
+        this.box.getWorldSize().y / 2
+      )
     );
 
     let inside = false;
@@ -139,15 +151,15 @@ export default class BoxCollisionResolver extends CollisionResolver {
         // 사각형에서 원과 가장 가까운 점을 찾아야 하므로
         // 가장 가까운 사각형의 경계를 점으로 선택한다.
         if (closest.x > 0) {
-          closest.x = this.box.getSize().x / 2;
+          closest.x = this.box.getWorldSize().x / 2;
         } else {
-          closest.x = -this.box.getSize().x / 2;
+          closest.x = -this.box.getWorldSize().x / 2;
         }
       } else {
         if (closest.y > 0) {
-          closest.y = this.box.getSize().y / 2;
+          closest.y = this.box.getWorldSize().y / 2;
         } else {
-          closest.y = -this.box.getSize().y / 2;
+          closest.y = -this.box.getWorldSize().y / 2;
         }
       }
     }
