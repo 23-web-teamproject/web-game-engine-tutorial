@@ -19,21 +19,21 @@ export default class CircleCollisionResolver extends CollisionResolver {
     distance.y = Math.abs(distance.y);
 
     if (
-      distance.x > box.getSize().x / 2 + this.circle.radius ||
-      distance.y > box.getSize().y / 2 + this.circle.radius
+      distance.x > box.getWorldSize().x / 2 + this.circle.radius ||
+      distance.y > box.getWorldSize().y / 2 + this.circle.radius
     ) {
       return false;
     }
 
     if (
-      distance.x <= box.getSize().x / 2 ||
-      distance.y <= box.getSize().y / 2
+      distance.x <= box.getWorldSize().x / 2 ||
+      distance.y <= box.getWorldSize().y / 2
     ) {
       return true;
     }
 
     // 꼭짓점부분에서 충돌이 될 가능성을 검사한다.
-    const d = distance.minus(box.getSize().multiply(0.5));
+    const d = distance.minus(box.getWorldSize().multiply(0.5));
     return d.squareLength() <= this.circle.radius * this.circle.radius;
   }
 
@@ -54,8 +54,8 @@ export default class CircleCollisionResolver extends CollisionResolver {
     const distance = this.circle.getWorldPosition().minus(rectCenter);
 
     const closest = new Vector(
-      clamp(distance.x, -box.getSize().x / 2, box.getSize().x / 2),
-      clamp(distance.y, -box.getSize().y / 2, box.getSize().y / 2)
+      clamp(distance.x, -box.getWorldSize().x / 2, box.getWorldSize().x / 2),
+      clamp(distance.y, -box.getWorldSize().y / 2, box.getWorldSize().y / 2)
     );
 
     let inside = false;
@@ -73,15 +73,15 @@ export default class CircleCollisionResolver extends CollisionResolver {
         // 사각형에서 원과 가장 가까운 점을 찾아야 하므로
         // 가장 가까운 사각형의 경계를 점으로 선택한다.
         if (closest.x > 0) {
-          closest.x = box.getSize().x / 2;
+          closest.x = box.getWorldSize().x / 2;
         } else {
-          closest.x = -box.getSize().x / 2;
+          closest.x = -box.getWorldSize().x / 2;
         }
       } else {
         if (closest.y > 0) {
-          closest.y = box.getSize().y / 2;
+          closest.y = box.getWorldSize().y / 2;
         } else {
-          closest.y = -box.getSize().y / 2;
+          closest.y = -box.getWorldSize().y / 2;
         }
       }
     }
