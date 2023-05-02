@@ -1,6 +1,7 @@
 /*
- * css에서 요소의 크기, 회전, 위치를 변환하려면
- * transform: matrix(...)을 이용해야한다.
+ * canvas에서 객체의 좌표, 회전, 축척을 변경하려면
+ * setTransform(matrix(...))을 이용해야한다.
+
  * 이 객체는 matrix의 인자가 될 값들을 나타낸다.
  *
  * matrix에 대한 자세한 설명은 아래 url에서 실습해볼 수 있다.
@@ -18,7 +19,6 @@
  *   x = x좌표
  *   y = y좌표
  */
-
 export default class Matrix {
   constructor() {
     this.a = 1;
@@ -29,17 +29,20 @@ export default class Matrix {
     this.y = 0;
   }
 
+  /*
+   * 이 matrix에 인자로 전달받은 matrix를 행렬곱하여 반환한다.
+   *
+   *           this    other
+   *           a c x   a c x
+   *           b d y * b d y
+   *           0 0 1   0 0 1
+   *
+   *   a*a+c*b    a*c+c*d   a*x+c*y+x*1
+   * = b*a+d*b    b*c+d*d   b*x+d*y+y*1
+   *         0          0             1
+   */
   multiply(other) {
     const result = new Matrix();
-    /*
-     *           a c x   a c x
-     *           b d y * b d y
-     *           0 0 1   0 0 1
-     *
-     *   a*a+c*b    a*c+c*d   a*x+c*y+x*1
-     * = b*a+d*b    b*c+d*d   b*x+d*y+y*1
-     *         0          0             1
-     */
     result.a = this.a * other.a + this.c * other.b;
     result.c = this.a * other.c + this.c * other.d;
     result.x = this.a * other.x + this.c * other.y + this.x;

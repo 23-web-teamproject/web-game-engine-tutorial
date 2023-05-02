@@ -29,9 +29,9 @@ export default class Path {
   }
 
   /* 
-   * 인자로 전달받은 경로를 에셋 폴더
+   * 인자로 전달받은 경로를 에셋 폴더와 결합한 절대경로로 만들어 반환한다.
    */
-  static convertAbsoluteAssetPath(path) {
+  static convertToAbsoluteAssetPath(path) {
     if (Path.isAbsolutePath(path)) {
       return path;
     }

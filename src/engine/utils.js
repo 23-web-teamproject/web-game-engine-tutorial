@@ -1,5 +1,4 @@
 import Timer from "/src/engine/utils/timer.js";
 
-export {
-  Timer
-}
+export * from "/src/engine/utils/helper.js";
+export { Timer };

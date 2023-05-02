@@ -2,55 +2,81 @@ import {
   InputManager,
   SceneManager,
   RenderManager,
+  PhysicsManager,
 } from "/src/engine/module.js";
 import { Timer } from "/src/engine/utils.js";
 
-import ExampleScene from "/src/example-scene/scene.js";
+window.onload = () => {
+  const engine = new Engine();
 
-class Engine {
+  requestAnimationFrame(() => {
+    engine.run();
+  });
+};
+
+export default class Engine {
   constructor() {
     this.inputManager = new InputManager();
 
     this.timer = new Timer();
   }
 
-  init() {
-    // Initialize page resolution
-    this.initializePageResolution();
+  static init(settings) {
+    let width = 1280;
+    if (settings.hasOwnProperty("width")) {
+      width = settings.width;
+    }
+    let height = 720;
+    if (settings.hasOwnProperty("height")) {
+      height = settings.height;
+    }
+    // Set resolution
+    RenderManager.changeResolution(width, height);
 
     // Load scene
-    SceneManager.changeScene(ExampleScene);
+    SceneManager.changeScene(settings.scene);
   }
 
-  // TODO
-  // 게임화면의 해상도를 특정 해상도로 변경할 수 있게 한다.
-  initializePageResolution() {}
-
+  /*
+   * 게임 파이프라인에 대해서는 이 게시글을 참고했다.
+   * https://developer.ibm.com/tutorials/wa-build2dphysicsengine/#physics-loop-step
+   */
   run() {
-    // 매 프레임마다 실행시키는 함수를 못찾아서
-    // 어쩔 수 없이 특정 시간마다 함수를 호출하도록 함
-    setInterval(() => {
-      // Calculate delta time
-      this.timer.update();
+    // Calculate delta time
+    this.timer.update();
 
-      // Update input
-      this.inputManager.update();
+    // Update input
+    this.inputManager.update();
 
-      // Update game logic
-      SceneManager.getCurrentScene().update(this.timer.deltaTime);
+    // Update game logic
+    SceneManager.getCurrentScene().update(this.timer.fixedDeltaTime);
 
-      // Remove previous canvas
-      RenderManager.clearScreen();
+    // TODO
+    // 브라우저에서 다른 탭으로 이동했다가 다시 게임으로 돌아오면
+    // deltaTime이 0.0166보다 훨씬 더 커지기 때문에
+    // 오브젝트가 순간이동해버린다.
+    // 그래서 강제로 fixedDeltaTime 사용하도록 바꿨는데,
+    // 만약 모니터가 144hz라면 오류를 일으킬 것이 예상된다.
+    while (this.timer.accumulatedTime > this.timer.fixedDeltaTime) {
+      // Update physics
+      PhysicsManager.update(
+        SceneManager.getCurrentScene(),
+        this.timer.fixedDeltaTime
+      );
+      this.timer.accumulatedTime -= this.timer.fixedDeltaTime;
+    }
 
-      // Render objects
-      RenderManager.render();
-    }, 10);
+    SceneManager.getCurrentScene().calculateMatrix();
+
+    // Remove previous canvas
+    RenderManager.clearScreen();
+
+    // Render objects
+    const alpha = this.timer.accumulatedTime / this.timer.fixedDeltaTime;
+    RenderManager.render(alpha);
+
+    requestAnimationFrame(() => {
+      this.run();
+    });
   }
 }
-
-window.onload = () => {
-  const engine = new Engine();
-
-  engine.init();
-  engine.run();
-};

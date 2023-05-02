@@ -10,7 +10,7 @@ body{
   align-items: center;
 }
 
-#render-target{
+#render-canvas{
   background-color: white;
 }
 
@@ -19,5 +19,10 @@ body{
 }
 
 ::-webkit-scrollbar {
+  display: none;
+}
+
+#buffer-canvas{
+  background-color: white;
   display: none;
 }
