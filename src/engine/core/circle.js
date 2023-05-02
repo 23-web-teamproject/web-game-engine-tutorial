@@ -11,7 +11,16 @@ export default class Circle extends GameObject {
 
     this.isFill = options.hasOwnProperty("color");
     if (this.isFill) {
-      this.color = typeCheck(options.color, Color, new Color(255, 255, 255, 1));
+      this.color = typeCheck(
+        options.color,
+        Color,
+        new Color(
+          Math.random() * 255,
+          Math.random() * 255,
+          Math.random() * 255,
+          1
+        )
+      );
     }
 
     this.isStroke = options.hasOwnProperty("strokeColor");

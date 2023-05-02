@@ -46,7 +46,16 @@ export default class GameObject {
     /*
      * 렌더링에 사용될 색상값을 담고 있다.
      */
-    this.color = typeCheck(options.color, Color, new Color(255, 255, 255, 1));
+    this.color = typeCheck(
+      options.color,
+      Color,
+      new Color(
+        Math.random() * 255,
+        Math.random() * 255,
+        Math.random() * 255,
+        1
+      )
+    );
 
     /*
      * 객체의 자식들을 저장할 테이블이다.
