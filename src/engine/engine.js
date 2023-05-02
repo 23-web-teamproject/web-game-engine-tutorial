@@ -22,8 +22,9 @@ export default class Engine {
   }
 
   static init(settings) {
-    const width = typeCheck(settings.width, "number", window.innerWidth);
-    const height = typeCheck(settings.height, "number", window.innerHeight);
+    let width = typeCheck(settings.width, "number", window.innerWidth);
+    let height = typeCheck(settings.height, "number", window.innerHeight);
+
     // Set resolution
     RenderManager.changeResolution(width, height);
 

@@ -8,6 +8,7 @@
  * Canvas의 크기, 해상도를 바꾸는 책임도 맡는다.
  */
 import SceneManager from "/src/engine/core/scene-manager.js";
+import { clamp } from "/src/engine/utils.js";
 
 export default class RenderManager {
   static renderCanvasId = "render-canvas";
@@ -41,10 +42,18 @@ export default class RenderManager {
   static changeResolution(width, height) {
     RenderManager.renderCanvasWidth = width;
     RenderManager.renderCanvasHeight = height;
-
     const renderCanvas = RenderManager.getRenderCanvas();
-    renderCanvas.width = RenderManager.renderCanvasWidth;
-    renderCanvas.height = RenderManager.renderCanvasHeight;
+
+    renderCanvas.width = clamp(
+      RenderManager.renderCanvasWidth,
+      0,
+      window.innerWidth
+    );
+    renderCanvas.height = clamp(
+      RenderManager.renderCanvasHeight,
+      0,
+      window.innerHeight
+    );
   }
 
   /*
