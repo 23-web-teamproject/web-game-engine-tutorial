@@ -4,7 +4,7 @@ import {
   RenderManager,
   PhysicsManager,
 } from "/src/engine/module.js";
-import { Timer } from "/src/engine/utils.js";
+import { Timer, typeCheck } from "/src/engine/utils.js";
 
 window.onload = () => {
   const engine = new Engine();
@@ -22,14 +22,8 @@ export default class Engine {
   }
 
   static init(settings) {
-    let width = 1280;
-    if (settings.hasOwnProperty("width")) {
-      width = settings.width;
-    }
-    let height = 720;
-    if (settings.hasOwnProperty("height")) {
-      height = settings.height;
-    }
+    const width = typeCheck(settings.width, "number", window.innerWidth);
+    const height = typeCheck(settings.height, "number", window.innerHeight);
     // Set resolution
     RenderManager.changeResolution(width, height);
 
