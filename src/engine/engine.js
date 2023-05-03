@@ -4,7 +4,7 @@ import {
   RenderManager,
   PhysicsManager,
 } from "/src/engine/module.js";
-import { Timer, typeCheck } from "/src/engine/utils.js";
+import { Timer } from "/src/engine/utils.js";
 
 window.onload = () => {
   const engine = new Engine();
@@ -22,11 +22,8 @@ export default class Engine {
   }
 
   static init(settings) {
-    let width = typeCheck(settings.width, "number", window.innerWidth);
-    let height = typeCheck(settings.height, "number", window.innerHeight);
-
     // Set resolution
-    RenderManager.changeResolution(width, height);
+    RenderManager.changeResolution(settings.width, settings.height);
 
     // Load scene
     SceneManager.changeScene(settings.scene);
@@ -62,9 +59,6 @@ export default class Engine {
     }
 
     SceneManager.getCurrentScene().calculateMatrix();
-
-    // Remove previous canvas
-    RenderManager.clearScreen();
 
     // Render objects
     const alpha = this.timer.accumulatedTime / this.timer.fixedDeltaTime;

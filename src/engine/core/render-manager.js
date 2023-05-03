@@ -8,7 +8,7 @@
  * Canvas의 크기, 해상도를 바꾸는 책임도 맡는다.
  */
 import SceneManager from "/src/engine/core/scene-manager.js";
-import { clamp } from "/src/engine/utils.js";
+import { clamp, typeCheck } from "/src/engine/utils.js";
 
 export default class RenderManager {
   static renderCanvasId = "render-canvas";
@@ -24,8 +24,11 @@ export default class RenderManager {
    * 현재 씬을 렌더링한다.
    */
   static render(alpha) {
+    RenderManager.changeCanvasCSS();
+
+    RenderManager.clearScreen();
+
     SceneManager.getCurrentScene().render(alpha);
-    const canvas = RenderManager.getRenderCanvas();
   }
 
   /*
@@ -40,8 +43,17 @@ export default class RenderManager {
    * renderCanvas의 크기(width, height)를 변경한다.
    */
   static changeResolution(width, height) {
-    RenderManager.renderCanvasWidth = width;
-    RenderManager.renderCanvasHeight = height;
+    RenderManager.renderCanvasWidth = typeCheck(
+      width,
+      "number",
+      window.innerWidth
+    );
+    RenderManager.renderCanvasHeight = typeCheck(
+      height,
+      "number",
+      window.innerHeight
+    );
+
     const renderCanvas = RenderManager.getRenderCanvas();
 
     renderCanvas.width = clamp(
