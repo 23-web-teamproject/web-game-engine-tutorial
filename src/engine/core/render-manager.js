@@ -24,8 +24,6 @@ export default class RenderManager {
    * 현재 씬을 렌더링한다.
    */
   static render(alpha) {
-    RenderManager.changeCanvasCSS();
-
     RenderManager.clearScreen();
 
     SceneManager.getCurrentScene().render(alpha);
