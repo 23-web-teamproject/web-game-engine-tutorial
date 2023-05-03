@@ -5,7 +5,7 @@ import RigidBody from "/src/engine/data-structure/rigidbody.js";
 import { BoxCollider } from "/src/engine/data-structure/collider.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
-import { typeCheck } from "/src/engine/utils.js";
+import { typeCheck, findKeyInObjectWithValue } from "/src/engine/utils.js";
 
 export default class GameObject {
   constructor(options = {}) {
@@ -551,18 +551,22 @@ export default class GameObject {
      *
      * 그러므로 이 GameObject를 제거하기 위해서는 이 GameObject를
      * 아무도 참조하지 않으면 된다.
-     * 따라서 부모가 이 GameObject를 참조하지 않도록 removeParent를 호출하고,
-     * 이 GameObject의 자식객체들도 연쇄적으로 삭제하면 된다.
+     * 따라서 이 GameObject의 자식객체들도 연쇄적으로 삭제하고,
+     * 부모의 프로퍼티에 이 객체가 존재하지 않도록 만들면 된다.
      */
-    if (this.parent !== undefined) {
-      // 부모의 자식 목록에서 이 객체를 삭제한다.
-      const childName = this.parent.getChildNameByChildGameObj(this);
-      delete this.parent.childTable[childName];
-    }
-
-    // 이 객체를 참조하는 자식 객체들도 삭제한다.
     for (const child of Object.values(this.childTable)) {
       child.destroy();
+    }
+
+    // 이 객체의 모든 자식들이 삭제되었다면 자기 자신도 삭제한다.
+    // 이 때 부모의 프로퍼티의 이 객체를 제거하는 방법으로 삭제한다.
+    if (this.parent !== undefined) {
+      // parent.childTable과 parent에서 this.~~로 선언된 변수 두 가지가 존재한다.
+      // 둘 다 지워야지만 완전하게 삭제된다.
+      const childKey = findKeyInObjectWithValue(this.parent.childTable, this);
+      delete this.parent.childTable[childKey];
+      const key = findKeyInObjectWithValue(this.parent, this);
+      delete this.parent[key];
     }
   }
 }
