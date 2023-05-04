@@ -70,7 +70,7 @@ class Particle extends Sprite {
    * 만약 물리효과가 적용되지 않는다면 직접 position을 변경해야한다.
    */
   spreadOut(deltaTime) {
-    // this.addPosition(this.forward.multiply(deltaTime));
+    this.addPosition(this.forward.multiply(deltaTime));
   }
 }
 
