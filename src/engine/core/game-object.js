@@ -60,7 +60,7 @@ export default class GameObject {
     /*
      * 객체의 자식들을 저장할 테이블이다.
      */
-    this.childTable = new Object();
+    this.childList = new Array();
 
     /*
      * 객체의 부모를 기억한다.
@@ -82,9 +82,9 @@ export default class GameObject {
    * 하위 GameObject들의 update를 실행시킨다.
    */
   update(deltaTime) {
-    for (const child of Object.values(this.childTable)) {
+    this.childList.forEach((child) => {
       child.update(deltaTime);
-    }
+    });
   }
 
   /*
@@ -127,9 +127,9 @@ export default class GameObject {
       this.matrix = this.transform.toMatrix();
     }
 
-    for (const child of Object.values(this.childTable)) {
+    this.childList.forEach((child) => {
       child.calculateMatrix();
-    }
+    });
   }
 
   /*
@@ -145,9 +145,9 @@ export default class GameObject {
 
     this.draw();
 
-    for (const child of Object.values(this.childTable)) {
+    this.childList.forEach((child) => {
       child.render(alpha);
-    }
+    });
 
     this.afterDraw();
   }
@@ -247,8 +247,8 @@ export default class GameObject {
     // 이 객체의 부모 객체가 있다면
     // 부모 객체로부터 자식 객체를 제거한다.
     if (this.parent !== undefined) {
-      const childName = this.parent.getChildNameByChildGameObj(this);
-      delete this.parent.childTable[childName];
+      const index = this.parent.childList.indexOf(this);
+      this.parent.childList.splice(index, 1);
     }
 
     this.parent = parent;
@@ -261,10 +261,10 @@ export default class GameObject {
    * 씬 객체의 자식 테이블에 추가한다.
    */
   removeChild(child) {
-    const childName = this.getChildNameByChildGameObj(child);
-    const isChildExist = this.childTable[childName];
+    const index = this.childList.indexOf(child);
+    const isChildExist = index !== -1;
     if (isChildExist) {
-      delete this.childTable[childName];
+      this.childList.splice(index, 1);
 
       // 자식 객체의 부모를 씬 객체로 변경한다.
       SceneManager.getCurrentScene().addChild(child);
@@ -287,22 +287,6 @@ export default class GameObject {
   }
 
   /*
-   * 인자로 전달받은 객체가 자식 테이블에 존재한다면,
-   * 그 객체를 자식 테이블에서 제거하고,
-   * 씬 객체의 자식 테이블에 추가한다.
-   */
-  removeChild(child) {
-    const childName = this.getChildNameByChildGameObj(child);
-    const isChildExist = this.childTable[childName];
-    if (isChildExist) {
-      delete this.childTable[childName];
-
-      // 자식 객체의 부모를 씬 객체로 변경한다.
-      SceneManager.getCurrentScene().addChild(child);
-    }
-  }
-
-  /*
    * 자식 목록에 객체를 추가한다.
    * 일반적으로 자식 객체에 대한 key를 무조건 갖고 있어야 한다.
    * key를 따로 지정해주지 않았으므로 겹치지 않도록
@@ -311,54 +295,13 @@ export default class GameObject {
    * 해시 함수를 사용하면 충돌될 경우를 따로 처리해야한다.
    */
   addChild(child) {
-    const childName = this.getChildNameByChildGameObj(child);
     // 만약 이미 있는 자식 객체라면 추가하지 않음.
-    if (childName === undefined) {
-      // 인자로 전달받은 객체를 자식 목록에 추가한다.
-
-      const djb2 = (string) => {
-        const TABLE_SIZE = 100000009;
-        let hash = 5381,
-          i = 0;
-        while (i < string.length) {
-          hash = ((hash << 5) + hash + string.charCodeAt(i++)) % TABLE_SIZE;
-        }
-        return hash;
-      };
-
-      const hash = djb2(new Date().getTime().toString());
-
-      this.createChild(hash, child);
+    const index = this.childList.indexOf(child);
+    if (index !== -1) {
+      return;
     }
-  }
-
-  /*
-   * 인자로 주어진 childName을 key로 하고,
-   * 객체의 자식 테이블에 gameObject를 자식 객체로 추가한다.
-   */
-  createChild(childName, gameObject) {
-    if (childName in Object.keys(this.childTable) == false) {
-      this.childTable[childName] = gameObject;
-      gameObject.setParent(this);
-    }
-  }
-
-  /*
-   * 이 객체의 자식 테이블에 인자로 전달받은 객체가 자식으로 존재한다면
-   * 그 객체의 key값(childName)을 반환한다.
-   */
-  getChildNameByChildGameObj(child) {
-    return Object.keys(this.childTable).find(
-      (key) => child === this.childTable[key]
-    );
-  }
-
-  /*
-   * 인자로 전달받은 childName을 key로 하여
-   * 자식 테이블에 있는 자식 객체를 반환한다.
-   */
-  getChild(childName) {
-    return this.childTable[childName];
+    this.childList.push(child);
+    child.setParent(this);
   }
 
   /*

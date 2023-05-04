@@ -103,15 +103,15 @@ export default class PhysicsManager {
    * 모든 객체를 조사해야하기 때문에 재귀호출하여 탐색한다.
    */
   static collectPhysicsEnabledGameObjectToList(scene) {
-    for (const child of Object.values(scene.childTable)) {
+    scene.childList.forEach((child) => {
       if (child.isPhysicsEnable) {
         PhysicsManager.physicsEnableGameObjectList.push(child);
       }
 
-      if (Object.keys(child.childTable).length > 0) {
+      if (child.childList.length > 0) {
         PhysicsManager.collectPhysicsEnabledGameObjectToList(child);
       }
-    }
+    });
   }
 
   /*
