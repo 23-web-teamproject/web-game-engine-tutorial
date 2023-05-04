@@ -6,7 +6,7 @@ import { BoxCollider } from "/src/engine/data-structure/collider.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
 import DestroyManager from "/src/engine/core/destroy-manager.js";
-import { typeCheck, findKeyInObjectWithValue } from "/src/engine/utils.js";
+import { typeCheck } from "/src/engine/utils.js";
 
 export default class GameObject {
   constructor(options = {}) {
