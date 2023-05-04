@@ -3,6 +3,7 @@ import {
   SceneManager,
   RenderManager,
   PhysicsManager,
+  DestroyManager,
 } from "/src/engine/module.js";
 import { Timer } from "/src/engine/utils.js";
 
@@ -63,6 +64,9 @@ export default class Engine {
     // Render objects
     const alpha = this.timer.accumulatedTime / this.timer.fixedDeltaTime;
     RenderManager.render(alpha);
+
+    // destroy objects
+    DestroyManager.destroyAll();
 
     requestAnimationFrame(() => {
       this.run();

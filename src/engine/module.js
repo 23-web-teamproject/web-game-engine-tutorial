@@ -11,6 +11,7 @@
 import Color from "/src/engine/data-structure/color.js";
 import Vector from "/src/engine/data-structure/vector.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
+import DestroyManager from "/src/engine/core/destroy-manager.js";
 import InputManager from "/src/engine/core/input-manager.js";
 import PhysicsManager from "/src/engine/core/physics-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
@@ -24,6 +25,7 @@ import SoundEffect from "/src/engine/fx/sound-effect.js";
 import ParticleEffect from "/src/engine/fx/particle-effect.js";
 
 export {
+  DestroyManager,
   InputManager,
   PhysicsManager,
   SceneManager,
@@ -37,5 +39,5 @@ export {
   Rect,
   Text,
   SoundEffect,
-  ParticleEffect
-}
+  ParticleEffect,
+};

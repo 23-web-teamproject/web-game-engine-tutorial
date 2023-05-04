@@ -5,6 +5,7 @@ import RigidBody from "/src/engine/data-structure/rigidbody.js";
 import { BoxCollider } from "/src/engine/data-structure/collider.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
+import DestroyManager from "/src/engine/core/destroy-manager.js";
 import { typeCheck, findKeyInObjectWithValue } from "/src/engine/utils.js";
 
 export default class GameObject {
@@ -486,6 +487,9 @@ export default class GameObject {
   /*
    * 이 객체를 씬으로부터 제거한다.
    * 이 객체의 자식 테이블에 있는 모든 객체들도 연달아 제거된다.
+   * 이 객체를 제거하기위해 DestroyManager에 등록한다.
+   * 이 객체가 등록되었다면 업데이트가 끝난 직후
+   * DestroyManager가 등록된 객체들을 제거한다.
    */
   destroy() {
     /* JS에는 클래스를 삭제하는 예약어가 따로 없다.
@@ -497,19 +501,10 @@ export default class GameObject {
      * 따라서 이 GameObject의 자식객체들도 연쇄적으로 삭제하고,
      * 부모의 프로퍼티에 이 객체가 존재하지 않도록 만들면 된다.
      */
-    for (const child of Object.values(this.childTable)) {
-      child.destroy();
-    }
+    DestroyManager.push(this);
 
-    // 이 객체의 모든 자식들이 삭제되었다면 자기 자신도 삭제한다.
-    // 이 때 부모의 프로퍼티의 이 객체를 제거하는 방법으로 삭제한다.
-    if (this.parent !== undefined) {
-      // parent.childTable과 parent에서 this.~~로 선언된 변수 두 가지가 존재한다.
-      // 둘 다 지워야지만 완전하게 삭제된다.
-      const childKey = findKeyInObjectWithValue(this.parent.childTable, this);
-      delete this.parent.childTable[childKey];
-      const key = findKeyInObjectWithValue(this.parent, this);
-      delete this.parent[key];
-    }
+    this.childList.forEach((child) => {
+      child.destroy();
+    });
   }
 }
