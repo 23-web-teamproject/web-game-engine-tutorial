@@ -26,16 +26,20 @@ class Particle extends Sprite {
 
     const rad = -(this.direction * Math.PI) / 180;
 
-    const forward = new Vector(
+    this.forward = new Vector(
       Math.cos(rad) * this.speed,
       Math.sin(rad) * this.speed
     );
-
-    this.addVelocity(forward);
+    if (this.isPhysicsEnable) {
+      this.addVelocity(forward);
+    }
   }
 
   update(deltaTime) {
     this.fadeAway();
+    if (this.isPhysicsEnable === false) {
+      this.spreadOut(deltaTime);
+    }
 
     this.lifeTime -= deltaTime;
 
@@ -59,10 +63,14 @@ class Particle extends Sprite {
     }
     if (this.isAlphaFade) {
       this.color.a = this.lifeTime / this.initialLifeTime;
-
-      // TODO
-      // alpha값 조절할 방법 추가해야함.
     }
+  }
+
+  /*
+   * 만약 물리효과가 적용되지 않는다면 직접 position을 변경해야한다.
+   */
+  spreadOut(deltaTime) {
+    // this.addPosition(this.forward.multiply(deltaTime));
   }
 }
 
@@ -166,17 +174,12 @@ export default class ParticleEffect extends GameObject {
           diffuseness: this.diffuseness,
           speed: this.speed,
           lifeTime: this.lifeTime,
-          isPhysicsEnabled: this.isParticlePhysicsEnable,
+          isPhysicsEnable: this.isParticlePhysicsEnable,
           isAlphaFade: this.isAlphaFade,
           isScaleFade: this.isScaleFade,
           imagePath: this.imagePath,
         };
         const newParticle = new Particle(options);
-        // TODO
-        // transformOrigin과 같은 속성이 좌상단으로 되어있다면?
-        //
-        // const centerPos = newParticle.getCenterPos();
-        // newParticle.addPos(-centerPos.x, -centerPos.y);
         this.addChild(newParticle);
       }
     }
