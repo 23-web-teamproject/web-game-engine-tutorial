@@ -19,7 +19,7 @@ export default class Engine {
   constructor() {
     this.inputManager = new InputManager();
 
-    this.timer = new Timer();
+    this.timer = new Timer(settings.fps);
   }
 
   static init(settings) {
@@ -42,14 +42,11 @@ export default class Engine {
     this.inputManager.update();
 
     // Update game logic
-    SceneManager.getCurrentScene().update(this.timer.fixedDeltaTime);
+    SceneManager.getCurrentScene().update(this.timer.deltaTime);
 
     // TODO
-    // 브라우저에서 다른 탭으로 이동했다가 다시 게임으로 돌아오면
-    // deltaTime이 0.0166보다 훨씬 더 커지기 때문에
-    // 오브젝트가 순간이동해버린다.
-    // 그래서 강제로 fixedDeltaTime 사용하도록 바꿨는데,
-    // 만약 모니터가 144hz라면 오류를 일으킬 것이 예상된다.
+    // 모니터가 144hz일 때 물리엔진의 업데이트가 매우 빠르게 진행되었다.
+    // 주사율에 관계 없이 동일한 업데이트가 되어야 한다.
     while (this.timer.accumulatedTime > this.timer.fixedDeltaTime) {
       // Update physics
       PhysicsManager.update(
