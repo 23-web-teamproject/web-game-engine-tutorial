@@ -1,4 +1,5 @@
 import Color from "/src/engine/data-structure/color.js";
+import Matrix from "/src/engine/data-structure/matrix.js";
 import Vector from "/src/engine/data-structure/vector.js";
 import Transform from "/src/engine/data-structure/transform.js";
 import RigidBody from "/src/engine/data-structure/rigidbody.js";
@@ -24,7 +25,6 @@ export default class GameObject {
      * 이 객체의 좌표, 크기, 각도 등을 담고 있다.
      */
     this.transform = new Transform(options.transform);
-    this.previousTransform = new Transform(options.transform);
 
     if (this.rigidbody.isStatic) {
       this.rigidbody.inverseMass = 0;
@@ -42,7 +42,7 @@ export default class GameObject {
      * 이 객체의 Collision 타입을 나타낸다.
      * 기본값으로는 상자형태를 사용한다.
      */
-    this.collider = new BoxCollider(0, 0);
+    this.collider = new BoxCollider();
 
     /*
      * 렌더링에 사용될 색상값을 담고 있다.
@@ -76,6 +76,7 @@ export default class GameObject {
      * 새로운 transform을 만들고, 그 transform을 matrix로 바꾸어 적용한다.
      */
     this.matrix = this.transform.toMatrix();
+    this.previousMatrix = this.transform.toMatrix();
   }
 
   /*
@@ -142,6 +143,7 @@ export default class GameObject {
   render(alpha) {
     this.beforeDraw();
 
+    this.interpolateMatrixWithPreviousMatrix(alpha);
     this.setTransform();
 
     this.draw();
@@ -154,26 +156,26 @@ export default class GameObject {
   }
 
   /*
-   * 이전 프레임의 transform과 이후 프레임의 transform의
-   * position, scale, rotation값을 선형보간한 matrix를 만든다.
+   * 이전 프레임의 matrix와 이후 프레임의 matrix을
+   * 선형보간한 matrix를 만든다.
    */
-  createMatrixWithInterpolatedTransform(alpha) {
-    const interpolatedTransform = new Transform({
-      position: this.previousTransform.position
-        .multiply(alpha)
-        .add(this.transform.position.multiply(1 - alpha)),
-      scale: this.previousTransform.scale
-        .multiply(alpha)
-        .add(this.transform.scale.multiply(1 - alpha)),
-      rotation:
-        this.previousTransform.rotation * alpha +
-        this.transform.rotation * (1 - alpha),
-    });
+  interpolateMatrixWithPreviousMatrix(alpha) {
+    const interpolatedMatrix = new Matrix();
+    interpolatedMatrix.a =
+      this.previousMatrix.a * alpha + this.matrix.a * (1 - alpha);
+    interpolatedMatrix.b =
+      this.previousMatrix.b * alpha + this.matrix.b * (1 - alpha);
+    interpolatedMatrix.x =
+      this.previousMatrix.x * alpha + this.matrix.x * (1 - alpha);
+    interpolatedMatrix.c =
+      this.previousMatrix.c * alpha + this.matrix.c * (1 - alpha);
+    interpolatedMatrix.d =
+      this.previousMatrix.d * alpha + this.matrix.d * (1 - alpha);
+    interpolatedMatrix.y =
+      this.previousMatrix.y * alpha + this.matrix.y * (1 - alpha);
 
-    interpolatedTransform.size = this.transform.size;
-
-    this.previousTransform = this.transform.copy();
-    this.matrix = interpolatedTransform.toMatrix();
+    this.previousMatrix = this.matrix;
+    this.matrix = interpolatedMatrix;
   }
 
   /*
