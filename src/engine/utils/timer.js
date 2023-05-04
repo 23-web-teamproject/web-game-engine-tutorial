@@ -90,7 +90,7 @@ export default class Timer {
   update() {
     this.previousTime = this.currentTime;
     this.currentTime = performance.now();
-    this.deltaTime = this.currentTime - this.previousTime;
+    this.deltaTime = (this.currentTime - this.previousTime) / 1000;
     this.accumulatedTime += this.deltaTime;
     if (this.accumulatedTime > 0.2) {
       this.accumulatedTime = 0.2;
