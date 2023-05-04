@@ -1,6 +1,11 @@
+/*
+ * 원과 원 또는 원과 상자 사이의 충돌체크 및 충격량을 연산하는 책임을 맡는다.
+ */
 import Manifold from "/src/engine/data-structure/manifold.js";
 import Vector from "/src/engine/data-structure/vector.js";
+
 import CollisionResolver from "/src/engine/core/collision-resolver.js";
+
 import { clamp } from "/src/engine/utils.js";
 
 export default class CircleCollisionResolver extends CollisionResolver {
@@ -9,8 +14,11 @@ export default class CircleCollisionResolver extends CollisionResolver {
     this.circle = circle;
   }
 
+  /*
+   * 원과 상자가 충돌했는지를 반환한다.
+   */
   isCollideWithBox(box) {
-    // 원에서 사각형의 변까지의 거리를 절댓값으로 구한다.
+    // 원의 중심과 상자의 중심간 거리의 차를 구한다.
     const distance = this.circle
       .getWorldPosition()
       .minus(box.getWorldPosition());
@@ -18,6 +26,8 @@ export default class CircleCollisionResolver extends CollisionResolver {
     distance.x = Math.abs(distance.x);
     distance.y = Math.abs(distance.y);
 
+    // 중심간 차의 절대값이 상자의 주변에 원이 접했을 때의 거리보다 크다면
+    // 충돌하지 않은 것이다.
     if (
       distance.x > box.getWorldSize().x / 2 + this.circle.radius ||
       distance.y > box.getWorldSize().y / 2 + this.circle.radius
@@ -25,6 +35,8 @@ export default class CircleCollisionResolver extends CollisionResolver {
       return false;
     }
 
+    // 중심간 차의 절대값이 상자의 크기의 절반보다 작다면
+    // 원이 상자 안에 있는 셈이므로 충돌한 것이다.
     if (
       distance.x <= box.getWorldSize().x / 2 ||
       distance.y <= box.getWorldSize().y / 2
@@ -37,10 +49,26 @@ export default class CircleCollisionResolver extends CollisionResolver {
     return d.squareLength() <= this.circle.radius * this.circle.radius;
   }
 
+  /*
+   * 원과 원이 충돌했는지 반환한다.
+   *
+   *                   *******
+   *       *****      **     **
+   *      *     *     *       *
+   *      *  x  *     *   x   *
+   *      *     *     *       *
+   *       *****      **     **
+   *                   *******
+   *         +--+     +---+     <-- 원의 반지름
+   *         +------------+     <-- 중심간의 거리
+   *
+   * 두 원의 반지름의 합이 중심간의 거리보다 작다면 충돌하지 않은 셈이다.
+   */
   isCollideWithCircle(circle) {
     const distance = this.circle
       .getWorldPosition()
       .minus(circle.getWorldPosition());
+
     return (
       (this.circle.radius + circle.radius) *
         (this.circle.radius + circle.radius) >
@@ -48,6 +76,9 @@ export default class CircleCollisionResolver extends CollisionResolver {
     );
   }
 
+  /*
+   * 원이 상자와 충돌했을 때 충격량과 반작용방향을 반환한다.
+   */
   resolveBoxCollision(box) {
     const rectCenter = box.getWorldPosition();
 
@@ -90,22 +121,26 @@ export default class CircleCollisionResolver extends CollisionResolver {
     let normal = distance.minus(closest);
     const d = normal.squareLength();
 
-    //
     if (d > this.circle.radius * this.circle.radius && !inside) {
       return;
     }
 
     if (inside) {
       normal = normal.multiply(-1).normalize();
-      penetrationDepth = 2 * this.circle.radius; // ???
+      // 원이 사각형 안에 있다면 단순하게 충돌 깊이를 반지름 * 2로 설정한다.
+      penetrationDepth = 2 * this.circle.radius;
     } else {
       normal = normal.multiply(1).normalize();
-      penetrationDepth = this.circle.radius - Math.sqrt(d); // ???
+      // 원이 사각형 밖에 있다면 충돌 깊이를 반지름에서 충돌한 거리를 뺀 값으로 설정한다.
+      penetrationDepth = this.circle.radius - Math.sqrt(d);
     }
 
     return new Manifold(box, this.circle, normal, penetrationDepth);
   }
 
+  /*
+   * 원과 원이 충돌했을 때 충격량과 반작용방향을 반환한다.
+   */
   resolveCircleCollision(circle) {
     const distance = circle
       .getWorldPosition()

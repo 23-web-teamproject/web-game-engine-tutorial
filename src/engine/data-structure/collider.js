@@ -1,3 +1,6 @@
+/*
+ * 충돌처리에서 물체의 외형을 간단하게 표현하기 위해 Collider를 이용한다.
+ */
 class Collider {
   constructor() {}
 }

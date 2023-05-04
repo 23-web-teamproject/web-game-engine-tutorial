@@ -1,10 +1,10 @@
 /*
- * canvas에서 객체의 좌표, 회전, 축척을 변경하려면
- * setTransform(matrix(...))을 이용해야한다.
+ * canvas에서 객체의 좌표, 회전, 규모를 변경하려면
+ * setTransform(...matrix)을 이용해야한다.
 
  * 이 객체는 matrix의 인자가 될 값들을 나타낸다.
  *
- * matrix에 대한 자세한 설명은 아래 url에서 실습해볼 수 있다.
+ * matrix에 대한 자세한 설명은 아래 url에서 찾아볼 수 있다.
  * https://angrytools.com/css-generator/transform/
  *
  * matrix =

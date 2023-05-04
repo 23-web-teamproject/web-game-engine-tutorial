@@ -25,7 +25,6 @@ class Particle extends Sprite {
     this.speed = options.speed;
 
     const rad = -(this.direction * Math.PI) / 180;
-
     this.forward = new Vector(
       Math.cos(rad) * this.speed,
       Math.sin(rad) * this.speed
@@ -156,8 +155,15 @@ export default class ParticleEffect extends GameObject {
       "boolean",
       false
     );
-
+    /*
+     * 파티클을 일정 시간마다 생성하기 위해 시간이 얼마나 지났는지 알아야 하므로
+     * 파티클효과가 켜진 후 지난 시간을 나타낸다.
+     */
     this.elapsedTime = 0;
+
+    if(this.isEnable){
+      this.run();
+    }
   }
 
   update(deltaTime) {

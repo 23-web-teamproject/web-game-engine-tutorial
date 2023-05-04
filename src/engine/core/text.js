@@ -1,10 +1,13 @@
+/*
+ * 화면에 문자열을 보이려면 Text를 사용하면 된다.
+ */
 import GameObject from "/src/engine/core/game-object.js";
+
 import { typeCheck } from "/src/engine/utils.js";
 
 export default class Text extends GameObject {
   constructor(options) {
     super(options);
-
     /*
      * 화면에 보여질 문자열을 말한다.
      * 줄바꿈을 하고 싶다면 문자열에 '\n'을 넣으면 된다.

@@ -1,10 +1,11 @@
 /*
  * 사용자가 어떤 키를 눌렀는지 또는 마우스의 위치를 알아야 할 때
  * 이 객체를 사용한다.
- * 엔진을 초기화 할 때 이벤트 리스너를 통해 키보드 또는 마우스의 입력을 받고
- * 매 프레임마다 키의 상태를 갱신하여 관리한다.
+ * 엔진을 초기화 할 때 이벤트 리스너를 등록하여 매 프레임마다 입력을 받고
+ * 키의 상태를 갱신하여 관리한다.
  */
 import Vector from "/src/engine/data-structure/vector.js";
+
 import RenderManager from "/src/engine/core/render-manager.js";
 
 /*
@@ -28,7 +29,7 @@ export default class InputManager {
    */
   static keyStatus = new Object();
   /*
-   * 마우스의 위치를 벡터로 나타낸다.
+   * 마우스의 위치를 나타낸다.
    */
   static mousePosition = new Vector(0, 0);
 
@@ -44,7 +45,7 @@ export default class InputManager {
   }
 
   /*
-   * 키 이벤트를 수신하여 keyTable를 갱신하는 함수를 이벤트리스너에 등록한다.
+   * 키 이벤트를 수신하여 keyTable를 갱신하는 함수를 이벤트 리스너에 등록한다.
    */
   registerEventListener() {
     document.addEventListener("keydown", (event) => {

@@ -1,10 +1,12 @@
 /*
- * 화면에 이미지를 가진 객체를 보여지게 하고 싶으면 이 객체를 사용한다.
+ * 화면에 이미지를 보이려면 Sprite를 사용하면 된다.
  */
-import GameObject from "/src/engine/core/game-object.js";
-import RenderManager from "/src/engine/core/render-manager.js";
 import Color from "/src/engine/data-structure/color.js";
 import Vector from "/src/engine/data-structure/vector.js";
+
+import GameObject from "/src/engine/core/game-object.js";
+import RenderManager from "/src/engine/core/render-manager.js";
+
 import Path from "/src/engine/utils/path.js";
 import { typeCheck } from "/src/engine/utils.js";
 
@@ -12,7 +14,7 @@ export default class Sprite extends GameObject {
   constructor(options = {}) {
     super(options);
     /*
-     * 화면에 보여질 이미지이다.
+     * 화면에 보여질 이미지를 의미한다.
      */
     this.image = new Image();
     if (typeof options.imagePath === "string") {
@@ -23,9 +25,8 @@ export default class Sprite extends GameObject {
         "defaultSpriteImage.png"
       );
     }
-
     /*
-     * 색상 오버레이를 씌울 것인지를 나타낸다.
+     * 색상 오버레이를 씌울 것인지를 의미한다.
      * 기본값으로는 false다.
      */
     this.isColorOverlayEnable = typeCheck(
@@ -33,9 +34,8 @@ export default class Sprite extends GameObject {
       "boolean",
       false
     );
-
     /*
-     * 색상 오버레이를 씌울 때 어떤 색을 씌울 것인지를 나타낸다.
+     * 색상 오버레이를 씌울 때 어떤 색을 씌울 것인지를 의미한다.
      * 만약 이 색의 Alpha가 1이면 이미지 전체에 불투명한 색을 덧입히기 때문에
      * 완전히 다른 색으로 덮히게 되어 이미지가 보이지 않는다.
      */
@@ -46,10 +46,6 @@ export default class Sprite extends GameObject {
     );
 
     this.updateSize();
-  }
-
-  update(deltaTime) {
-    super.update(deltaTime);
   }
 
   /*

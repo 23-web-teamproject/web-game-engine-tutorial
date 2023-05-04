@@ -1,5 +1,5 @@
 /*
- * 씬 객체에 물리효과를 적용하려면 PhysicsManager를 사용하여야 한다.
+ * 씬 객체에 물리효과를 적용하는 책임은 PhysicsManager이 맡는다.
  * 물리효과를 적용할 객체들에게만 물리효과를 적용한다.
  *
  * 참고한 사이트
@@ -11,11 +11,13 @@ import {
   BoxCollider,
   CircleCollider,
 } from "/src/engine/data-structure/collider.js";
+
 import BoxCollisionResolver from "/src/engine/core/box-collision-resolver.js";
 import CircleCollisionResolver from "/src/engine/core/circle-collision-resolver.js";
 
 export default class PhysicsManager {
   static physicsEnableGameObjectList = new Array();
+
   constructor() {}
 
   /*

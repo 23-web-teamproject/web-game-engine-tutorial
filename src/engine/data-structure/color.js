@@ -2,6 +2,8 @@
  * Canvas에서 style을 변경할 때 색상값을 입히기 위해 사용할 색상값을 담고 있다.
  * 보통 Canvas에서 RGBA만 사용가능하기 때문에 각각의 값들을 프로퍼티로 갖는다.
  */
+import { clamp } from "/src/engine/utils.js";
+
 export default class Color {
   constructor(r, g, b, a) {
     this.r = r;
@@ -25,10 +27,10 @@ export default class Color {
    */
   clamp() {
     const clamped = new Color();
-    clamped.r = Math.max(0, Math.min(255, this.r));
-    clamped.g = Math.max(0, Math.min(255, this.g));
-    clamped.b = Math.max(0, Math.min(255, this.b));
-    clamped.a = Math.max(0, Math.min(1, this.a));
+    clamped.r = clamp(this.r, 0, 255);
+    clamped.g = clamp(this.g, 0, 255);
+    clamped.b = clamp(this.b, 0, 255);
+    clamped.a = clamp(this.a, 0, 1);
     return clamped;
   }
 }

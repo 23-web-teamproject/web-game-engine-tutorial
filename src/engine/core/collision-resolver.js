@@ -6,7 +6,7 @@
  * 모든 메서드를 재정의하여 어떤 상황에도 충돌체크를 할 수 있도록 만들어야 한다.
  *
  * 충돌체크에 사용한 공식은 아래 링크에서 참고했다.
- * https://gamedevelopment.tutsplus.com/series/how-t-create-a-custom-physics-engnien--gamedev-12715
+ * https://gamedevelopment.tutsplus.com/series/how-to-create-a-custom-physics-engine--gamedev-12715
  */
 import {
   BoxCollider,

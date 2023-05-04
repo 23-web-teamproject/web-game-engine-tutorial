@@ -1,12 +1,18 @@
+/*
+ * 게임에 등장하는 모든 객체의 기본형태는 GameObject다.
+ * 그러므로 게임에 등장하는 모든 객체는 GameObject를 상속받아 구현된다.
+ */
 import Color from "/src/engine/data-structure/color.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
-import Vector from "/src/engine/data-structure/vector.js";
 import Transform from "/src/engine/data-structure/transform.js";
 import RigidBody from "/src/engine/data-structure/rigidbody.js";
+import Vector from "/src/engine/data-structure/vector.js";
 import { BoxCollider } from "/src/engine/data-structure/collider.js";
+
+import DestroyManager from "/src/engine/core/destroy-manager.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 import RenderManager from "/src/engine/core/render-manager.js";
-import DestroyManager from "/src/engine/core/destroy-manager.js";
+
 import { typeCheck } from "/src/engine/utils.js";
 
 export default class GameObject {
@@ -15,14 +21,12 @@ export default class GameObject {
      * canvas에 이 객체를 렌더링할 때 사용할 context다.
      */
     this.context2d = RenderManager.getRenderCanvas().getContext("2d");
-
     /*
-     * 물리효과를 위한 강체를 의미한다.
+     * 물리효과를 위한 강체다.
      */
     this.rigidbody = new RigidBody(options.rigidbody);
-
     /*
-     * 이 객체의 좌표, 크기, 각도 등을 담고 있다.
+     * 이 객체의 좌표, 크기, 각도 등을 의미한다.
      */
     this.transform = new Transform(options.transform);
 
@@ -37,15 +41,13 @@ export default class GameObject {
      * 기본적으론 적용하지 않는다.
      */
     this.isPhysicsEnable = typeCheck(options.isPhysicsEnable, "boolean", false);
-
     /*
      * 이 객체의 Collision 타입을 나타낸다.
-     * 기본값으로는 상자형태를 사용한다.
+     * 기본값으로는 상자 형태(BoxCollider)를 사용한다.
      */
     this.collider = new BoxCollider();
-
     /*
-     * 렌더링에 사용될 색상값을 담고 있다.
+     * 렌더링에 사용될 색상값이다.
      */
     this.color = typeCheck(
       options.color,
@@ -57,26 +59,29 @@ export default class GameObject {
         1
       )
     );
-
     /*
-     * 객체의 자식들을 저장할 테이블이다.
-     */
-    this.childList = new Array();
-
-    /*
-     * 객체의 부모를 기억한다.
-     * 부모의 matrix를 이용해 자신을 렌더링하기 때문에 기억해야 한다.
-     */
-    this.parent = undefined;
-
-    /*
-     * 부모 matrix를 행렬곱한 결과를 담아 렌더링에 사용할 때 필요하다.
-     * 부모 matrix를 행렬곱하여 이 객체의 matrix를 만들 때,
-     * 이전 프레임의 transform과 현재 프레임의 transform을 선형보간하여
-     * 새로운 transform을 만들고, 그 transform을 matrix로 바꾸어 적용한다.
+     * 이 객체의 transform을 행렬로 나타낸 결과다.
+     * canvas에서 좌표, 회전, 크기를 이용해 물체를 그리려면 행렬을 이용해야한다.
+     * 그래서 이 객체의 transform을 canvas에서 활용할 수 있게 matrix로 변환해야하고
+     * 그 결과가 matrix에 저장된다.
      */
     this.matrix = this.transform.toMatrix();
+    /*
+     * 이전 프레임의 matrix와 현재 프레임의 matrix를 선형보간하기 위해
+     * 이전 프레임의 matrix를 저장해야한다.
+     */
     this.previousMatrix = this.transform.toMatrix();
+    /*
+     * 이 객체의 자식들을 저장할 테이블이다.
+     */
+    this.childList = new Array();
+    /*
+     * 이 객체의 부모 객체다.
+     * 부모의 matrix를 이용해 자신의 matrix를 만들고,
+     * 이 객체를 삭제할 때 부모에 의해 삭제되기 때문에
+     * 이 객체의 부모를 기억해야 한다.
+     */
+    this.parent = undefined;
   }
 
   /*
@@ -135,10 +140,11 @@ export default class GameObject {
   }
 
   /*
-   * 이 GameObject의 하위 GameObject들의 render를 실행시킨다.
-   * 부모의 matrix를 가져와 자신의 matrix와 행렬곱을 수행한다.
-   * 그 결과를 이용해 렌더링에 사용하고,
-   * 연결된 자식들의 렌더링을 수행하는데에 사용한다.
+   * 먼저 선형보간한 matrix를 사용해 context에 등록한다.
+   * 그 다음 draw()를 통해 물체를 렌더링한다.
+   * 이 객체를 상속받은 Rect나 Circle처럼 자식객체에 따라 
+   * 각각 다른 렌더링이 수행된다.
+   * 그 후 이 객체의 모든 자식들을 렌더링한다.
    */
   render(alpha) {
     this.beforeDraw();
@@ -179,7 +185,7 @@ export default class GameObject {
   }
 
   /*
-   * 객체의 부모가 존재하는지 확인한다.
+   * 이 객체의 부모가 존재하는지 확인한다.
    */
   hasParentGameObject() {
     return this.parent !== undefined;
@@ -223,7 +229,7 @@ export default class GameObject {
 
   /*
    * 이 함수는 GameObject를 상속받은 객체마다 다르게 동작한다.
-   * GameObject 자체는 렌더링할 대상이 없지만 스프라이트나 도형, 텍스트 등
+   * GameObject 자체는 렌더링할 대상이 없지만 Sprite나, Rect, Text 등
    * GmaeObject를 상속받은 객체들은 명확히 렌더링할 대상이 존재한다.
    * 그 때 이 함수안에서 어떻게 렌더링할건지 정의를 해 놓으면 된다.
    * super.render()를 먼저 호출하고 대상을 렌더링할 경우
@@ -277,7 +283,7 @@ export default class GameObject {
   /*
    * 이 객체의 부모와 이 객체 사이의 관계를 끊는다.
    * 이 객체는 부모로부터 떨어져 나오게 되는데,
-   * 이 때 씬 객체를 새로운 부모로 설정한다.
+   * 씬 객체를 새로운 부모로 설정한다.
    */
   removeParent() {
     // 만약 이 객체의 부모가 있어야지만 부모 객체로부터 떨어져 나올 수 있다.
@@ -290,15 +296,10 @@ export default class GameObject {
   }
 
   /*
-   * 자식 목록에 객체를 추가한다.
-   * 일반적으로 자식 객체에 대한 key를 무조건 갖고 있어야 한다.
-   * key를 따로 지정해주지 않았으므로 겹치지 않도록
-   * 현재 시간에 해시 함수를 적용해 얻은 값을 key로 사용한다.
-   * TODO
-   * 해시 함수를 사용하면 충돌될 경우를 따로 처리해야한다.
+   * 자식 목록에 인자로 전달된 객체를 추가한다.
    */
   addChild(child) {
-    // 만약 이미 있는 자식 객체라면 추가하지 않음.
+    // 만약 이미 있는 자식 객체라면 추가하지 않는다.
     const index = this.childList.indexOf(child);
     if (index !== -1) {
       return;
@@ -314,7 +315,7 @@ export default class GameObject {
   onCollision(other) {}
 
   /*
-   * 이 객체의 좌표값을 특정값만큼 변경한다.
+   * 이 객체의 좌표값에 특정값을 더한다.
    */
   addPosition(position) {
     this.transform.position = this.transform.position.add(position);
@@ -358,13 +359,16 @@ export default class GameObject {
   }
 
   /*
-   * 이 객체의 크기(스케일값)를 반환한다.
+   * 이 객체의 규모(스케일값)를 반환한다.
    * 크기(size)를 반환하는게 아니다!
    */
   getScale() {
     return this.transform.scale;
   }
 
+  /*
+   * 이 객체의 화면상 규모를 반환한다.
+   */
   getWorldScale() {
     const rad = (this.getWorldRotation() * Math.PI) / 180;
 
@@ -376,14 +380,14 @@ export default class GameObject {
   }
 
   /*
-   * 이 객체의 각도를 특정값만큼 변경한다.
+   * 이 객체의 각도(degree)를 특정값만큼 변경한다.
    */
   addRotation(degree) {
     this.transform.rotation += degree;
   }
 
   /*
-   * 이 객체의 각도를 특정값으로 설정한다.
+   * 이 객체의 각도(degree)를 특정값으로 설정한다.
    */
   setRotation(degree) {
     this.transform.rotation = degree;
@@ -396,6 +400,9 @@ export default class GameObject {
     return this.transform.rotation;
   }
 
+  /*
+   * 이 객체의 화면상 각도(degree)를 반환한다.
+   */
   getWorldRotation() {
     const a = this.matrix.a;
     const b = this.matrix.b;
@@ -403,7 +410,7 @@ export default class GameObject {
   }
 
   /*
-   * 이 객체의 속도를 증가시킨다.
+   * 이 객체의 속도를 특정값만큼 증가시킨다.
    */
   addVelocity(velocity) {
     this.transform.velocity = this.transform.velocity.add(velocity);
@@ -417,7 +424,7 @@ export default class GameObject {
   }
 
   /*
-   * 이 객체의 가속도를 증가시킨다.
+   * 이 객체의 가속도를 특정값만큼 증가시킨다.
    */
   addAcceleration(acceleration) {
     this.transform.acceleration = this.transform.acceleration.add(acceleration);
@@ -438,7 +445,8 @@ export default class GameObject {
   }
 
   /*
-   * 행렬곱된 matrix에서 이 객체의 화면상 크기를 반환한다.
+   * 이 객체의 화면상 크기를 반환한다.
+   * 이 객체의 크기에 화면상 규모를 곱한 값을 반환하게 된다.
    */
   getWorldSize() {
     return this.getSize().elementMultiply(this.getWorldScale());
@@ -459,14 +467,14 @@ export default class GameObject {
   }
 
   /*
-   * 이 객체의 정지 마찰계수를 반환한다.
+   * 이 객체의 정지 마찰 계수를 반환한다.
    */
   getStaticFriction() {
     return this.rigidbody.staticFriction;
   }
 
   /*
-   * 이 객체의 운동 마찰계수를 반환한다.
+   * 이 객체의 운동 마찰 계수를 반환한다.
    */
   getDynamicFriction() {
     return this.rigidbody.dynamicFriction;
@@ -489,20 +497,12 @@ export default class GameObject {
   /*
    * 이 객체를 씬으로부터 제거한다.
    * 이 객체의 자식 테이블에 있는 모든 객체들도 연달아 제거된다.
+   * 
    * 이 객체를 제거하기위해 DestroyManager에 등록한다.
    * 이 객체가 등록되었다면 업데이트가 끝난 직후
    * DestroyManager가 등록된 객체들을 제거한다.
    */
   destroy() {
-    /* JS에는 클래스를 삭제하는 예약어가 따로 없다.
-     * 단지 어떤 변수를 아무도 참조하지 않을 때 가비지 컬렉터(GC)가
-     * 자동으로 수집해 제거한다.
-     *
-     * 그러므로 이 GameObject를 제거하기 위해서는 이 GameObject를
-     * 아무도 참조하지 않으면 된다.
-     * 따라서 이 GameObject의 자식객체들도 연쇄적으로 삭제하고,
-     * 부모의 프로퍼티에 이 객체가 존재하지 않도록 만들면 된다.
-     */
     DestroyManager.push(this);
 
     this.childList.forEach((child) => {

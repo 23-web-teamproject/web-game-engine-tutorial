@@ -1,28 +1,41 @@
 /*
- * 사각형이 렌더링되는 GameObject다.
+ * 화면에 사각형을 보이려면 Rect를 사용하면 된다.
  */
-import Vector from "/src/engine/data-structure/vector.js";
 import Color from "/src/engine/data-structure/color.js";
+import Vector from "/src/engine/data-structure/vector.js";
+
 import GameObject from "/src/engine/core/game-object.js";
-import { typeCheck } from "/src/engine/utils.js";
+
+import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
 
 export default class Rect extends GameObject {
   constructor(options = {}) {
     super(options);
-
-    const size = new Vector(0, 0);
-    size.x = size.y = this.transform.setSize(
+    /*
+     * 사각형의 가로, 세로를 의미한다.
+     * 기본값은 50이다.
+     */
+    this.transform.setSize(
       new Vector(
         typeCheck(options.width, "number", 50),
         typeCheck(options.height, "number", 50)
       )
     );
-
+    /*
+     * 윤곽선을 그릴 것인지를 의미한다.
+     * 윤곽선을 그리기 위해서는 옵션에서 strokeColor나 strokeWidth를
+     * 설정하면 화면에 나타나게 된다.
+     */
     this.isStroke =
       options.hasOwnProperty("strokeColor") ||
       options.hasOwnProperty("strokeWidth");
 
     if (this.isStroke) {
+      /*
+       * 윤곽선의 색상을 의미한다.
+       * 만약 옵션에서 윤곽선에 대한 정보가 있다면 isStroke는 true로 설정되고
+       * 윤곽선의 색상이 설정된다.
+       */
       this.strokeColor = typeCheck(
         options.strokeColor,
         Color,
@@ -34,11 +47,12 @@ export default class Rect extends GameObject {
         )
       );
     }
-    this.strokeWidth = typeCheck(options.strokeWidth, "number", 1);
-  }
-
-  update(deltaTime) {
-    super.update(deltaTime);
+    /*
+     * 윤곽선의 두께를 의미한다.
+     * 1~10 사이의 값을 설정할 수 있다.
+     * 기본값으로는 1이다.
+     */
+    this.setStrokeWidth(options.strokeWidth);
   }
 
   draw() {
@@ -54,6 +68,7 @@ export default class Rect extends GameObject {
       this.getSize().y
     );
 
+    // 윤곽선을 그리도록 설정했다면 윤곽선을 렌더링한다.
     if (this.isStroke) {
       this.context2d.lineWidth = this.strokeWidth;
       this.context2d.strokeStyle = `rgb(
@@ -68,5 +83,9 @@ export default class Rect extends GameObject {
         this.getSize().y - this.strokeWidth
       );
     }
+  }
+
+  setStrokeWidth(width) {
+    this.strokeWidth = typeCheckAndClamp(width, "number", 1, 10);
   }
 }

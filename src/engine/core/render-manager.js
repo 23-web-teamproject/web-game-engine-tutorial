@@ -8,6 +8,7 @@
  * Canvas의 크기, 해상도를 바꾸는 책임도 맡는다.
  */
 import SceneManager from "/src/engine/core/scene-manager.js";
+
 import { clamp, typeCheck } from "/src/engine/utils.js";
 
 export default class RenderManager {
