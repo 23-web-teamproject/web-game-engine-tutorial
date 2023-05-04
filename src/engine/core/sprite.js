@@ -4,6 +4,7 @@
 import GameObject from "/src/engine/core/game-object.js";
 import RenderManager from "/src/engine/core/render-manager.js";
 import Color from "/src/engine/data-structure/color.js";
+import Vector from "/src/engine/data-structure/vector.js";
 import Path from "/src/engine/utils/path.js";
 import { typeCheck } from "/src/engine/utils.js";
 
@@ -102,6 +103,9 @@ export default class Sprite extends GameObject {
         throw error;
       }
     } else {
+      if(this.getSize().isEquals(new Vector(0, 0))){
+        return;
+      }
       this.context2d.drawImage(
         this.image,
         -this.getSize().x / 2,
