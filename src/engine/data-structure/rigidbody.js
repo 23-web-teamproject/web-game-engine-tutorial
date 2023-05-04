@@ -68,6 +68,6 @@ export default class RigidBody {
     /*
      * 중력의 영향을 받는 상태인지를 나타낸다.
      */
-    this.isGravity = typeCheck(options.isGravity, "boolean", true);
+    this.isGravity = typeCheck(options.isGravity, "boolean", false);
   }
 }
