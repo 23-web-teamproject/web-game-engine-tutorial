@@ -193,7 +193,7 @@ export default class PhysicsManager {
    * 충돌된 위치에서 정해진 값만큼 강제로 떨어지게 한다.
    */
   static positionalCorrection(manifold) {
-    const percentage = 0.6; // ??? 0.2 ~ 0.8
+    const percentage = 0.4; // ??? 0.2 ~ 0.8
     const slop = 0.05; // ??? 0.01 ~ 0.1
     const correction = manifold.normal.multiply(
       (Math.max(manifold.penetrationDepth - slop, 0) /
