@@ -103,7 +103,11 @@ export default class Sprite extends GameObject {
         throw error;
       }
     } else {
-      if(this.getSize().isEquals(new Vector(0, 0))){
+      // TODO
+      // 사이즈가 0이면 그리지 않는다.
+      // 하지만 다른 객체들은 출력이 됐기 때문에 올바른 렌더링이 아니다.
+      // 엔진을 초기화할 때 완전히 초기화되지 않았다면 업데이트하지 말아야 한다.
+      if (this.getSize().isEquals(new Vector(0, 0))) {
         return;
       }
       this.context2d.drawImage(
@@ -119,8 +123,9 @@ export default class Sprite extends GameObject {
    */
   updateSize() {
     this.image.onload = () => {
-      this.transform.size.x = this.image.naturalWidth;
-      this.transform.size.y = this.image.naturalHeight;
+      this.transform.setSize(
+        new Vector(this.image.naturalWidth, this.image.naturalHeight)
+      );
     };
   }
 

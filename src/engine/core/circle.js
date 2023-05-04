@@ -9,10 +9,24 @@ export default class Circle extends GameObject {
 
     this.radius = typeCheck(options.radius, "number", 5);
 
-    this.isFill = options.hasOwnProperty("color");
-    if (this.isFill) {
-      this.color = typeCheck(
-        options.color,
+    this.isStroke =
+      options.hasOwnProperty("strokeColor") ||
+      options.hasOwnProperty("strokeWidth");
+
+    this.color = typeCheck(
+      options.color,
+      Color,
+      new Color(
+        Math.random() * 255,
+        Math.random() * 255,
+        Math.random() * 255,
+        1
+      )
+    );
+
+    if (this.isStroke) {
+      this.strokeColor = typeCheck(
+        options.strokeColor,
         Color,
         new Color(
           Math.random() * 255,
@@ -22,16 +36,7 @@ export default class Circle extends GameObject {
         )
       );
     }
-
-    this.isStroke = options.hasOwnProperty("strokeColor");
-    if (this.isStroke) {
-      this.strokeColor = typeCheck(
-        options.strokeColor,
-        Color,
-        new Color(255, 255, 255, 1)
-      );
-      this.strokeWidth = typeCheck(options.strokeWidth, "number", 1);
-    }
+    this.strokeWidth = typeCheck(options.strokeWidth, "number", 1);
 
     this.collider = new CircleCollider();
   }

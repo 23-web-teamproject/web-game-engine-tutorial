@@ -29,7 +29,7 @@ export default class Engine {
 
     // Load scene
     SceneManager.changeScene(settings.scene);
-}
+  }
 
   /*
    * 게임 파이프라인에 대해서는 이 게시글을 참고했다.

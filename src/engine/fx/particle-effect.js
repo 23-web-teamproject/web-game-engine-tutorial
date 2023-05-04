@@ -185,10 +185,6 @@ export default class ParticleEffect extends GameObject {
     }
   }
 
-  render() {
-    super.render();
-  }
-
   run() {
     this.isEnable = true;
     // countPerSecond를 이용해서 파티클 1개를 생성하려면

@@ -11,22 +11,30 @@ export default class Rect extends GameObject {
     super(options);
 
     const size = new Vector(0, 0);
-    size.x = typeCheck(options.width, "number", 50);
-    size.y = typeCheck(options.height, "number", 50);
+    size.x = size.y = this.transform.setSize(
+      new Vector(
+        typeCheck(options.width, "number", 50),
+        typeCheck(options.height, "number", 50)
+      )
+    );
 
-    this.transform.size = size;
-
-    this.isFill = options.hasOwnProperty("color");
-    this.isStroke = options.hasOwnProperty("strokeColor");
+    this.isStroke =
+      options.hasOwnProperty("strokeColor") ||
+      options.hasOwnProperty("strokeWidth");
 
     if (this.isStroke) {
       this.strokeColor = typeCheck(
         options.strokeColor,
         Color,
-        new Color(255, 255, 255, 1)
+        new Color(
+          Math.random() * 255,
+          Math.random() * 255,
+          Math.random() * 255,
+          1
+        )
       );
-      this.strokeWidth = typeCheck(options.strokeWidth, "number", 1);
     }
+    this.strokeWidth = typeCheck(options.strokeWidth, "number", 1);
   }
 
   update(deltaTime) {
@@ -34,19 +42,17 @@ export default class Rect extends GameObject {
   }
 
   draw() {
-    if (this.isFill) {
-      this.context2d.fillStyle = `rgb(
-        ${this.color.r}, 
-        ${this.color.g}, 
-        ${this.color.b}
-        )`;
-      this.context2d.fillRect(
-        -this.getSize().x / 2,
-        -this.getSize().y / 2,
-        this.getSize().x,
-        this.getSize().y
-      );
-    }
+    this.context2d.fillStyle = `rgb(
+      ${this.color.r},
+      ${this.color.g},
+      ${this.color.b}
+      )`;
+    this.context2d.fillRect(
+      -this.getSize().x / 2,
+      -this.getSize().y / 2,
+      this.getSize().x,
+      this.getSize().y
+    );
 
     if (this.isStroke) {
       this.context2d.lineWidth = this.strokeWidth;
