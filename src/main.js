@@ -7,10 +7,11 @@
  * 이 때 최초로 불러올 씬을 선택하여 게임을 시작한다.
  */
 import Engine from "/src/engine/engine.js";
-import ExampleScene from "/src/example-scene/scene.js";
+import ExampleScene from "/src/default-scene/scene.js";
 
 Engine.init({
   width: 1280,
   height: 720,
+  fps: 24,
   scene: ExampleScene
 });
