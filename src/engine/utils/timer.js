@@ -46,7 +46,7 @@
 import { typeCheckAndClamp } from "/src/engine/utils.js";
 
 export default class Timer {
-  constructor(fps) {
+  constructor() {
     /*
      * 현재 프레임의 시간을 말한다.
      * 웹페이지가 열린 후 지난 시간이 저장된다.
@@ -68,7 +68,7 @@ export default class Timer {
      * 1초에 보여줄 프레임의 개수를 말한다.
      * 기본값으로 60이고, 24부터 MAX_VALUE 사이의 값을 저장할 수 있다.
      */
-    this.fps = typeCheckAndClamp(fps, "number", 60, 24, Number.MAX_VALUE);
+    this.fps = this.setFps(60);
     /*
      * 물리엔진에서는 가속도를 적분하여 속도를 나타내고,
      * 속도를 적분하여 이동거리를 나타내기 때문에
@@ -95,5 +95,9 @@ export default class Timer {
     if (this.accumulatedTime > 0.2) {
       this.accumulatedTime = 0.2;
     }
+  }
+
+  setFps(fps) {
+    this.fps = typeCheckAndClamp(fps, "number", 60, 24, Number.MAX_VALUE);
   }
 }
