@@ -55,16 +55,14 @@ export default class Circle extends GameObject {
   }
 
   draw() {
-    if (this.isFill) {
-      this.context2d.beginPath();
-      this.context2d.arc(0, 0, this.radius, 0, 2 * Math.PI);
-      this.context2d.fillStyle = `rgb(
-        ${this.color.r},
-        ${this.color.g},
-        ${this.color.b}
-      )`;
-      this.context2d.fill();
-    }
+    this.context2d.beginPath();
+    this.context2d.arc(0, 0, this.radius, 0, 2 * Math.PI);
+    this.context2d.fillStyle = `rgb(
+      ${this.color.r},
+      ${this.color.g},
+      ${this.color.b}
+    )`;
+    this.context2d.fill();
     if (this.isStroke) {
       this.context2d.lineWidth = this.strokeWidth;
       this.context2d.beginPath();
