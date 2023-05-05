@@ -51,7 +51,7 @@ export default class Timer {
      * 현재 프레임의 시간을 말한다.
      * 웹페이지가 열린 후 지난 시간이 저장된다.
      */
-    this.currentTime = performance.now() / 1000;
+    this.currentTime = this.getCurrentTime();
     /*
      * 이전 프레임의 시간을 말한다.
      */
@@ -76,7 +76,7 @@ export default class Timer {
      * 따라서 fixedDeltaTime은 이론적으로 1 프레임을 렌더링할 때
      * 걸리는 시간을 ∇t로 정한다.
      */
-    this.fixedDeltaTime = 1 / this.fps;
+    this.setFixedDeltaTime();
   }
 
   /*
@@ -88,16 +88,29 @@ export default class Timer {
    * 긴 딜레이가 걸릴 수 있으므로 일부러 값을 낮춘다.
    */
   update() {
-    this.previousTime = this.currentTime;
-    this.currentTime = performance.now() / 1000;
+    this.currentTime = this.getCurrentTime();
     this.deltaTime = this.currentTime - this.previousTime;
     this.accumulatedTime += this.deltaTime;
-    if (this.accumulatedTime > 0.2) {
-      this.accumulatedTime = 0.2;
+    if (this.accumulatedTime > 0.3) {
+      this.accumulatedTime = 0.3;
     }
+    this.previousTime = this.currentTime;
+  }
+
+  getCurrentTime() {
+    // 1초는 1000밀리초라서 나누기 1000을 하는게 맞지만
+    // 나누기 1000을 했더니 너무 느리게 업데이트되어서
+    // 어쩔 수 없이 100만 나누기로 했다.
+    return performance.now() / 100;
   }
 
   setFps(fps) {
     this.fps = typeCheckAndClamp(fps, "number", 60, 24, Number.MAX_VALUE);
+    this.setFixedDeltaTime();
+    console.log(this);
+  }
+
+  setFixedDeltaTime() {
+    this.fixedDeltaTime = 1 / this.fps;
   }
 }

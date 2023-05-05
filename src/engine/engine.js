@@ -19,9 +19,10 @@ import { Timer } from "/src/engine/utils.js";
 window.onload = () => {
   const engine = new Engine();
 
-  requestAnimationFrame(() => {
-    engine.run();
-  });
+  // requestAnimationFrame으로 매 프레임마다 렌더링할 수 있지만
+  // 그렇게 된다면 프레임을 변경한 효과가 드러나지 않기 때문에
+  // 어쩔 수 없이 fixedDeltaTime마다 run을 호출하는 방향으로 정했다.
+  setInterval(engine.run, 1000 * Engine.timer.fixedDeltaTime);
 };
 
 export default class Engine {
@@ -55,16 +56,11 @@ export default class Engine {
     // 키의 상태를 업데이트한다.
     Engine.inputManager.update();
 
-    // 게임 로젝을 수행한다.
+    // 게임 로직을 처리한다.
     SceneManager.getCurrentScene().update(Engine.timer.deltaTime);
 
-    // TODO
-    // 모니터가 144hz일 때 물리엔진의 업데이트가 매우 빠르게 진행되었다.
-    // 주사율에 관계 없이 동일한 업데이트가 되어야 한다.
-    
     // 물리 효과를 적용한다.
     while (Engine.timer.accumulatedTime > Engine.timer.fixedDeltaTime) {
-      // Update physics
       PhysicsManager.update(
         SceneManager.getCurrentScene(),
         Engine.timer.fixedDeltaTime
@@ -81,9 +77,5 @@ export default class Engine {
 
     // 삭제되길 기다리는 오브젝트가 있다면 모두 삭제한다.
     DestroyManager.destroyAll();
-
-    requestAnimationFrame(() => {
-      this.run();
-    });
   }
 }
