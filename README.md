@@ -1,7 +1,7 @@
 # Web Game Engine
 
 ![Version](https://img.shields.io/badge/version-0.4-success.svg?style=flat-square)
-![JavaScript](https://img.shields.io/badge/javascript-white.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![JavaScript](https://img.shields.io/badge/javascript-white.svg?style=flat-square&logo=javascript&logoColor=%23F7DF1E)
 
 # Introducion
 
