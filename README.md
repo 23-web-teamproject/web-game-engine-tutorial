@@ -98,7 +98,7 @@ Engine.init({
 ```js
 import { GameObject, Vector } from "/src/engine/module.js";
 
-export default ExampleScene extends GameObject {
+export default class ExampleScene extends GameObject {
   constructor() {
     this.rect = new Rect({
       transform: {
