@@ -49,7 +49,7 @@ export default class Rect extends GameObject {
     }
     /*
      * 윤곽선의 두께를 의미한다.
-     * 1~10 사이의 값을 설정할 수 있다.
+     * 1~15 사이의 값을 설정할 수 있다.
      * 기본값으로는 1이다.
      */
     this.setStrokeWidth(options.strokeWidth);
@@ -86,6 +86,6 @@ export default class Rect extends GameObject {
   }
 
   setStrokeWidth(width) {
-    this.strokeWidth = typeCheckAndClamp(width, "number", 1, 10);
+    this.strokeWidth = typeCheckAndClamp(width, "number", 1, 1, 15);
   }
 }
