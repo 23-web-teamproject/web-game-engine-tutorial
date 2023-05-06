@@ -107,7 +107,6 @@ export default class Timer {
   setFps(fps) {
     this.fps = typeCheckAndClamp(fps, "number", 60, 24, Number.MAX_VALUE);
     this.setFixedDeltaTime();
-    console.log(this);
   }
 
   setFixedDeltaTime() {
