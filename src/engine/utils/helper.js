@@ -27,8 +27,15 @@ const typeCheckAndClamp = (value, Type, defaultValue, min, max) => {
   return clamp(typeCheckedValue, min, max);
 }
 
+const findKeyInObjectWithValue = (object, value) => {
+  return Object.keys(object).find(key => {
+    return object[key] === value;
+  });
+}
+
 export {
   clamp,
   typeCheck,
-  typeCheckAndClamp
+  typeCheckAndClamp,
+  findKeyInObjectWithValue
 };

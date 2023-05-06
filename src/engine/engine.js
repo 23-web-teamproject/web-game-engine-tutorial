@@ -1,39 +1,47 @@
+/*
+ * 게임 로직을 실행하고 물리효과를 적용시키며 화면에 렌더링하는 엔진이다.
+ */
 import {
   InputManager,
   SceneManager,
   RenderManager,
   PhysicsManager,
+  DestroyManager,
 } from "/src/engine/module.js";
+
 import { Timer } from "/src/engine/utils.js";
 
+/*
+ * TODO
+ * 나중에는 페이지를 열었을 때 화면 해상도와 프레임을 결정하도록 할 계획이다.
+ * 그 기능을 개발하고 나면 window.onload에 등록하지 않도록 해야한다.
+ */
 window.onload = () => {
   const engine = new Engine();
 
-  requestAnimationFrame(() => {
-    engine.run();
-  });
+  // requestAnimationFrame으로 매 프레임마다 렌더링할 수 있지만
+  // 그렇게 된다면 프레임을 변경한 효과가 드러나지 않기 때문에
+  // 어쩔 수 없이 fixedDeltaTime마다 run을 호출하는 방향으로 정했다.
+  setInterval(engine.run, 1000 * Engine.timer.fixedDeltaTime);
 };
 
 export default class Engine {
-  constructor() {
-    this.inputManager = new InputManager();
+  static inputManager = new InputManager();
+  static timer = new Timer();
 
-    this.timer = new Timer();
-  }
+  constructor() {}
 
+  /*
+   * 인자로 전달된 값을 이용해 엔진을 초기화한다.
+   */
   static init(settings) {
-    let width = 1280;
-    if (settings.hasOwnProperty("width")) {
-      width = settings.width;
-    }
-    let height = 720;
-    if (settings.hasOwnProperty("height")) {
-      height = settings.height;
-    }
-    // Set resolution
-    RenderManager.changeResolution(width, height);
+    // fps를 타이머에 등록하여 fixedDeltaTime을 프레임에 맞게 변경한다.
+    Engine.timer.setFps(settings.fps);
 
-    // Load scene
+    // canvas의 해상도를 변경한다.
+    RenderManager.changeResolution(settings.width, settings.height);
+
+    // 씬을 불러온다.
     SceneManager.changeScene(settings.scene);
   }
 
@@ -42,41 +50,32 @@ export default class Engine {
    * https://developer.ibm.com/tutorials/wa-build2dphysicsengine/#physics-loop-step
    */
   run() {
-    // Calculate delta time
-    this.timer.update();
+    // 이전 프레임와 현재 프레임의 시간차를 계산한다.
+    Engine.timer.update();
 
-    // Update input
-    this.inputManager.update();
+    // 키의 상태를 업데이트한다.
+    Engine.inputManager.update();
 
-    // Update game logic
-    SceneManager.getCurrentScene().update(this.timer.fixedDeltaTime);
+    // 게임 로직을 처리한다.
+    SceneManager.getCurrentScene().update(Engine.timer.deltaTime);
 
-    // TODO
-    // 브라우저에서 다른 탭으로 이동했다가 다시 게임으로 돌아오면
-    // deltaTime이 0.0166보다 훨씬 더 커지기 때문에
-    // 오브젝트가 순간이동해버린다.
-    // 그래서 강제로 fixedDeltaTime 사용하도록 바꿨는데,
-    // 만약 모니터가 144hz라면 오류를 일으킬 것이 예상된다.
-    while (this.timer.accumulatedTime > this.timer.fixedDeltaTime) {
-      // Update physics
+    // 물리 효과를 적용한다.
+    while (Engine.timer.accumulatedTime > Engine.timer.fixedDeltaTime) {
       PhysicsManager.update(
         SceneManager.getCurrentScene(),
-        this.timer.fixedDeltaTime
+        Engine.timer.fixedDeltaTime
       );
-      this.timer.accumulatedTime -= this.timer.fixedDeltaTime;
+      Engine.timer.accumulatedTime -= Engine.timer.fixedDeltaTime;
     }
 
+    // 물리효과를 적용하고 나서 모든 오브젝트의 matrix를 업데이트한다.
     SceneManager.getCurrentScene().calculateMatrix();
 
-    // Remove previous canvas
-    RenderManager.clearScreen();
-
-    // Render objects
-    const alpha = this.timer.accumulatedTime / this.timer.fixedDeltaTime;
+    // 모든 오브젝트를 canvas에 그린다.
+    const alpha = Engine.timer.accumulatedTime / Engine.timer.fixedDeltaTime;
     RenderManager.render(alpha);
 
-    requestAnimationFrame(() => {
-      this.run();
-    });
+    // 삭제되길 기다리는 오브젝트가 있다면 모두 삭제한다.
+    DestroyManager.destroyAll();
   }
 }

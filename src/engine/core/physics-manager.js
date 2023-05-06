@@ -1,5 +1,5 @@
 /*
- * 씬 객체에 물리효과를 적용하려면 PhysicsManager를 사용하여야 한다.
+ * 씬 객체에 물리효과를 적용하는 책임은 PhysicsManager이 맡는다.
  * 물리효과를 적용할 객체들에게만 물리효과를 적용한다.
  *
  * 참고한 사이트
@@ -11,11 +11,13 @@ import {
   BoxCollider,
   CircleCollider,
 } from "/src/engine/data-structure/collider.js";
+
 import BoxCollisionResolver from "/src/engine/core/box-collision-resolver.js";
 import CircleCollisionResolver from "/src/engine/core/circle-collision-resolver.js";
 
 export default class PhysicsManager {
   static physicsEnableGameObjectList = new Array();
+
   constructor() {}
 
   /*
@@ -103,15 +105,15 @@ export default class PhysicsManager {
    * 모든 객체를 조사해야하기 때문에 재귀호출하여 탐색한다.
    */
   static collectPhysicsEnabledGameObjectToList(scene) {
-    for (const child of Object.values(scene.childTable)) {
+    scene.childList.forEach((child) => {
       if (child.isPhysicsEnable) {
         PhysicsManager.physicsEnableGameObjectList.push(child);
       }
 
-      if (Object.keys(child.childTable).length > 0) {
+      if (child.childList.length > 0) {
         PhysicsManager.collectPhysicsEnabledGameObjectToList(child);
       }
-    }
+    });
   }
 
   /*
@@ -193,7 +195,7 @@ export default class PhysicsManager {
    * 충돌된 위치에서 정해진 값만큼 강제로 떨어지게 한다.
    */
   static positionalCorrection(manifold) {
-    const percentage = 0.6; // ??? 0.2 ~ 0.8
+    const percentage = 0.4; // ??? 0.2 ~ 0.8
     const slop = 0.05; // ??? 0.01 ~ 0.1
     const correction = manifold.normal.multiply(
       (Math.max(manifold.penetrationDepth - slop, 0) /

@@ -1,3 +1,8 @@
+:root {
+  --render-canvas-width: 0;
+  --render-canvas-height: 0;
+}
+
 html {
   background-color: black;
 }
@@ -12,6 +17,8 @@ body{
 
 #render-canvas{
   background-color: white;
+  width: var(--render-canvas-width);
+  height: var(--render-canvas-height);
 }
 
 .error-msg{

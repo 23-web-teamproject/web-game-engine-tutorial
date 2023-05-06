@@ -1,6 +1,11 @@
+/*
+ * 상자와 상자 또는 상자와 원 사이의 충돌체크 및 충격량을 연산하는 책임을 맡는다.
+ */
 import Manifold from "/src/engine/data-structure/manifold.js";
 import Vector from "/src/engine/data-structure/vector.js";
+
 import CollisionResolver from "/src/engine/core/collision-resolver.js";
+
 import { clamp } from "/src/engine/utils.js";
 
 export default class BoxCollisionResolver extends CollisionResolver {
@@ -9,7 +14,11 @@ export default class BoxCollisionResolver extends CollisionResolver {
     this.box = box;
   }
 
+  /*
+   * 상자와 상자가 충돌했는지를 반환한다.
+   */
   isCollideWithBox(box) {
+    // 단순하게 AABB충돌체크 방식을 사용한다.
     if (
       this.box.getWorldPosition().x - this.box.getWorldSize().x / 2 >
         box.getWorldPosition().x + box.getWorldSize().x / 2 ||
@@ -25,8 +34,11 @@ export default class BoxCollisionResolver extends CollisionResolver {
     return true;
   }
 
+  /*
+   * 상자와 원이 충돌했는지를 반환한다.
+   */
   isCollideWithCircle(circle) {
-    // 원에서 사각형의 변까지의 거리를 절댓값으로 구한다.
+    // 원의 중심과 상자의 중심간 거리의 차를 구한다.
     const distance = circle
       .getWorldPosition()
       .minus(this.box.getWorldPosition());
@@ -34,6 +46,8 @@ export default class BoxCollisionResolver extends CollisionResolver {
     distance.x = Math.abs(distance.x);
     distance.y = Math.abs(distance.y);
 
+    // 중심간 차의 절대값이 상자의 주변에 원이 접했을 때의 거리보다 크다면
+    // 충돌하지 않은 것이다.
     if (
       distance.x > this.box.getWorldSize().x / 2 + circle.radius ||
       distance.y > this.box.getWorldSize().y / 2 + circle.radius
@@ -41,6 +55,8 @@ export default class BoxCollisionResolver extends CollisionResolver {
       return false;
     }
 
+    // 중심간 차의 절대값이 상자의 크기의 절반보다 작다면
+    // 원이 상자 안에 있는 셈이므로 충돌한 것이다.
     if (
       distance.x <= this.box.getWorldSize().x / 2 ||
       distance.y <= this.box.getWorldSize().y / 2
@@ -118,6 +134,9 @@ export default class BoxCollisionResolver extends CollisionResolver {
     return new Manifold(this.box, box, normal, penetrationDepth);
   }
 
+  /*
+   * 원이 상자와 충돌했을 때 충격량과 반작용방향을 반환한다.
+   */
   resolveCircleCollision(circle) {
     const rectCenter = this.box.getWorldPosition();
 
@@ -168,17 +187,18 @@ export default class BoxCollisionResolver extends CollisionResolver {
     let normal = distance.minus(closest);
     const d = normal.squareLength();
 
-    //
     if (d > circle.radius * circle.radius && !inside) {
       return;
     }
 
     if (inside) {
       normal = normal.multiply(-1).normalize();
-      penetrationDepth = 2 * circle.radius; // ???
+      // 원이 사각형 안에 있다면 단순하게 충돌 깊이를 반지름 * 2로 설정한다.
+      penetrationDepth = 2 * circle.radius;
     } else {
       normal = normal.multiply(1).normalize();
-      penetrationDepth = circle.radius - Math.sqrt(d); // ???
+      // 원이 사각형 밖에 있다면 충돌 깊이를 반지름에서 충돌한 거리를 뺀 값으로 설정한다.
+      penetrationDepth = circle.radius - Math.sqrt(d);
     }
 
     return new Manifold(this.box, circle, normal, penetrationDepth);

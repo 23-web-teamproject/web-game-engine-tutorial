@@ -9,33 +9,37 @@
  */
 
 import Color from "/src/engine/data-structure/color.js";
-import Vector from "/src/engine/data-structure/vector.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
+import Vector from "/src/engine/data-structure/vector.js";
+
+import Circle from "/src/engine/core/circle.js";
+import DestroyManager from "/src/engine/core/destroy-manager.js";
+import GameObject from "/src/engine/core/game-object.js";
 import InputManager from "/src/engine/core/input-manager.js";
 import PhysicsManager from "/src/engine/core/physics-manager.js";
-import SceneManager from "/src/engine/core/scene-manager.js";
-import RenderManager from "/src/engine/core/render-manager.js";
-import GameObject from "/src/engine/core/game-object.js";
-import Sprite from "/src/engine/core/sprite.js";
-import Circle from "/src/engine/core/circle.js";
 import Rect from "/src/engine/core/rect.js";
+import RenderManager from "/src/engine/core/render-manager.js";
+import SceneManager from "/src/engine/core/scene-manager.js";
+import Sprite from "/src/engine/core/sprite.js";
 import Text from "/src/engine/core/text.js";
+
 import SoundEffect from "/src/engine/fx/sound-effect.js";
 import ParticleEffect from "/src/engine/fx/particle-effect.js";
 
 export {
+  Color,
+  Matrix,
+  Vector,
+  Circle,
+  DestroyManager,
+  GameObject,
   InputManager,
   PhysicsManager,
-  SceneManager,
   RenderManager,
-  Color,
-  Vector,
-  Matrix,
-  GameObject,
-  Sprite,
-  Circle,
   Rect,
+  SceneManager,
+  Sprite,
   Text,
   SoundEffect,
-  ParticleEffect
-}
+  ParticleEffect,
+};
