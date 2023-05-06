@@ -9,13 +9,15 @@
  */
 import SceneManager from "/src/engine/core/scene-manager.js";
 
-import { clamp, typeCheck } from "/src/engine/utils.js";
+import { typeCheckAndClamp } from "/src/engine/utils.js";
 
 export default class RenderManager {
   static renderCanvasId = "render-canvas";
   static renderCanvas = undefined;
-  static renderCanvasWidth = 1280;
-  static renderCanvasHeight = 720;
+  static renderCanvasWidth;
+  static renderCanvasHeight;
+  static renderCanvasMinWidth = 800;
+  static renderCanvasMinHeight = 600;
   static bufferCanvasId = "buffer-canvas";
   static bufferCanvas = undefined;
 
@@ -25,8 +27,8 @@ export default class RenderManager {
    * 현재 씬을 렌더링한다.
    */
   static render(alpha) {
+    RenderManager.updateRenderCanvasSizeByWindowSize();
     RenderManager.clearScreen();
-
     SceneManager.getCurrentScene().render(alpha);
   }
 
@@ -42,29 +44,75 @@ export default class RenderManager {
    * renderCanvas의 크기(width, height)를 변경한다.
    */
   static changeResolution(width, height) {
-    RenderManager.renderCanvasWidth = typeCheck(
+    RenderManager.renderCanvasWidth = typeCheckAndClamp(
       width,
       "number",
-      window.innerWidth
+      1280,
+      RenderManager.renderCanvasMinWidth,
+      Number.MAX_VALUE
     );
-    RenderManager.renderCanvasHeight = typeCheck(
+    RenderManager.renderCanvasHeight = typeCheckAndClamp(
       height,
       "number",
-      window.innerHeight
+      720,
+      RenderManager.renderCanvasMinHeight,
+      Number.MAX_VALUE
     );
 
     const renderCanvas = RenderManager.getRenderCanvas();
-
-    renderCanvas.width = clamp(
+    renderCanvas.width = RenderManager.renderCanvasWidth;
+    renderCanvas.height = RenderManager.renderCanvasHeight;
+    RenderManager.changeRenderCanvasCSSSize(
       RenderManager.renderCanvasWidth,
-      0,
-      window.innerWidth
+      RenderManager.renderCanvasHeight
     );
-    renderCanvas.height = clamp(
-      RenderManager.renderCanvasHeight,
-      0,
-      window.innerHeight
+  }
+
+  /*
+   * 브라우저의 크기에 따라 canvas의 크기를 변경한다.
+   */
+  static updateRenderCanvasSizeByWindowSize() {
+    const canvasRatio =
+      RenderManager.renderCanvasWidth / RenderManager.renderCanvasHeight;
+
+    let renderCanvasStyleWidth = RenderManager.renderCanvasWidth;
+    let renderCanvasStyleHeight = RenderManager.renderCanvasHeight;
+    // 화면의 세로 길이가 canvas의 세로 길이보다 작다면
+    // canvas의 가로 길이를 화면의 가로 길이로 설정한다.
+    if (window.innerHeight < RenderManager.renderCanvasHeight) {
+      renderCanvasStyleHeight = window.innerHeight;
+    }
+    // 화면의 가로 길이가 canvas의 가로 길이보다 작다면
+    // canvas의 가로 길이를 화면의 가로 길이로 설정한다.
+    if (window.innerWidth < RenderManager.renderCanvasWidth) {
+      renderCanvasStyleWidth = window.innerWidth;
+    }
+
+    const newRatio = renderCanvasStyleWidth / renderCanvasStyleHeight;
+    // w : h = newW : newH
+    // newW가 더 길다면 newW = w * newH/h = newH * w/h
+    // newH가 더 길다면 newH = h * newW/w = newW * h/w
+    if (newRatio > canvasRatio) {
+      renderCanvasStyleWidth = renderCanvasStyleHeight * canvasRatio;
+    } else if (newRatio < canvasRatio) {
+      renderCanvasStyleHeight = renderCanvasStyleWidth / canvasRatio;
+    }
+
+    // 완성된 크기를 canvas의 style에 업데이트한다.
+    RenderManager.changeRenderCanvasCSSSize(
+      renderCanvasStyleWidth,
+      renderCanvasStyleHeight
     );
+  }
+
+  /*
+   * renderCanvas의 style에 사용되는 변수를 업데이트하여
+   * 화면에 나타나는 renderCanvans의 크기를 변경한다.
+   */
+  static changeRenderCanvasCSSSize(width, height) {
+    const renderCanvas = RenderManager.getRenderCanvas();
+    renderCanvas.style.setProperty("--render-canvas-width", width);
+    renderCanvas.style.setProperty("--render-canvas-height", height);
   }
 
   /*
