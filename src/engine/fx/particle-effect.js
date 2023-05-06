@@ -129,14 +129,14 @@ export default class ParticleEffect extends GameObject {
     /*
      * 파티클이 날아가는 속도를 의미한다.
      * 값이 낮을수록 파티클이 멀리 퍼지지 않게 된다.
-     * 100 ~ 1000 사이의 값을 지정할 수 있다. 기본값은 100이다.
+     * 100 ~ 1000 사이의 값을 지정할 수 있다. 기본값은 10이다.
      */
-    this.speed = typeCheckAndClamp(options.speed, "number", 100, 100, 1000);
+    this.speed = typeCheckAndClamp(options.speed, "number", 100, 10, 1000);
     /*
      * lifeTime은 생성된 파티클이 몇 초동안 화면에 보일지를 의미한다.
-     * 0.1 ~ 5.0 사이의 값을 지정할 수 있다. 기본값은 3초다.
+     * 0.1 ~ 10.0 사이의 값을 지정할 수 있다. 기본값은 3초다.
      */
-    this.lifeTime = typeCheckAndClamp(options.lifeTime, "number", 3, 0.1, 5);
+    this.lifeTime = typeCheckAndClamp(options.lifeTime, "number", 3, 0.1, 10);
     /*
      * 파티클의 이미지 경로를 의미한다.
      * 기본값으로는 엔진에 딸린 이미지를 불러오게 된다.
