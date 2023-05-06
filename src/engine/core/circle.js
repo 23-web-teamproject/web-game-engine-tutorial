@@ -6,7 +6,7 @@ import Color from "/src/engine/data-structure/color.js";
 import GameObject from "/src/engine/core/game-object.js";
 
 import { CircleCollider } from "/src/engine/data-structure/collider.js";
-import { typeCheck } from "/src/engine/utils.js";
+import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
 
 export default class Circle extends GameObject {
   constructor(options = {}) {
@@ -44,10 +44,10 @@ export default class Circle extends GameObject {
     }
     /*
      * 윤곽선의 두께를 의미한다.
-     * 1~10 사이의 값을 설정할 수 있다.
+     * 1~15 사이의 값을 설정할 수 있다.
      * 기본값으로는 1이다.
      */
-    this.strokeWidth = typeCheck(options.strokeWidth, "number", 1);
+    this.setStrokeWidth(options.strokeWidth);
     /*
      * Collision 타입을 원으로 바꾼다.
      */
@@ -80,5 +80,9 @@ export default class Circle extends GameObject {
         )`;
       this.context2d.stroke();
     }
+  }
+
+  setStrokeWidth(width) {
+    this.strokeWidth = typeCheckAndClamp(width, "number", 1, 1, 15);
   }
 }

@@ -90,7 +90,8 @@ export default class Timer {
   update() {
     this.currentTime = this.getCurrentTime();
     this.deltaTime = this.currentTime - this.previousTime;
-    this.accumulatedTime += this.deltaTime;
+    // 빠른 물리효과 업데이트를 위해 10을 곱하기로 했다.
+    this.accumulatedTime += this.deltaTime * 10;
     if (this.accumulatedTime > 0.3) {
       this.accumulatedTime = 0.3;
     }
@@ -98,10 +99,7 @@ export default class Timer {
   }
 
   getCurrentTime() {
-    // 1초는 1000밀리초라서 나누기 1000을 하는게 맞지만
-    // 나누기 1000을 했더니 너무 느리게 업데이트되어서
-    // 어쩔 수 없이 100만 나누기로 했다.
-    return performance.now() / 100;
+    return performance.now() / 1000;
   }
 
   setFps(fps) {
