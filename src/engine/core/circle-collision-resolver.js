@@ -1,6 +1,3 @@
-/*
- * 원과 원 또는 원과 상자 사이의 충돌체크 및 충격량을 연산하는 책임을 맡는다.
- */
 import Manifold from "/src/engine/data-structure/manifold.js";
 import Vector from "/src/engine/data-structure/vector.js";
 
@@ -8,14 +5,28 @@ import CollisionResolver from "/src/engine/core/collision-resolver.js";
 
 import { clamp } from "/src/engine/utils.js";
 
+/**
+ * 원과 원 또는 원과 상자 사이의 충돌체크 및
+ * 충돌깊이와 반작용방향을 연산하는 책임을 맡는다.
+ *
+ * @extends {CollisionResolver}
+ */
 export default class CircleCollisionResolver extends CollisionResolver {
+  /**
+   * 주 객체를 등록하여 충돌체크를 진행한다.
+   *
+   * @param {GameObject} circle
+   */
   constructor(circle) {
     super(circle);
     this.circle = circle;
   }
 
-  /*
-   * 원과 상자가 충돌했는지를 반환한다.
+  /**
+   * 원과 상자가 충돌했다면 true를 반환한다.
+   *
+   * @param {GameObject} box - 이 객체와 충돌인지 확인할 객체
+   * @returns {boolean}
    */
   isCollideWithBox(box) {
     // 원의 중심과 상자의 중심간 거리의 차를 구한다.
@@ -49,8 +60,8 @@ export default class CircleCollisionResolver extends CollisionResolver {
     return d.squareLength() <= this.circle.radius * this.circle.radius;
   }
 
-  /*
-   * 원과 원이 충돌했는지 반환한다.
+  /**
+   * 원과 원이 충돌했다면 true를 반환한다.
    *
    *                   *******
    *       *****      **     **
@@ -63,6 +74,9 @@ export default class CircleCollisionResolver extends CollisionResolver {
    *         +------------+     <-- 중심간의 거리
    *
    * 두 원의 반지름의 합이 중심간의 거리보다 작다면 충돌하지 않은 셈이다.
+   *
+   * @param {GameObject} circle - 이 객체와 충돌인지 확인할 객체
+   * @returns {boolean}
    */
   isCollideWithCircle(circle) {
     const distance = this.circle
@@ -76,8 +90,11 @@ export default class CircleCollisionResolver extends CollisionResolver {
     );
   }
 
-  /*
-   * 원이 상자와 충돌했을 때 충격량과 반작용방향을 반환한다.
+  /**
+   * 원이 상자와 충돌했을 때 충돌깊이와 반작용방향을 반환한다.
+   *
+   * @param {GameObject} box - 이 객체와 충돌인지 확인할 객체
+   * @returns {boolean}
    */
   resolveBoxCollision(box) {
     const rectCenter = box.getWorldPosition();
@@ -138,8 +155,11 @@ export default class CircleCollisionResolver extends CollisionResolver {
     return new Manifold(box, this.circle, normal, penetrationDepth);
   }
 
-  /*
-   * 원과 원이 충돌했을 때 충격량과 반작용방향을 반환한다.
+  /**
+   * 원과 원이 충돌했을 때 충돌깊이와 반작용방향을 반환한다.
+   *
+   * @param {GameObject} circle - 이 객체와 충돌인지 확인할 객체
+   * @returns {boolean}
    */
   resolveCircleCollision(circle) {
     const distance = circle

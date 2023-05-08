@@ -1,4 +1,4 @@
-/*
+/**
  * canvas에서 객체의 좌표, 회전, 규모를 변경하려면
  * setTransform(...matrix)을 이용해야한다.
 
@@ -7,39 +7,44 @@
  * matrix에 대한 자세한 설명은 아래 url에서 찾아볼 수 있다.
  * https://angrytools.com/css-generator/transform/
  *
- * matrix =
- *   a c x
- *   b d y
- *   0 0 1
- *
- *   a = x크기 * cos(라디안)
- *   b = x크기 * sin(라디안)
- *   c = y크기 * -sin(라디안)
- *   d = y크기 * cos(라디안)
- *   x = x좌표
- *   y = y좌표
+ *     matrix => a = x크기 * cos(라디안)
+ *     a c x     b = x크기 * sin(라디안)
+ *     b d y     c = y크기 * -sin(라디안)
+ *     0 0 1     d = y크기 * cos(라디안)
+ *               x = x좌표
+ *               y = y좌표
  */
 export default class Matrix {
+  /**
+   * 3x3행렬의 기본행렬의 원소중에 
+   * a, b, c, d, x, y위치에 해당하는 값이 초기화된다.
+   * 
+   * @constructor
+   */
   constructor() {
+    /** @type {number} */
     this.a = 1;
+    /** @type {number} */
     this.b = 0;
+    /** @type {number} */
     this.x = 0;
+    /** @type {number} */
     this.c = 0;
+    /** @type {number} */
     this.d = 1;
+    /** @type {number} */
     this.y = 0;
   }
 
-  /*
+  /**
    * 이 matrix에 인자로 전달받은 matrix를 행렬곱하여 반환한다.
    *
-   *           this    other
-   *           a c x   a c x
-   *           b d y * b d y
-   *           0 0 1   0 0 1
+   *      this    other        result
+   *     a c x   A C X   aA+cB aC+cD aX+cY+x
+   *     b d y * B D Y = bA+dB bC+dD bX+dY+y
+   *     0 0 1   0 0 1       0     0       1
    *
-   *   a*a+c*b    a*c+c*d   a*x+c*y+x*1
-   * = b*a+d*b    b*c+d*d   b*x+d*y+y*1
-   *         0          0             1
+   * @param {Matrix} other - 행렬곱을 할 대상
    */
   multiply(other) {
     const result = new Matrix();
