@@ -1,4 +1,8 @@
-/*
+import SceneManager from "/src/engine/core/scene-manager.js";
+
+import { findKeyInObjectWithValue } from "/src/engine/utils.js";
+
+/**
  * JS에는 클래스를 삭제하는 예약어가 따로 없다.
  * 단지 어떤 변수를 아무도 참조하지 않을 때 가비지 컬렉터(GC)가
  * 자동으로 수집해 제거한다.
@@ -11,22 +15,27 @@
  * object.destroy()를 실행하면 바로 삭제되는게 아니라,
  * 현재의 update가 종료된 후 큐에 등록된 오브젝트를 삭제한다.
  */
-import SceneManager from "/src/engine/core/scene-manager.js";
-
-import { findKeyInObjectWithValue } from "/src/engine/utils.js";
-
 export default class DestroyManager {
+  /**
+   * 삭제되길 기다리는 객체들을 저장한 큐
+   *
+   * @type {GameObject[]}
+   * @static
+   */
   static objectQueue = new Array();
+
   constructor() {}
 
-  /*
+  /**
    * 큐에 객체를 넣는다.
+   *
+   * @param {GameObject} object - 삭제될 객체
    */
   static push(object) {
     DestroyManager.objectQueue.push(object);
   }
 
-  /*
+  /**
    * 큐가 빌 때까지 큐에 들어있는 객체를 삭제한다.
    * 삭제한다는 말은 그 객체를 참조하는 값을 모두 지운다는 말이다.
    */

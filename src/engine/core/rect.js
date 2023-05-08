@@ -1,6 +1,3 @@
-/*
- * 화면에 사각형을 보이려면 Rect를 사용하면 된다.
- */
 import Color from "/src/engine/data-structure/color.js";
 import Vector from "/src/engine/data-structure/vector.js";
 
@@ -8,12 +5,30 @@ import GameObject from "/src/engine/core/game-object.js";
 
 import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
 
+/**
+ * 화면에 사각형을 그리는 객체다.
+ *
+ * @extends {GameObject}
+ */
 export default class Rect extends GameObject {
+  /**
+   * @constructor
+   * @param {object} options
+   * @param {number} [options.width]
+   * @param {number} [options.height]
+   * @param {Color} [options.color]
+   * @param {number} [options.strokeWidth]
+   * @param {Color} [options.strokeColor]
+   * @param {boolean} [options.isPhysicsEnable]
+   * @param {Transform} [options.transform]
+   * @param {RigidBody} [options.rigidbody]
+   */
   constructor(options = {}) {
     super(options);
-    /*
+    /**
      * 사각형의 가로, 세로를 의미한다.
      * 기본값은 50이다.
+     * width속성에 저장하지 않고 transform의 size에 저장한다.
      */
     this.transform.setSize(
       new Vector(
@@ -21,20 +36,24 @@ export default class Rect extends GameObject {
         typeCheck(options.height, "number", 50)
       )
     );
-    /*
+    /**
      * 윤곽선을 그릴 것인지를 의미한다.
-     * 윤곽선을 그리기 위해서는 옵션에서 strokeColor나 strokeWidth를
-     * 설정하면 화면에 나타나게 된다.
+     * 윤곽선을 그리기 위해서는 옵션에서 strokeColor나
+     * strokeWidth를 설정하여야한다.
+     *
+     * @type {boolean}
      */
     this.isStroke =
       options.hasOwnProperty("strokeColor") ||
       options.hasOwnProperty("strokeWidth");
 
     if (this.isStroke) {
-      /*
+      /**
        * 윤곽선의 색상을 의미한다.
        * 만약 옵션에서 윤곽선에 대한 정보가 있다면 isStroke는 true로 설정되고
        * 윤곽선의 색상이 설정된다.
+       *
+       * @type {Color}
        */
       this.strokeColor = typeCheck(
         options.strokeColor,
@@ -47,14 +66,19 @@ export default class Rect extends GameObject {
         )
       );
     }
-    /*
+    /**
      * 윤곽선의 두께를 의미한다.
-     * 1~15 사이의 값을 설정할 수 있다.
-     * 기본값으로는 1이다.
+     * 기본값은 1이다.
+     * 값의 범위는 1 ~ 15다.
+     *
+     * @type {number}
      */
     this.setStrokeWidth(options.strokeWidth);
   }
 
+  /**
+   * 화면에 사각형과 윤곽선을 그린다.
+   */
   draw() {
     this.context2d.fillStyle = `rgb(
       ${this.color.r},
@@ -85,6 +109,11 @@ export default class Rect extends GameObject {
     }
   }
 
+  /**
+   * 윤곽선의 두께를 설정한다.
+   *
+   * @param {number} width - 윤곽선의 두께
+   */
   setStrokeWidth(width) {
     this.strokeWidth = typeCheckAndClamp(width, "number", 1, 1, 15);
   }

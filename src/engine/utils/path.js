@@ -9,8 +9,14 @@
  * - /folderC/index.js
  */
 export default class Path {
-  /** @property {string} 상대 경로의 루트가 될 경로*/
+  /**
+   * 상대 경로의 루트가 될 경로를 의미한다.
+   *
+   * @type {string}
+   * @static
+   */
   static assetFolderPath = "";
+
   constructor() {}
 
   /**
@@ -19,8 +25,8 @@ export default class Path {
    * js는 로컬 파일에 직접 접근할 수 있는 방법이 매우 제한적이기 때문에
    * 부득이하게 생성자에서 미리 에셋 폴더를 설정해주어야 한다.
    * 아래 코드를 씬 생성자에서 실행하도록 설정하면 적용된다.
-   *
    * Path.setAssetDirectory(import.meta.url);
+   *
    * @param {string} path - 상대 경로의 루트 폴더
    */
   static setAssetFolderPath(path) {

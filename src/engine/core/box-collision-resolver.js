@@ -1,6 +1,3 @@
-/*
- * 상자와 상자 또는 상자와 원 사이의 충돌체크 및 충격량을 연산하는 책임을 맡는다.
- */
 import Manifold from "/src/engine/data-structure/manifold.js";
 import Vector from "/src/engine/data-structure/vector.js";
 
@@ -8,14 +5,28 @@ import CollisionResolver from "/src/engine/core/collision-resolver.js";
 
 import { clamp } from "/src/engine/utils.js";
 
+/**
+ * 상자와 상자 또는 상자와 원 사이의 충돌체크 및
+ * 충돌깊이와 반작용방향을 연산하는 책임을 맡는다.
+ *
+ * @extends CollisionResolver
+ */
 export default class BoxCollisionResolver extends CollisionResolver {
+  /**
+   * 주 객체를 등록하여 충돌체크를 진행한다.
+   *
+   * @param {GameObject} box
+   */
   constructor(box) {
     super(box);
     this.box = box;
   }
 
-  /*
-   * 상자와 상자가 충돌했는지를 반환한다.
+  /**
+   * 상자와 상자가 충돌했다면 true를 반환한다.
+   *
+   * @param {GameObject} box - 이 객체와 충돌인지 확인할 객체
+   * @returns {boolean}
    */
   isCollideWithBox(box) {
     // 단순하게 AABB충돌체크 방식을 사용한다.
@@ -34,8 +45,11 @@ export default class BoxCollisionResolver extends CollisionResolver {
     return true;
   }
 
-  /*
-   * 상자와 원이 충돌했는지를 반환한다.
+  /**
+   * 상자와 원이 충돌했다면 true를 반환한다.
+   *
+   * @param {GameObject} circle - 이 객체와 충돌인지 확인할 객체
+   * @returns {boolean}
    */
   isCollideWithCircle(circle) {
     // 원의 중심과 상자의 중심간 거리의 차를 구한다.
@@ -69,18 +83,23 @@ export default class BoxCollisionResolver extends CollisionResolver {
     return d.squareLength() <= circle.radius * circle.radius;
   }
 
-  /*
-   *              +-------+
-   *    +-----+   |       |
-   *    |  x  |   |   x   |
-   *    +-----+   |       |
-   *              +-------+
+  /**
+   * 상자와 상자가 충돌했을 때 충돌깊이와 반작용방향을 반환한다.
    *
-   *       +--+   +---+    <-- 가로 길이의 절반
-   *       +----------+    <-- 중심간의 거리
+   *               +-------+
+   *     +-----+   |       |
+   *     |  x  |   |   x   |
+   *     +-----+   |       |
+   *               +-------+
    *
-   * 각 상자의 길이의 절반의 합이 중심간의 거리보다 작을 때에만 충돌임.
+   *        +--+   +---+    <-- 가로 길이의 절반
+   *        +----------+    <-- 중심간의 거리
+   *
+   * 각 상자의 길이의 절반의 합이 중심간의 거리보다 작을 때에만 충돌이다.
    * 이 때 충돌한 깊이는 각 길이의 절반의 합과 중심간의 거리의 차로 구해진다.
+   *
+   * @param {GameObject} box - 이 객체와 충돌한 다른 객체
+   * @returns {Manifold}
    */
   resolveBoxCollision(box) {
     const distance = box.getWorldPosition().minus(this.box.getWorldPosition());
@@ -134,8 +153,11 @@ export default class BoxCollisionResolver extends CollisionResolver {
     return new Manifold(this.box, box, normal, penetrationDepth);
   }
 
-  /*
-   * 원이 상자와 충돌했을 때 충격량과 반작용방향을 반환한다.
+  /**
+   * 원이 상자와 충돌했을 때 충돌깊이와 반작용방향을 반환한다.
+   *
+   * @param {GameObject} circle - 이 객체와 충돌한 다른 객체
+   * @returns {Manifold}
    */
   resolveCircleCollision(circle) {
     const rectCenter = this.box.getWorldPosition();

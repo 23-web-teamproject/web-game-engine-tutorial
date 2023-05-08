@@ -1,4 +1,8 @@
-/*
+import SceneManager from "/src/engine/core/scene-manager.js";
+
+import { typeCheckAndClamp } from "/src/engine/utils.js";
+
+/**
  * 렌더링을 위해 HTML에서 제공하는 API중 하나인 <canvas>를 사용한다.
  * RenderManager는 Canvas를 다루는 기능을 제공한다.
  *
@@ -7,24 +11,33 @@
  *
  * Canvas의 크기, 해상도를 바꾸는 책임도 맡는다.
  */
-import SceneManager from "/src/engine/core/scene-manager.js";
-
-import { typeCheckAndClamp } from "/src/engine/utils.js";
-
 export default class RenderManager {
+  /** @type {string} @static */
   static renderCanvasId = "render-canvas";
+  /** @type {RenderCanvasContext2d} @static */
   static renderCanvas = undefined;
+  /** @type {number} @static */
   static renderCanvasWidth;
+  /** @type {number} @static */
   static renderCanvasHeight;
+  /** @type {number} @static */
   static renderCanvasMinWidth = 800;
+  /** @type {number} @static */
   static renderCanvasMinHeight = 600;
+  /** @type {string} @static */
   static bufferCanvasId = "buffer-canvas";
+  /** @type {RenderCanvasContext2d} @static */
   static bufferCanvas = undefined;
 
   constructor() {}
 
-  /*
+  /**
    * 현재 씬을 렌더링한다.
+   * 1. 먼저 게임화면의 크기를 브라우저의 크기에 맞춘다.
+   * 2. 그다음 화면을 지운다.
+   * 3. 깨끗해진 화면에 현재 프레임의 모든 오브젝트를 렌더링한다.
+   *
+   * @param {number} alpha - 이전 프레임과 현재 프레임간 선형보간을 위한 값
    */
   static render(alpha) {
     RenderManager.updateRenderCanvasSizeByWindowSize();
@@ -32,7 +45,7 @@ export default class RenderManager {
     SceneManager.getCurrentScene().render(alpha);
   }
 
-  /*
+  /**
    * renderCanvas를 깨끗이 지운다.
    */
   static clearScreen() {
@@ -40,8 +53,12 @@ export default class RenderManager {
     canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
   }
 
-  /*
+  /**
    * renderCanvas의 크기(width, height)를 변경한다.
+   * 크기를 변경하면 style에도 영향이 있기 때문에 renderCanvas의 CSS도 변경한다.
+   *
+   * @param {number} width - 가로 크기
+   * @param {number} height - 세로 크기
    */
   static changeResolution(width, height) {
     RenderManager.renderCanvasWidth = typeCheckAndClamp(
@@ -62,14 +79,15 @@ export default class RenderManager {
     const renderCanvas = RenderManager.getRenderCanvas();
     renderCanvas.width = RenderManager.renderCanvasWidth;
     renderCanvas.height = RenderManager.renderCanvasHeight;
-    RenderManager.changeRenderCanvasCSSSize(
+    RenderManager.changeRenderCanvasStyleVariable(
       RenderManager.renderCanvasWidth,
       RenderManager.renderCanvasHeight
     );
   }
 
-  /*
-   * 브라우저의 크기에 따라 canvas의 크기를 변경한다.
+  /**
+   * 브라우저의 크기에 따라 canvas의 크기를 조절한다.
+   * 조절한 크기를 renderCanvas의 style에 적용한다.
    */
   static updateRenderCanvasSizeByWindowSize() {
     const canvasRatio =
@@ -99,24 +117,30 @@ export default class RenderManager {
     }
 
     // 완성된 크기를 canvas의 style에 업데이트한다.
-    RenderManager.changeRenderCanvasCSSSize(
+    RenderManager.changeRenderCanvasStyleVariable(
       renderCanvasStyleWidth,
       renderCanvasStyleHeight
     );
   }
 
-  /*
+  /**
    * renderCanvas의 style에 사용되는 변수를 업데이트하여
    * 화면에 나타나는 renderCanvans의 크기를 변경한다.
+   *
+   * @param {number} width - 가로 크기
+   * @param {number} height - 세로 크기
    */
-  static changeRenderCanvasCSSSize(width, height) {
+  static changeRenderCanvasStyleVariable(width, height) {
     const renderCanvas = RenderManager.getRenderCanvas();
     renderCanvas.style.setProperty("--render-canvas-width", width);
     renderCanvas.style.setProperty("--render-canvas-height", height);
   }
 
-  /*
+  /**
    * bufferCanvas의 크기(width, height)를 변경한다.
+   *
+   * @param {number} width - 가로 크기
+   * @param {number} height - 세로 크기
    */
   static changeBufferCanvasResolution(width, height) {
     const bufferCanvas = RenderManager.getBufferCanvas();
@@ -124,8 +148,11 @@ export default class RenderManager {
     bufferCanvas.height = height;
   }
 
-  /*
+  /**
    * renderCanvas를 getElementById로 찾아 반환한다.
+   * 만약 존재하지 않는 element라면 새로 element를 생성해 반환한다.
+   *
+   * @returns {RenderCanvasContext2d}
    */
   static getRenderCanvas() {
     if (RenderManager.renderCanvas === undefined) {
@@ -142,8 +169,11 @@ export default class RenderManager {
     return RenderManager.renderCanvas;
   }
 
-  /*
+  /**
    * bufferCanvas를 getElementById로 찾아 반환한다.
+   * 만약 존재하지 않는 element라면 새로 element를 생성해 반환한다.
+   *
+   * @returns {RenderCanvasContext2d}
    */
   static getBufferCanvas() {
     if (RenderManager.bufferCanvas === undefined) {

@@ -4,7 +4,16 @@
  */
 import { clamp } from "/src/engine/utils.js";
 
+/** rgba에 해당하는 색상값을 나타낸다. */
 export default class Color {
+  /**
+   * 각각의 rgba값을 설정한다.
+   *
+   * @param {number} r - 빨간색
+   * @param {number} g - 초록색
+   * @param {number} b - 파란색
+   * @param {number} a - 투명도
+   */
   constructor(r, g, b, a) {
     this.r = r;
     this.g = g;
@@ -12,25 +21,14 @@ export default class Color {
     this.a = a;
   }
 
-  /*
+  /**
    * 각각의 색상값을 배열로 담아 반환한다.
    * 반환 형태는 [r, g, b, a] 이다.
+   *
+   * @returns {array} 각각의 색상값이 저장된 배열
    */
   toArray() {
     const clamped = this.clamp();
     return [clamped.r, clamped.g, clamped.b, clamped.a];
-  }
-
-  /*
-   * 각각의 색상값을 0~255 사이로 한정시켜 반환한다.
-   * Alpha값은 0~1 사이로 한정되어 반환된다.
-   */
-  clamp() {
-    const clamped = new Color();
-    clamped.r = clamp(this.r, 0, 255);
-    clamped.g = clamp(this.g, 0, 255);
-    clamped.b = clamp(this.b, 0, 255);
-    clamped.a = clamp(this.a, 0, 1);
-    return clamped;
   }
 }

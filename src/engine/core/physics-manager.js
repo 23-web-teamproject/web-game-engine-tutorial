@@ -71,13 +71,13 @@ export default class PhysicsManager {
      * 물체의 충돌을 계산하여 속도를 변화시킨다.
      */
     manifoldList.forEach((manifold) => {
-      manifold.objA.onCollision(manifold.objB);
-      manifold.objB.onCollision(manifold.objA);
       PhysicsManager.applyImpulse(
         manifold.objA,
         manifold.objB,
         manifold.normal
       );
+      manifold.objA.onCollision(manifold.objB);
+      manifold.objB.onCollision(manifold.objA);
     });
 
     /*

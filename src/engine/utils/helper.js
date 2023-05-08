@@ -10,10 +10,11 @@ const clamp = (value, min, max) => {
   return Math.min(max, Math.max(min, value));
 };
 
-/** @function
+/**
  * value의 타입이 Type이라면 value를 그대로 반환하고,
  * 그렇지 않으면 defaultValue를 반환한다.
  *
+ * @function typeCheck
  * @param {any} value - 타입 검사의 대상
  * @param {any} Type - 지정된 타입
  * @param {any} defaultValue - value의 타입이 Type이 아닐 때 반환될 기본값
@@ -39,10 +40,11 @@ const typeCheck = (value, Type, defaultValue) => {
   }
 };
 
-/** @function
+/**
  * value의 타입이 number라면 min과 max사이로 값을 강제하고,
  * 그렇지 않으면 defaultValue를 반환한다.
  *
+ * @function typeCheckAndClamp
  * @param {any} value - 타입 검사의 대상
  * @param {number} Type - 지정된 타입
  * @param {number} defaultValue - value의 타입이 Type이 아닐 때 반환될 기본값
@@ -55,10 +57,11 @@ const typeCheckAndClamp = (value, Type, defaultValue, min, max) => {
   return clamp(typeCheckedValue, min, max);
 };
 
-/** @function
+/**
  * 주어진 객체가 갖고 있는 프로퍼티중에
  * value를 값으로 갖는 키를 반환한다.
  *
+ * @function findKeyInObjectWithValue
  * @param {object} object - 프로퍼티를 조사할 객체
  * @param {object} value - 찾으려는 객체
  * @returns {string} value를 값으로 갖는 키

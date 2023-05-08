@@ -49,46 +49,46 @@ import { typeCheckAndClamp } from "/src/engine/utils.js";
 export default class Timer {
   constructor() {
     /**
-     * @property {number} currentTime
-     *
      * 현재 프레임의 시간을 말한다.
      * 웹페이지가 열린 후 지난 시간이 저장된다.
+     *
+     * @type {number}
      */
     this.currentTime = this.getCurrentTime();
     /**
-     * @property {number} currentTime
-     *
      * 이전 프레임의 시간을 말한다.
+     *
+     * @type {number}
      */
     this.previousTime = this.currentTime;
     /**
-     * @property {number} deltaTime
-     *
      * 현재 프레임의 시간과 이전 프레임의 시간의 차를 말한다.
+     *
+     * @type {number}
      */
     this.deltaTime = 0;
     /**
-     * @property {number} accumulatedTime
-     *
      * 매 프레임마다 누적된 deltaTime을 저장한다.
+     *
+     * @type {number}
      */
     this.accumulatedTime = 0;
     /**
-     * @property {number} fps
-     *
      * 1초에 보여줄 프레임의 개수를 말한다.
      * 기본값으로 60이고, 24부터 MAX_VALUE 사이의 값을 저장할 수 있다.
+     *
+     * @type {number}
      */
     this.fps = 24;
     this.setFps(60);
     /**
-     * @property {number} currentTime
-     *
      * 물리엔진에서는 가속도를 적분하여 속도를 나타내고,
      * 속도를 적분하여 이동거리를 나타내기 때문에
      * 정확한 연산을 위해서는 수식에서 사용할 ∇t가 일정해야한다.
      * 따라서 fixedDeltaTime은 이론적으로 1 프레임을 렌더링할 때
      * 걸리는 시간을 ∇t로 정한다.
+     *
+     * @type {number}
      */
     this.fixedDeltaTime = 0;
     this.setFixedDeltaTime();

@@ -1,18 +1,35 @@
-/*
- * 화면에 문자열을 보이려면 Text를 사용하면 된다.
- */
 import GameObject from "/src/engine/core/game-object.js";
 
 import { typeCheck } from "/src/engine/utils.js";
 
+/**
+ * 화면에 문자열을 그리는 객체다.
+ *
+ * @extends {GameObject}
+ */
 export default class Text extends GameObject {
+  /**
+   * @constructor
+   * @param {object} options
+   * @param {string} [options.text]
+   * @param {number} [options.fontSize]
+   * @param {string} [options.font]
+   * @param {number} [options.lineHeight]
+   * @param {Color} [options.color]
+   * @param {boolean} [options.isPhysicsEnable]
+   * @param {Transform} [options.transform]
+   * @param {RigidBody} [options.rigidbody]
+   */
   constructor(options) {
     super(options);
-    /*
+    /**
      * 화면에 보여질 문자열을 말한다.
      * 줄바꿈을 하고 싶다면 문자열에 '\n'을 넣으면 된다.
      * 이렇게 하면 '\n'을 기준으로 문자열을 나눠서
      * 한 줄씩 여러번 출력하게 된다.
+     * 기본값은 팬그램 문자열이다.
+     *
+     * @type {string}
      */
     this.text = typeCheck(
       options.text,
@@ -21,21 +38,27 @@ export default class Text extends GameObject {
 The Quick Brown Fox Jumps Over The Lazy Dog`
     );
     this.parseText();
-    /*
+    /**
      * 글자 크기를 말한다.
      * 기본값은 12다.
+     *
+     * @type {number}
      */
     this.fontSize = typeCheck(options.fontSize, "number", 12);
-    /*
+    /**
      * 폰트를 말한다.
      * 만약 외부 폰트를 사용하려고 한다면
      * style.css에서 @import(url)로 불러와야 사용가능하다.
      * 기본값은 맑은 고딕(malgeun gothic)이다.
+     *
+     * @type {string}
      */
     this.font = typeCheck(options.font, "string", "malgeun gothic");
-    /*
+    /**
      * 줄 간격을 말한다.
-     * 기본값으로는 fontSize의 1.25배다.
+     * 기본값은 fontSize의 1.25배다.
+     *
+     * @type {number}
      */
     this.lineHeight = typeCheck(
       options.lineHeight,
@@ -56,10 +79,12 @@ The Quick Brown Fox Jumps Over The Lazy Dog`
     }
   }
 
-  /*
+  /**
    * 문자열을 지정한다.
    * 인자로 전달된 문자열을 파싱해 '\n'이 포함되어 있다면
    * '\n'을 기준으로 문자열을 쪼갠다.
+   *
+   * @param {string} text - 화면에 그릴 문자열
    */
   setText(text) {
     if (typeof text === "string") {
@@ -68,7 +93,7 @@ The Quick Brown Fox Jumps Over The Lazy Dog`
     }
   }
 
-  /*
+  /**
    * '\n'을 기준으로 문자열을 나눈다.
    */
   parseText() {
@@ -79,8 +104,10 @@ The Quick Brown Fox Jumps Over The Lazy Dog`
     }
   }
 
-  /*
+  /**
    * 글자 크기를 정한다.
+   *
+   * @param {number} fontSize
    */
   setFontSize(fontSize) {
     if (typeof fontSize === "number") {
@@ -88,8 +115,10 @@ The Quick Brown Fox Jumps Over The Lazy Dog`
     }
   }
 
-  /*
+  /**
    * 폰트를 정한다.
+   *
+   * @param {string} font
    */
   setFont(font) {
     if (typeof font === "string") {
@@ -97,8 +126,10 @@ The Quick Brown Fox Jumps Over The Lazy Dog`
     }
   }
 
-  /*
+  /**
    * 줄 간격을 정한다.
+   *
+   * @param {number} fontSize
    */
   setLineHeight(lineHeight) {
     if (typeof lineHeight === "number") {
