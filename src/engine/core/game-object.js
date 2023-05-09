@@ -181,47 +181,19 @@ export default class GameObject {
    * 이 객체를 상속받은 Rect나 Circle처럼 자식객체에 따라
    * 각각 다른 렌더링이 수행된다.
    * 그 후 이 객체의 모든 자식들을 렌더링한다.
-   *
-   * @param {number} alpha - 이전 프레임과 현재 프레임간 선형보간을 위한 값
    */
-  render(alpha) {
+  render() {
     this.beforeDraw();
 
-    this.interpolateMatrixWithPreviousMatrix(alpha);
     this.setTransform();
 
     this.draw();
 
     this.childList.forEach((child) => {
-      child.render(alpha);
+      child.render();
     });
 
     this.afterDraw();
-  }
-
-  /**
-   * 이전 프레임의 matrix와 이후 프레임의 matrix을
-   * 선형보간한 matrix를 만든다.
-   *
-   * @param {number} alpha - 이전 프레임과 현재 프레임간 선형보간을 위한 값
-   */
-  interpolateMatrixWithPreviousMatrix(alpha) {
-    const interpolatedMatrix = new Matrix();
-    interpolatedMatrix.a =
-      this.previousMatrix.a * alpha + this.matrix.a * (1 - alpha);
-    interpolatedMatrix.b =
-      this.previousMatrix.b * alpha + this.matrix.b * (1 - alpha);
-    interpolatedMatrix.x =
-      this.previousMatrix.x * alpha + this.matrix.x * (1 - alpha);
-    interpolatedMatrix.c =
-      this.previousMatrix.c * alpha + this.matrix.c * (1 - alpha);
-    interpolatedMatrix.d =
-      this.previousMatrix.d * alpha + this.matrix.d * (1 - alpha);
-    interpolatedMatrix.y =
-      this.previousMatrix.y * alpha + this.matrix.y * (1 - alpha);
-
-    this.previousMatrix = this.matrix;
-    this.matrix = interpolatedMatrix;
   }
 
   /**

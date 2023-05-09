@@ -36,13 +36,11 @@ export default class RenderManager {
    * 1. 먼저 게임화면의 크기를 브라우저의 크기에 맞춘다.
    * 2. 그다음 화면을 지운다.
    * 3. 깨끗해진 화면에 현재 프레임의 모든 오브젝트를 렌더링한다.
-   *
-   * @param {number} alpha - 이전 프레임과 현재 프레임간 선형보간을 위한 값
    */
-  static render(alpha) {
+  static render() {
     RenderManager.updateRenderCanvasSizeByWindowSize();
     RenderManager.clearScreen();
-    SceneManager.getCurrentScene().render(alpha);
+    SceneManager.getCurrentScene().render();
   }
 
   /**
