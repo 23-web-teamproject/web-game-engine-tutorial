@@ -27,12 +27,25 @@ export default class Sprite extends GameObject {
    */
   constructor(options = {}) {
     super(options);
+    // 이미지가 완전히 로딩되기 전까지 isActive를 false로 만든다.
+    this.deactivate();
+
     /**
      * 화면에 보여질 이미지를 의미한다.
      *
      * @type {HTMLImageElement}
      */
-    this.image = ResourceManager.loadResource(options.imagePath, Image);
+    this.image = ResourceManager.loadResource(
+      options.imagePath,
+      Image,
+      () => {
+        // 이미지가 완전히 불러와졌다면 isActive를 true로 만든다.
+        this.transform.setSize(
+          new Vector(this.image.naturalWidth, this.image.naturalHeight)
+        );
+        this.activate();
+      }
+    );
 
     /**
      * 색상 오버레이를 씌울 것인지를 의미한다.
@@ -105,7 +118,7 @@ export default class Sprite extends GameObject {
       // 버퍼 캔버스에 그려진 이미지를 주 캔버스에 렌더링한다.
       this.context2d.drawImage(buffer, -size.x / 2, -size.y / 2);
     } else {
-    this.context2d.drawImage(
+      this.context2d.drawImage(
         this.image,
         -this.getSize().x / 2,
         -this.getSize().y / 2

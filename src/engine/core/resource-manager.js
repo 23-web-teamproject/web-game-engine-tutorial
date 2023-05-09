@@ -12,13 +12,14 @@ class ResourceLoaderFactory {
    *
    * @param {string} path - 리소스의 경로
    * @param {Audio|Image} Element - 리소스를 생성할 객체의 타입
+   * @param {function} callback - 리소스가 생성된 이후에 실행할 콜백함수
    * @returns
    */
-  static create(path, constructor) {
+  static create(path, constructor, callback) {
     if (constructor.name === "Audio") {
-      return new AudioResourceLoader(path, constructor.name);
+      return new AudioResourceLoader(path, constructor.name, callback);
     } else if (constructor.name === "Image") {
-      return new ImageResourceLoader(path, constructor.name);
+      return new ImageResourceLoader(path, constructor.name, callback);
     }
   }
 }
@@ -45,8 +46,10 @@ class ResourceLoader {
    * @constructor
    * @param {string} path - 리소스의 경로
    * @param {string} constructorName - 리소스를 생성할 생성자명
+   * @param {function} callback - 리소스가 생성된 이후에 실행할 콜백함수
    */
-  constructor(path, constructorName) {
+  constructor(path, constructorName, callback) {
+    this.callback = callback;
     if (typeof path === "string") {
       this.path = Path.convertToAbsoluteAssetPath(path);
     } else {
@@ -75,9 +78,10 @@ class AudioResourceLoader extends ResourceLoader {
    * @constructor
    * @param {string} path - 리소스의 경로
    * @param {string} constructorName - 리소스를 생성할 생성자명
+   * @param {function} callback - 리소스가 생성된 이후에 실행할 콜백함수
    */
-  constructor(path, constructorName) {
-    super(path, constructorName);
+  constructor(path, constructorName, callback) {
+    super(path, constructorName, callback);
   }
 
   /**
@@ -86,7 +90,10 @@ class AudioResourceLoader extends ResourceLoader {
    */
   load() {
     const resource = new Audio(this.path);
-    resource.addEventListener("loadeddata", ResourceManager.onResourceLoad);
+    resource.addEventListener("loadeddata", () => {
+      ResourceManager.onResourceLoad();
+      this.callback();
+    });
     return resource;
   }
 }
@@ -101,9 +108,10 @@ class ImageResourceLoader extends ResourceLoader {
    * @constructor
    * @param {string} path - 리소스의 경로
    * @param {string} constructorName - 리소스를 생성할 생성자명
+   * @param {function} callback - 리소스가 생성된 이후에 실행할 콜백함수
    */
-  constructor(path, constructorName) {
-    super(path, constructorName);
+  constructor(path, constructorName, callback) {
+    super(path, constructorName, callback);
   }
 
   /**
@@ -113,7 +121,10 @@ class ImageResourceLoader extends ResourceLoader {
   load() {
     const resource = new Image();
     resource.src = this.path;
-    resource.addEventListener("load", ResourceManager.onResourceLoad);
+    resource.addEventListener("load", () => {
+      ResourceManager.onResourceLoad();
+      this.callback();
+    });
     return resource;
   }
 }
@@ -127,7 +138,7 @@ export default class ResourceManager {
   static loadedResourceCount = 0;
   /** @type {number} @static */
   static totalResourceCount = 0;
-  /** @type {boolean @static} */
+  /** @type {boolean} @static */
   static isRunEngineEventOccurred = false;
 
   constructor() {}
@@ -137,11 +148,16 @@ export default class ResourceManager {
    * 이 때 리소스를 생성할 객체는 Element다.
    *
    * @param {string} path - 리소스의 경로
-   * @param {Audio|Image} constructor - 리소스를 생성할 생성자
+   * @param {Audio.constructor|Image.constructor} constructor - 리소스를 생성할 생성자
+   * @param {function} [callback=() => {}] - 리소스가 생성된 이후에 실행할 콜백함수
    * @returns {HTMLAudioElement|HTMLImageElement}
    */
-  static loadResource(path, constructor) {
-    const resourceLoader = ResourceLoaderFactory.create(path, constructor);
+  static loadResource(path, constructor, callback = () => {}) {
+    const resourceLoader = ResourceLoaderFactory.create(
+      path,
+      constructor,
+      callback
+    );
 
     ResourceManager.addResourceCount(1);
 
