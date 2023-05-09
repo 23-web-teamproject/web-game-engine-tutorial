@@ -1,12 +1,3 @@
-/*
- * 씬 객체에 물리효과를 적용하는 책임은 PhysicsManager이 맡는다.
- * 물리효과를 적용할 객체들에게만 물리효과를 적용한다.
- *
- * 참고한 사이트
- * https://github.com/tutsplus/ImpulseEngine/
- * https://github.com/Kareus/SP2C/
- * https://kareus.tistory.com/15
- */
 import {
   BoxCollider,
   CircleCollider,
@@ -15,14 +6,27 @@ import {
 import BoxCollisionResolver from "/src/engine/core/box-collision-resolver.js";
 import CircleCollisionResolver from "/src/engine/core/circle-collision-resolver.js";
 
+/**
+ * 씬 객체에 물리효과를 적용하는 책임은 PhysicsManager이 맡는다.
+ * 물리효과를 적용할 객체들에게만 물리효과를 적용한다.
+ *
+ * 참고한 사이트
+ * https://github.com/tutsplus/ImpulseEngine/
+ * https://github.com/Kareus/SP2C/
+ * https://kareus.tistory.com/15
+ */
 export default class PhysicsManager {
+  /** @type {array} @static */
   static physicsEnableGameObjectList = new Array();
 
   constructor() {}
 
-  /*
+  /**
    * 씬 객체 내에 존재하는 오브젝트들중
    * 물리효과가 켜진 오브젝트들에게 물리효과를 계산해 적용한다.
+   *
+   * @param {GameObject} scene - 현재 씬
+   * @param {number} deltaTime - 이전 프레임과 현재 프레임의 시간차
    */
   static update(scene, deltaTime) {
     PhysicsManager.collectPhysicsEnabledGameObjectToList(scene);
@@ -60,14 +64,14 @@ export default class PhysicsManager {
       }
     }
 
-    /*
+    /**
      * 물체의 가속도를 적분하여 속도에 누적한다.
      */
     objectList.forEach((obj) => {
       obj.integrateForce(deltaTime);
     });
 
-    /*
+    /**
      * 물체의 충돌을 계산하여 속도를 변화시킨다.
      */
     manifoldList.forEach((manifold) => {
@@ -80,14 +84,14 @@ export default class PhysicsManager {
       manifold.objB.onCollision(manifold.objA);
     });
 
-    /*
+    /**
      * 속도를 적분하여 좌표값에 누적한다.
      */
     objectList.forEach((obj) => {
       obj.integrateVelocity(deltaTime);
     });
 
-    /*
+    /**
      * 서로 겹쳐지는 상황을 피하기 위해
      * 겹친 도형끼리 멀어지는 연산을 한다.
      */
@@ -99,10 +103,12 @@ export default class PhysicsManager {
     PhysicsManager.physicsEnableGameObjectList = new Array();
   }
 
-  /*
+  /**
    * 씬 객체 내에 존재하는 모든 오브젝트들중
    * 물리효과를 받는 오브젝트들만 모아 리스트에 담는다.
    * 모든 객체를 조사해야하기 때문에 재귀호출하여 탐색한다.
+   *
+   * @param {GameObject} scene - 현재 씬
    */
   static collectPhysicsEnabledGameObjectToList(scene) {
     scene.childList.forEach((child) => {
@@ -116,8 +122,12 @@ export default class PhysicsManager {
     });
   }
 
-  /*
+  /**
    * 두 객체에게 충격량을 적용한다.
+   *
+   * @param {GameObject} objA - 서로 충돌한 객체1
+   * @param {GameObject} objB - 서로 충돌한 객체2
+   * @param {Vector} normal - 반작용 방향
    */
   static applyImpulse(objA, objB, normal) {
     const diff = objB.getVelocity().minus(objA.getVelocity());
@@ -146,8 +156,13 @@ export default class PhysicsManager {
     PhysicsManager.applyFriction(objA, objB, normal, j);
   }
 
-  /*
+  /**
    * 정지 마찰 계수와 운동 마찰 계수를 통해 마찰력을 적용한다.
+   *
+   * @param {GameObject} objA - 서로 충돌한 객체1
+   * @param {GameObject} objB - 서로 충돌한 객체2
+   * @param {Vector} normal - 반작용 방향
+   * @param {number} j - 충격량
    */
   static applyFriction(objA, objB, normal, j) {
     // 충격이 전달된 후의 속도로 계산을 진행한다.
@@ -190,9 +205,11 @@ export default class PhysicsManager {
     objB.addVelocity(frictionImpulse.multiply(objB.getInverseMass()));
   }
 
-  /*
+  /**
    * 충돌처리가 되었지만 서서히 빠져버리는 버그를 해결하기 위해
    * 충돌된 위치에서 정해진 값만큼 강제로 떨어지게 한다.
+   *
+   * @param {Manifold} manifold - 충돌체크의 결과
    */
   static positionalCorrection(manifold) {
     const percentage = 0.4; // ??? 0.2 ~ 0.8

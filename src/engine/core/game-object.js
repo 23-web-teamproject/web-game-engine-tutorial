@@ -19,6 +19,8 @@ export default class GameObject {
   /**
    * @constructor
    * @param {object} [options]
+   * @param {boolean} [isActive]
+   * @param {boolean} [isVisible]
    * @param {Color} [options.color=Random Color]
    * @param {boolean} [options.isPhysicsEnable=false]
    * @param {Transform} [options.transform]
@@ -31,6 +33,22 @@ export default class GameObject {
      * @type {CanvasRenderingContext2d}
      */
     this.context2d = RenderManager.getRenderCanvas().getContext("2d");
+    /**
+     * 화면에 이 객체를 그릴 것인지를 의미한다.
+     * 기본값은 true다.
+     *
+     * @type {boolean}
+     */
+    this.isVisible = typeCheck(options.isVisible, "boolean", true);
+    /**
+     * 이 객체가 활성상태인지 의미한다.
+     * 만약 이 값이 false라면 update와 render가 실행되지 않는다.
+     * 이 값이 false라면 물리엔진에서도 수집하지 않는다.
+     * 기본값은 true다.
+     *
+     * @type {boolean}
+     */
+    this.isActive = typeCheck(options.isActive, "boolean", true);
     /**
      * 물리효과를 위한 강체다.
      *
@@ -119,9 +137,11 @@ export default class GameObject {
    * @param {number} deltaTime - 이전 프레임과 현재 프레임의 시간차
    */
   update(deltaTime) {
-    this.childList.forEach((child) => {
-      child.update(deltaTime);
-    });
+    if (this.isActive) {
+      this.childList.forEach((child) => {
+        child.update(deltaTime);
+      });
+    }
   }
 
   /**
@@ -164,15 +184,17 @@ export default class GameObject {
    * calculateMatrix를 호출한다.
    */
   calculateMatrix() {
-    if (this.hasParentGameObject()) {
-      this.multiplyParentMatrix();
-    } else {
-      this.matrix = this.transform.toMatrix();
-    }
+    if (this.isActive) {
+      if (this.hasParentGameObject()) {
+        this.multiplyParentMatrix();
+      } else {
+        this.matrix = this.transform.toMatrix();
+      }
 
-    this.childList.forEach((child) => {
-      child.calculateMatrix();
-    });
+      this.childList.forEach((child) => {
+        child.calculateMatrix();
+      });
+    }
   }
 
   /**
@@ -181,47 +203,21 @@ export default class GameObject {
    * 이 객체를 상속받은 Rect나 Circle처럼 자식객체에 따라
    * 각각 다른 렌더링이 수행된다.
    * 그 후 이 객체의 모든 자식들을 렌더링한다.
-   *
-   * @param {number} alpha - 이전 프레임과 현재 프레임간 선형보간을 위한 값
    */
-  render(alpha) {
-    this.beforeDraw();
+  render() {
+    if (this.isActive) {
+      this.beforeDraw();
 
-    this.interpolateMatrixWithPreviousMatrix(alpha);
-    this.setTransform();
+      this.setTransform();
 
-    this.draw();
+      this.draw();
 
-    this.childList.forEach((child) => {
-      child.render(alpha);
-    });
+      this.childList.forEach((child) => {
+        child.render();
+      });
 
-    this.afterDraw();
-  }
-
-  /**
-   * 이전 프레임의 matrix와 이후 프레임의 matrix을
-   * 선형보간한 matrix를 만든다.
-   *
-   * @param {number} alpha - 이전 프레임과 현재 프레임간 선형보간을 위한 값
-   */
-  interpolateMatrixWithPreviousMatrix(alpha) {
-    const interpolatedMatrix = new Matrix();
-    interpolatedMatrix.a =
-      this.previousMatrix.a * alpha + this.matrix.a * (1 - alpha);
-    interpolatedMatrix.b =
-      this.previousMatrix.b * alpha + this.matrix.b * (1 - alpha);
-    interpolatedMatrix.x =
-      this.previousMatrix.x * alpha + this.matrix.x * (1 - alpha);
-    interpolatedMatrix.c =
-      this.previousMatrix.c * alpha + this.matrix.c * (1 - alpha);
-    interpolatedMatrix.d =
-      this.previousMatrix.d * alpha + this.matrix.d * (1 - alpha);
-    interpolatedMatrix.y =
-      this.previousMatrix.y * alpha + this.matrix.y * (1 - alpha);
-
-    this.previousMatrix = this.matrix;
-    this.matrix = interpolatedMatrix;
+      this.afterDraw();
+    }
   }
 
   /**
@@ -287,6 +283,34 @@ export default class GameObject {
    */
   afterDraw() {
     this.context2d.restore();
+  }
+
+  /**
+   * isActive를 true로 설정한다.
+   */
+  activate() {
+    this.isActive = true;
+  }
+
+  /**
+   * isActive를 false로 설정한다.
+   */
+  deactivate() {
+    this.isActive = false;
+  }
+
+  /**
+   * isVisible을 true로 설정한다.
+   */
+  show() {
+    this.isVisible = true;
+  }
+
+  /**
+   * isVisible을 false로 설정한다.
+   */
+  hide() {
+    this.isVisible = false;
   }
 
   /**

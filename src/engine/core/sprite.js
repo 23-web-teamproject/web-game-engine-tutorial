@@ -3,6 +3,7 @@ import Vector from "/src/engine/data-structure/vector.js";
 
 import GameObject from "/src/engine/core/game-object.js";
 import RenderManager from "/src/engine/core/render-manager.js";
+import ResourceManager from "/src/engine/core/resource-manager.js";
 
 import Path from "/src/engine/utils/path.js";
 import { typeCheck } from "/src/engine/utils.js";
@@ -26,20 +27,26 @@ export default class Sprite extends GameObject {
    */
   constructor(options = {}) {
     super(options);
+    // 이미지가 완전히 로딩되기 전까지 isActive를 false로 만든다.
+    this.deactivate();
+
     /**
      * 화면에 보여질 이미지를 의미한다.
      *
      * @type {HTMLImageElement}
      */
-    this.image = new Image();
-    if (typeof options.imagePath === "string") {
-      this.image.src = Path.convertToAbsoluteAssetPath(options.imagePath);
-    } else {
-      Path.setAssetFolderPath("/src/engine/assets/");
-      this.image.src = Path.convertToAbsoluteAssetPath(
-        "defaultSpriteImage.png"
-      );
-    }
+    this.image = ResourceManager.loadResource(
+      options.imagePath,
+      Image,
+      () => {
+        // 이미지가 완전히 불러와졌다면 isActive를 true로 만든다.
+        this.transform.setSize(
+          new Vector(this.image.naturalWidth, this.image.naturalHeight)
+        );
+        this.activate();
+      }
+    );
+
     /**
      * 색상 오버레이를 씌울 것인지를 의미한다.
      * 기본값은 false다.
@@ -89,42 +96,28 @@ export default class Sprite extends GameObject {
       // 버퍼 캔버스의 크기를 현재 이미지의 크기로 설정한다.
       const size = this.getSize();
 
-      // 만약 이미지의 size가 0x0일 경우 drawImage()를 실행할 때
-      // 크기가 0인 이미지를 그린다는 에러가 일어난다.
-      // 그럴 경우를 위해 try-catch로 감싸주어 에러를 숨겼다.
-      try {
-        // 버퍼 캔버스를 초기화한다.
-        const buffer = RenderManager.getBufferCanvas();
-        const bufferCtx = buffer.getContext("2d");
-        bufferCtx.clearRect(0, 0, buffer.width, buffer.height);
+      // 버퍼 캔버스를 초기화한다.
+      const buffer = RenderManager.getBufferCanvas();
+      const bufferCtx = buffer.getContext("2d");
+      bufferCtx.clearRect(0, 0, buffer.width, buffer.height);
 
-        // 버퍼 캔버스에 이미지를 렌더링한다.
-        bufferCtx.drawImage(this.image, 0, 0);
-        bufferCtx.globalCompositeOperation = "source-atop";
+      // 버퍼 캔버스에 이미지를 렌더링한다.
+      bufferCtx.drawImage(this.image, 0, 0);
+      bufferCtx.globalCompositeOperation = "source-atop";
 
-        // 버퍼 캔버스에 source-atop 방식으로 오버레이를 입힌다.
-        bufferCtx.fillStyle = `rgba(
+      // 버퍼 캔버스에 source-atop 방식으로 오버레이를 입힌다.
+      bufferCtx.fillStyle = `rgba(
           ${this.overlayColor.r},
           ${this.overlayColor.g},
           ${this.overlayColor.b},
           ${this.overlayColor.a}
         )`;
-        bufferCtx.fillRect(0, 0, size.x, size.y);
-        bufferCtx.globalCompositeOperation = "source-over";
+      bufferCtx.fillRect(0, 0, size.x, size.y);
+      bufferCtx.globalCompositeOperation = "source-over";
 
-        // 버퍼 캔버스에 그려진 이미지를 주 캔버스에 렌더링한다.
-        this.context2d.drawImage(buffer, -size.x / 2, -size.y / 2);
-      } catch (error) {
-        throw error;
-      }
+      // 버퍼 캔버스에 그려진 이미지를 주 캔버스에 렌더링한다.
+      this.context2d.drawImage(buffer, -size.x / 2, -size.y / 2);
     } else {
-      // TODO
-      // 사이즈가 0이면 그리지 않는다.
-      // 하지만 다른 객체들은 출력이 됐기 때문에 올바른 렌더링이 아니다.
-      // 엔진을 초기화할 때 완전히 초기화되지 않았다면 업데이트하지 말아야 한다.
-      if (this.getSize().isEquals(new Vector(0, 0))) {
-        return;
-      }
       this.context2d.drawImage(
         this.image,
         -this.getSize().x / 2,
@@ -137,11 +130,11 @@ export default class Sprite extends GameObject {
    * 이 객체의 물리적인 크기를 이미지의 크기로 설정한다.
    */
   updateSize() {
-    this.image.onload = () => {
+    this.image.addEventListener("load", () => {
       this.transform.setSize(
         new Vector(this.image.naturalWidth, this.image.naturalHeight)
       );
-    };
+    });
   }
 
   /**

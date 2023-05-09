@@ -8,19 +8,14 @@ import {
 
 import { Timer } from "/src/engine/utils.js";
 
-/**
- * TODO
- * 나중에는 페이지를 열었을 때 화면 해상도와 프레임을 결정하도록 할 계획이다.
- * 그 기능을 개발하고 나면 window.onload에 등록하지 않도록 해야한다.
- */
-window.onload = () => {
+window.addEventListener("runEngine", () => {
   const engine = new Engine();
 
   // requestAnimationFrame으로 매 프레임마다 렌더링할 수 있지만
   // 그렇게 된다면 프레임을 변경한 효과가 드러나지 않기 때문에
   // 어쩔 수 없이 fixedDeltaTime마다 run을 호출하는 방향으로 정했다.
   setInterval(engine.run, 1000 * Engine.timer.fixedDeltaTime);
-};
+});
 
 /**
  * 게임 로직을 실행하고 물리효과를 적용시키며 화면에 렌더링하는 엔진이다.
