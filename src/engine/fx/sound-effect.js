@@ -1,13 +1,15 @@
+import ResourceManager from "/src/engine/core/resource-manager.js";
+
 /**
  * 사운드파일을 제어하는 역할을 담당한다.
  */
 export default class SoundEffect {
   /**
    * @constructor
-   * @param {string} src - 사운드파일의 경로
+   * @param {string} path - 사운드파일의 경로
    */
-  constructor(src) {
-    this.source = new Audio(src);
+  constructor(path) {
+    this.source = ResourceManager.loadResource(path, Audio);
   }
 
   /**
