@@ -112,12 +112,14 @@ export default class PhysicsManager {
    */
   static collectPhysicsEnabledGameObjectToList(scene) {
     scene.childList.forEach((child) => {
-      if (child.isPhysicsEnable) {
-        PhysicsManager.physicsEnableGameObjectList.push(child);
-      }
+      if (child.isActive) {
+        if (child.isPhysicsEnable) {
+          PhysicsManager.physicsEnableGameObjectList.push(child);
+        }
 
-      if (child.childList.length > 0) {
-        PhysicsManager.collectPhysicsEnabledGameObjectToList(child);
+        if (child.childList.length > 0) {
+          PhysicsManager.collectPhysicsEnabledGameObjectToList(child);
+        }
       }
     });
   }
