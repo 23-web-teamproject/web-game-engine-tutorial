@@ -9,15 +9,6 @@ import {
 
 import { Timer } from "/src/engine/utils.js";
 
-window.addEventListener("runEngine", () => {
-  const engine = new Engine();
-
-  // requestAnimationFrame으로 매 프레임마다 렌더링할 수 있지만
-  // 그렇게 된다면 프레임을 변경한 효과가 드러나지 않기 때문에
-  // 어쩔 수 없이 fixedDeltaTime마다 run을 호출하는 방향으로 정했다.
-  setInterval(engine.run, 1000 * Engine.timer.fixedDeltaTime);
-});
-
 /**
  * 게임 로직을 실행하고 물리효과를 적용시키며 화면에 렌더링하는 엔진이다.
  */
@@ -49,7 +40,12 @@ export default class Engine {
     LayerManager.initializePhysicsInteractionState();
 
     // 씬을 불러온다.
-    SceneManager.changeScene(settings.scene);
+    // 씬의 모든 리소스가 로드되었을 때 엔진을 실행하는
+    // 콜백함수를 인자로 넘겨준다.
+    SceneManager.loadScene(settings.scene, () => {
+      const engine = new Engine();
+      setInterval(engine.run, 1000 * Engine.timer.fixedDeltaTime);
+    });
   }
 
   /**
@@ -79,8 +75,7 @@ export default class Engine {
     SceneManager.getCurrentScene().calculateMatrix();
 
     // 모든 오브젝트를 canvas에 그린다.
-    const alpha = Engine.timer.accumulatedTime / Engine.timer.fixedDeltaTime;
-    RenderManager.render(alpha);
+    RenderManager.render();
 
     // 삭제되길 기다리는 오브젝트가 있다면 모두 삭제한다.
     DestroyManager.destroyAll();
