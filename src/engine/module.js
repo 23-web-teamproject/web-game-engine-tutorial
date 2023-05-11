@@ -11,11 +11,13 @@
 import Color from "/src/engine/data-structure/color.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
 import Vector from "/src/engine/data-structure/vector.js";
+import { DefaultLayer, Layer, TerrainLayer } from "/src/engine/data-structure/layer.js";
 
 import Circle from "/src/engine/core/circle.js";
 import DestroyManager from "/src/engine/core/destroy-manager.js";
 import GameObject from "/src/engine/core/game-object.js";
 import InputManager from "/src/engine/core/input-manager.js";
+import LayerManager from "/src/engine/core/layer-manager.js";
 import PhysicsManager from "/src/engine/core/physics-manager.js";
 import Rect from "/src/engine/core/rect.js";
 import RenderManager from "/src/engine/core/render-manager.js";
@@ -28,12 +30,16 @@ import ParticleEffect from "/src/engine/fx/particle-effect.js";
 
 export {
   Color,
+  DefaultLayer,
+  Layer,
   Matrix,
+  TerrainLayer,
   Vector,
   Circle,
   DestroyManager,
   GameObject,
   InputManager,
+  LayerManager,
   PhysicsManager,
   RenderManager,
   Rect,

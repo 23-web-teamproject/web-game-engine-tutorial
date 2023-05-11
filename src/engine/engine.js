@@ -4,6 +4,7 @@ import {
   RenderManager,
   PhysicsManager,
   DestroyManager,
+  LayerManager,
 } from "/src/engine/module.js";
 
 import { Timer } from "/src/engine/utils.js";
@@ -43,6 +44,9 @@ export default class Engine {
 
     // canvas의 해상도를 변경한다.
     RenderManager.changeResolution(settings.width, settings.height);
+
+    // 레이어 상태를 초기화한다.
+    LayerManager.initializePhysicsInteractionState();
 
     // 씬을 불러온다.
     SceneManager.changeScene(settings.scene);

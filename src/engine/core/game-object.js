@@ -1,4 +1,5 @@
 import Color from "/src/engine/data-structure/color.js";
+import { DefaultLayer, Layer, TerrainLayer } from "/src/engine/data-structure/layer.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
 import Transform from "/src/engine/data-structure/transform.js";
 import RigidBody from "/src/engine/data-structure/rigidbody.js";
@@ -19,8 +20,9 @@ export default class GameObject {
   /**
    * @constructor
    * @param {object} [options]
-   * @param {boolean} [isActive]
-   * @param {boolean} [isVisible]
+   * @param {boolean} [options.isActive]
+   * @param {boolean} [options.isVisible]
+   * @param {Layer} [options.layer]
    * @param {Color} [options.color=Random Color]
    * @param {boolean} [options.isPhysicsEnable=false]
    * @param {Transform} [options.transform]
@@ -49,6 +51,12 @@ export default class GameObject {
      * @type {boolean}
      */
     this.isActive = typeCheck(options.isActive, "boolean", true);
+    /**
+     * 객체의 레이어다.
+     *
+     * @type {Layer}
+     */
+    this.layer = typeCheck(options.layer, Layer, new DefaultLayer());
     /**
      * 물리효과를 위한 강체다.
      *
@@ -311,6 +319,15 @@ export default class GameObject {
    */
   hide() {
     this.isVisible = false;
+  }
+
+  /**
+   * 레이어를 반환한다.
+   *
+   * @return {Layer}
+   */
+  getLayer() {
+    return this.layer;
   }
 
   /**
