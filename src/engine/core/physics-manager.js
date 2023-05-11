@@ -52,7 +52,17 @@ export default class PhysicsManager {
       // 만약 충돌했을 경우 이벤트함수를 실행하고 물리효과를 적용한다.
       for (let j = i + 1; j < length; j++) {
         const other = objectList[j];
+        // 두 객체가 모두 static rigidbody일 경우에는
+        // 충돌체크를 하지 않는다.
         if (obj.rigidbody.isStatic && other.rigidbody.isStatic) {
+          continue;
+        }
+
+        // 두 객체의 레이어가 충돌체크를 하지 않는 레이어관계라면
+        // 충돌체크를 하지 않는다.
+        if (
+          obj.getLayer().canPhysicsInteractLayerWith(other.getLayer()) === false
+        ) {
           continue;
         }
         if (collisionResolver.isCollideWith(other)) {
@@ -112,12 +122,14 @@ export default class PhysicsManager {
    */
   static collectPhysicsEnabledGameObjectToList(scene) {
     scene.childList.forEach((child) => {
-      if (child.isPhysicsEnable) {
-        PhysicsManager.physicsEnableGameObjectList.push(child);
-      }
+      if (child.isActive) {
+        if (child.isPhysicsEnable) {
+          PhysicsManager.physicsEnableGameObjectList.push(child);
+        }
 
-      if (child.childList.length > 0) {
-        PhysicsManager.collectPhysicsEnabledGameObjectToList(child);
+        if (child.childList.length > 0) {
+          PhysicsManager.collectPhysicsEnabledGameObjectToList(child);
+        }
       }
     });
   }

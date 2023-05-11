@@ -1,3 +1,5 @@
+import ResourceManager from "/src/engine/core/resource-manager.js";
+
 /**
  * 씬 객체를 다루는 책임을 맡는다.
  * 엔진 내에서 씬을 교체한다거나 현재 씬 객체를 반환하는 일을 한다.
@@ -13,14 +15,42 @@ export default class SceneManager {
   constructor() {}
 
   /**
-   * currentScene에 새로운 씬을 생성해 저장한다.
-   * 엔진에서는 매 프레임마다 이 currentScene를 참조해
-   * update와 render를 실행하므로, 씬이 변경된 효과가 나타난다.
+   * 새로운 씬을 생성해 currentScene에 저장하여 씬을 교체한다.
+   * 만약 새로운 씬이 리소스를 불러와야 하는 객체를 갖고 있지 않으면
+   * 곧바로 씬을 교체하고, 그렇지 않으면 ResourceManager에
+   * 콜백함수를 등록하여 모든 리소스가 불러와졌을 때 콜백함수를 실행함으로
+   * currentScene을 교체하게 된다.
    *
-   * @param {GameObject} targetScene - 교체할 씬 객체
+   * @typedef {Gameobject.constructor} sceneConstructor
+   *
+   * @param {sceneConstructor} sceneConstructor
+   * @param {function} [callback=()=>{}]
    */
-  static changeScene(targetScene) {
-    SceneManager.currentScene = new targetScene();
+  static loadScene(sceneConstructor, callback = () => {}) {
+    const newScene = new sceneConstructor();
+    const changeScene = () => {
+      SceneManager.changeScene(newScene);
+      callback();
+    };
+
+    if (ResourceManager.getTotalResourceCount() === 0) {
+      changeScene();
+    } else {
+      ResourceManager.setAllResourceLoadedCallback(changeScene);
+    }
+  }
+
+  /**
+   * currentScene에 다른 씬을 저장한다.
+   * Engine에서 currentScene을 update, render하므로
+   * 결과적으로는 씬이 교체된다.
+   * 만약 리소스를 불러와야하는 객체가 포함된 씬이라면,
+   * loadScene을 이용해야한다.
+   *
+   * @param {GameObject} scene - 저장할 씬 객체
+   */
+  static changeScene(scene) {
+    SceneManager.currentScene = scene;
   }
 
   /**
