@@ -13,5 +13,6 @@ Engine.init({
   width: 1280,
   height: 720,
   fps: 24,
+  title: "gameEngine",
   scene: ExampleScene
 });

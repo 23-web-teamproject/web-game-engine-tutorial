@@ -7,7 +7,7 @@ import {
   LayerManager,
 } from "/src/engine/module.js";
 
-import { Timer } from "/src/engine/utils.js";
+import { Timer, typeCheck } from "/src/engine/utils.js";
 
 /**
  * 게임 로직을 실행하고 물리효과를 적용시키며 화면에 렌더링하는 엔진이다.
@@ -27,9 +27,13 @@ export default class Engine {
    * @param {number} [settings.width]
    * @param {number} [settings.height]
    * @param {number} [settings.fps]
+   * @param {string} [settings.title]
    * @param {GameObject} [settings.scene]
    */
   static init(settings) {
+    // 페이지의 타이틀을 title로 정한다.
+    document.title = typeCheck(settings.title, "string", "Web Game Engine");
+
     // fps를 타이머에 등록하여 fixedDeltaTime을 프레임에 맞게 변경한다.
     Engine.timer.setFps(settings.fps);
 
