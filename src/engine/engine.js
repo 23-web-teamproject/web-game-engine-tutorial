@@ -1,4 +1,5 @@
 import {
+  HTMLManager,
   InputManager,
   SceneManager,
   RenderManager,
@@ -28,11 +29,15 @@ export default class Engine {
    * @param {number} [settings.height]
    * @param {number} [settings.fps]
    * @param {string} [settings.title]
+   * @param {string} [settings.faviconPath]
    * @param {GameObject} [settings.scene]
    */
   static init(settings) {
-    // 페이지의 타이틀을 title로 정한다.
-    document.title = typeCheck(settings.title, "string", "Web Game Engine");
+    // 페이지의 타이틀을 정한다.
+    HTMLManager.setTitle(settings.title);
+
+    // 페이지의 아이콘을 정한다.
+    HTMLManager.setFavicon(settings.faviconPath);
 
     // fps를 타이머에 등록하여 fixedDeltaTime을 프레임에 맞게 변경한다.
     Engine.timer.setFps(settings.fps);
