@@ -1,0 +1,37 @@
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+#form-container > img {
+  width: 360px;
+  height: 360px;
+  object-fit: cover; 
+}
+
+#init-form {
+  padding: 1rem;
+  background-color: white;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+#init-form > label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 15px 0;
+}
+
+#init-form > label:first-child {
+  margin-top: 0px;
+}
+
+#init-form > label:last-child {
+  margin-bottom: 0px;
+}
+
+#init-form > label > * {
+  min-width: 150px;
+}
+
+#init-form select {
+  border-radius: 0px;
+  outline: none;
+}

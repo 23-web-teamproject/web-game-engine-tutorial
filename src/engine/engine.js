@@ -8,7 +8,9 @@ import {
   LayerManager,
 } from "/src/engine/module.js";
 
-import { Timer, typeCheck } from "/src/engine/utils.js";
+import makeForm from "/src/engine/form.js";
+
+import { Timer } from "/src/engine/utils.js";
 
 /**
  * 게임 로직을 실행하고 물리효과를 적용시키며 화면에 렌더링하는 엔진이다.
@@ -54,6 +56,28 @@ export default class Engine {
     SceneManager.loadScene(settings.scene, () => {
       const engine = new Engine();
       setInterval(engine.run, 1000 * Engine.timer.fixedDeltaTime);
+    });
+  }
+
+  /**
+   * form으로부터 전달된 값으로 엔진을 초기화한다.
+   *
+   * @param {object} options
+   * @param {string} options.thumbnailImagePath,
+   * @param {string} options.title,
+   * @param {GameObject} options.scene
+   */
+  static async initWithForm(options) {
+    // 먼저 form을 생성한다.
+    await makeForm(options.thumbnailImagePath, (data) => {
+      Engine.init({
+        width: data.width,
+        height: data.height,
+        fps: data.fps,
+        isMobile: data.isMobileDevice,
+        title: options.title,
+        scene: options.scene,
+      });
     });
   }
 

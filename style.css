@@ -1,3 +1,5 @@
+@import url(./form-style.css);
+
 :root {
   --render-canvas-width: 0;
   --render-canvas-height: 0;
