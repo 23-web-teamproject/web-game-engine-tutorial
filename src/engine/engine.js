@@ -17,9 +17,9 @@ import { Timer } from "/src/engine/utils.js";
  */
 export default class Engine {
   /** @type {InputManager} @static */
-  static inputManager = new InputManager();
+  static inputManager;
   /** @type {Timer} @static */
-  static timer = new Timer();
+  static timer;
 
   constructor() {}
 
@@ -35,6 +35,8 @@ export default class Engine {
    * @param {GameObject} [settings.scene]
    */
   static init(settings) {
+    Engine.inputManager = new InputManager();
+
     // 페이지의 타이틀을 정한다.
     HTMLManager.setTitle(settings.title);
 
@@ -42,6 +44,7 @@ export default class Engine {
     HTMLManager.setFavicon(settings.faviconPath);
 
     // fps를 타이머에 등록하여 fixedDeltaTime을 프레임에 맞게 변경한다.
+    Engine.timer = new Timer();
     Engine.timer.setFps(settings.fps);
 
     // canvas의 해상도를 변경한다.
