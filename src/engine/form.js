@@ -11,9 +11,11 @@ let resolutionList;
  * @param {function} callback - form에 submit된 데이터로 초기화를 진행하는 콜백함수
  */
 const makeForm = async (imagePath, callback) => {
+  // fps와 해상도 리스트를 가져온다.
   fpsList = await getAvailableFpsList();
   resolutionList = getAvailableResolution();
 
+  // form에 입력된 데이터를 추출할 함수다.
   const getFormData = (event) => {
     const formData = new FormData(event.target);
     const option = new Object();
@@ -28,22 +30,29 @@ const makeForm = async (imagePath, callback) => {
     };
   };
 
+  // form과 썸네일을 감쌀 div태그를 만든다.
   const div = document.createElement("div");
-  div.id="form-container";
-  
+  div.id = "form-container";
+
+  // 썸네일 이미지를 생성한다.
   const thumbnailImage = new Image();
   thumbnailImage.src = imagePath;
   div.append(thumbnailImage);
 
+  // form을 생성한다.
   const form = document.createElement("form");
   form.id = "init-form";
   form.action = "javascript:void(0)";
+
+  // form에 submit 이벤트가 발생하면 데이터를 추출해 콜백함수에 넘겨주고
+  // div#form-container를 지운다.
   form.onsubmit = (event) => {
     const formdata = getFormData(event);
     callback(formdata);
     document.getElementById("form-container").remove();
     return false;
   };
+
   form.innerHTML = `
 <label>
   Resolution :
@@ -76,7 +85,6 @@ const makeForm = async (imagePath, callback) => {
   <input type="checkbox" name="mobile" />
 </label>
 <input type="submit" value="Ok">`;
-
   div.append(form);
   document.body.append(div);
 };

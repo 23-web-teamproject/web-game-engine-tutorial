@@ -66,8 +66,8 @@ export default class Engine {
    * form으로부터 전달된 값으로 엔진을 초기화한다.
    *
    * @param {object} options
-   * @param {string} options.thumbnailImagePath,
-   * @param {string} options.title,
+   * @param {string} options.thumbnailImagePath
+   * @param {string} options.title
    * @param {GameObject} options.scene
    */
   static async initWithForm(options) {
