@@ -26,21 +26,21 @@ export default class InputManager {
    * 이전 프레임에서 키가 눌렸는가와
    * 현재 프레임에서 키가 눌렸는가를 저장할 테이블이다.
    *
-   * @type {Object}
+   * @property {Object}
    * @static
    */
   static keyTable = new Object();
   /**
    * keyTable을 이용해 현재 키의 상태(KEY_STATUS)를 저장할 테이블이다.
    *
-   * @type {Object}
+   * @property {Object}
    * @static
    */
   static keyStatus = new Object();
   /**
    * 마우스의 위치를 나타낸다.
    *
-   * @type {Vector}
+   * @property {Vector}
    * @static
    */
   static mousePosition = new Vector(0, 0);

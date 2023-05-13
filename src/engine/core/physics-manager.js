@@ -16,7 +16,12 @@ import CircleCollisionResolver from "/src/engine/core/circle-collision-resolver.
  * https://kareus.tistory.com/15
  */
 export default class PhysicsManager {
-  /** @type {array} @static */
+  /**
+   * 물리효과가 적용될 객체들
+   *
+   * @property {array}
+   * @static
+   */
   static physicsEnableGameObjectList = new Array();
 
   constructor() {}

@@ -9,7 +9,12 @@ import ResourceManager from "/src/engine/core/resource-manager.js";
  * 씬 객체는 모든 게임 오브젝트를 통제하여 게임의 로직을 설계하고 관리하게 된다.
  */
 export default class SceneManager {
-  /** @type {GameObject} @static */
+  /**
+   * 엔진에 연결된 현재 씬
+   *
+   * @property {GameObject}
+   * @static
+   */
   static currentScene = undefined;
 
   constructor() {}

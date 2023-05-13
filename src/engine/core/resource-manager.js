@@ -5,11 +5,26 @@ import ResourceLoaderFactory from "/src/engine/core/resource-loader-factory.js";
  * 모든 리소스가 불러와졌다면 등록된 콜백 함수를 호출한다.
  */
 export default class ResourceManager {
-  /** @type {number} @static */
+  /**
+   * 불러온 리소스의 개수
+   *
+   * @property {number}
+   * @static
+   */
   static loadedResourceCount = 0;
-  /** @type {number} @static */
+  /**
+   * 불러와야할 리소스의 총 개수
+   *
+   * @property {number}
+   * @static
+   */
   static totalResourceCount = 0;
-  /** @type {function} @static */
+  /**
+   * 모든 리소스가 불러와졌을 때 실행할 콜백함수
+   *
+   * @property {function}
+   * @static
+   */
   static allResourceLoadedCallback = () => {};
 
   constructor() {}
