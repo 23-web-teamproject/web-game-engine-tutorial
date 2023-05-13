@@ -10,13 +10,14 @@ export default class HTMLManager {
   static setTitle(title) {
     document.title = typeCheck(title, "string", HTMLManager.defaultTitle);
   }
-  
+
   static setFavicon(path) {
     const link = document.querySelector("link[rel~='icon']");
     const image = new Image();
+    path = typeCheck(path, "string", HTMLManager.defaultFaviconPath);
     image.onload = () => {
       link.href = path;
-    }
+    };
     image.onerror = () => {
       link.href = HTMLManager.defaultFaviconPath;
     };
