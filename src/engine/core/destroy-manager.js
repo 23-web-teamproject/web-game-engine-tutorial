@@ -19,7 +19,7 @@ export default class DestroyManager {
   /**
    * 삭제되길 기다리는 객체들을 저장한 큐
    *
-   * @type {GameObject[]}
+   * @property {GameObject[]}
    * @static
    */
   static objectQueue = new Array();

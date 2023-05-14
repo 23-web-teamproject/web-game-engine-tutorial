@@ -1,4 +1,5 @@
 import {
+  HTMLManager,
   InputManager,
   SceneManager,
   RenderManager,
@@ -7,6 +8,8 @@ import {
   LayerManager,
 } from "/src/engine/module.js";
 
+import makeForm from "/src/engine/form.js";
+
 import { Timer } from "/src/engine/utils.js";
 
 /**
@@ -14,9 +17,9 @@ import { Timer } from "/src/engine/utils.js";
  */
 export default class Engine {
   /** @type {InputManager} @static */
-  static inputManager = new InputManager();
+  static inputManager;
   /** @type {Timer} @static */
-  static timer = new Timer();
+  static timer;
 
   constructor() {}
 
@@ -27,10 +30,21 @@ export default class Engine {
    * @param {number} [settings.width]
    * @param {number} [settings.height]
    * @param {number} [settings.fps]
+   * @param {string} [settings.title]
+   * @param {string} [settings.faviconPath]
    * @param {GameObject} [settings.scene]
    */
   static init(settings) {
+    Engine.inputManager = new InputManager();
+
+    // 페이지의 타이틀을 정한다.
+    HTMLManager.setTitle(settings.title);
+
+    // 페이지의 아이콘을 정한다.
+    HTMLManager.setFavicon(settings.faviconPath);
+
     // fps를 타이머에 등록하여 fixedDeltaTime을 프레임에 맞게 변경한다.
+    Engine.timer = new Timer();
     Engine.timer.setFps(settings.fps);
 
     // canvas의 해상도를 변경한다.
@@ -45,6 +59,28 @@ export default class Engine {
     SceneManager.loadScene(settings.scene, () => {
       const engine = new Engine();
       setInterval(engine.run, 1000 * Engine.timer.fixedDeltaTime);
+    });
+  }
+
+  /**
+   * form으로부터 전달된 값으로 엔진을 초기화한다.
+   *
+   * @param {object} options
+   * @param {string} options.thumbnailImagePath
+   * @param {string} options.title
+   * @param {GameObject} options.scene
+   */
+  static async initWithForm(options) {
+    // 먼저 form을 생성한다.
+    await makeForm(options.thumbnailImagePath, (data) => {
+      Engine.init({
+        width: data.width,
+        height: data.height,
+        fps: data.fps,
+        isMobile: data.isMobileDevice,
+        title: options.title,
+        scene: options.scene,
+      });
     });
   }
 

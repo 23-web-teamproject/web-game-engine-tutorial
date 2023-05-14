@@ -12,21 +12,61 @@ import { typeCheckAndClamp } from "/src/engine/utils.js";
  * Canvas의 크기, 해상도를 바꾸는 책임도 맡는다.
  */
 export default class RenderManager {
-  /** @type {string} @static */
+  /**
+   * renderCanvas의 id값
+   *
+   * @property {string}
+   * @static
+   */
   static renderCanvasId = "render-canvas";
-  /** @type {RenderCanvasContext2d} @static */
+  /**
+   * renderCanvas의 Element요소
+   *
+   * @property {RenderCanvasContext2d}
+   * @static
+   */
   static renderCanvas = undefined;
-  /** @type {number} @static */
+  /**
+   * renderCanvans의 가로 길이
+   *
+   * @property {number}
+   * @static
+   */
   static renderCanvasWidth;
-  /** @type {number} @static */
+  /**
+   * renderCanvans의 세로 길이
+   *
+   * @property {number}
+   * @static
+   */
   static renderCanvasHeight;
-  /** @type {number} @static */
+  /**
+   * renderCanvans의 최소 가로 길이
+   *
+   * @property {number}
+   * @static
+   */
   static renderCanvasMinWidth = 800;
-  /** @type {number} @static */
+  /**
+   * renderCanvans의 최소 세로 길이
+   *
+   * @property {number}
+   * @static
+   */
   static renderCanvasMinHeight = 600;
-  /** @type {string} @static */
+  /**
+   * bufferCanvas의 id값
+   *
+   * @property {string}
+   * @static
+   */
   static bufferCanvasId = "buffer-canvas";
-  /** @type {RenderCanvasContext2d} @static */
+  /**
+   * bufferCanvas의 Element요소
+   *
+   * @property {RenderCanvasContext2d}
+   * @static
+   */
   static bufferCanvas = undefined;
 
   constructor() {}

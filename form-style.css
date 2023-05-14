@@ -1,0 +1,24 @@
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+#form-container > img {
+  width: 360px;
+  height: 360px;
+  object-fit: cover; 
+}
+
+#init-form {
+  padding: 1rem;
+  background-color: white;
+  font-family: "Noto Sans KR", sans-serif;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  align-items: center;
+}
+
+#init-form > label {
+  margin: 15px;
+}
+
+#init-form > .input {
+  width: 100%;
+}

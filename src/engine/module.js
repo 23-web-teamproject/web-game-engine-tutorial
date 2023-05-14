@@ -16,6 +16,7 @@ import { DefaultLayer, Layer, TerrainLayer } from "/src/engine/data-structure/la
 import Circle from "/src/engine/core/circle.js";
 import DestroyManager from "/src/engine/core/destroy-manager.js";
 import GameObject from "/src/engine/core/game-object.js";
+import HTMLManager from "/src/engine/core/html-manager.js";
 import InputManager from "/src/engine/core/input-manager.js";
 import LayerManager from "/src/engine/core/layer-manager.js";
 import PhysicsManager from "/src/engine/core/physics-manager.js";
@@ -38,6 +39,7 @@ export {
   Circle,
   DestroyManager,
   GameObject,
+  HTMLManager,
   InputManager,
   LayerManager,
   PhysicsManager,

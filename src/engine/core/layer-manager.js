@@ -8,11 +8,12 @@
  */
 export default class LayerManager {
   /**
-   * 전체 레이어의 목록을 나타낸다. 
+   * 전체 레이어의 목록을 나타낸다.
    * 새로운 Layer클래스를 생성하는 순간 Layer클래스의 생성자에 의해
    * layerSet에 그 레이어가 추가된다.
    *
-   * @type {Set} @static 
+   * @property {Set}
+   * @static
    */
   static layerSet = new Set();
 
