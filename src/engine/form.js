@@ -55,36 +55,37 @@ const makeForm = async (imagePath, callback) => {
 
   form.innerHTML = `
 <label>
-  Resolution :
-  <select name="resolution">
-    ${resolutionList.reduce((optionElement, item, index) => {
-      optionElement += `
-        <option value="${index}" ${
-        index + 1 === resolutionList.length ? "selected" : ""
-      }>${item.description}</option>
-      `;
-      return optionElement;
-    }, new String())}
-  </select>
+Resolution
 </label>
+<select class="input" name="resolution">
+  ${resolutionList.reduce((optionElement, item, index) => {
+    optionElement += `
+      <option value="${index}" ${
+      index + 1 === resolutionList.length ? "selected" : ""
+    }>${item.description}</option>
+    `;
+    return optionElement;
+  }, new String())}
+</select>
 <label>
-  Framelate :
-  <select name="framelate">
-    ${fpsList.reduce((optionElement, item, index) => {
-      optionElement += `
-        <option value="${index}" ${
-        index + 1 === fpsList.length ? "selected" : ""
-      }>${item.description}</option>
-      `;
-      return optionElement;
-    }, new String())}
-  </select>
+  Framelate
 </label>
+<select class="input" name="framelate">
+  ${fpsList.reduce((optionElement, item, index) => {
+    optionElement += `
+      <option value="${index}" ${
+      index + 1 === fpsList.length ? "selected" : ""
+    }>${item.description}</option>
+    `;
+    return optionElement;
+  }, new String())}
+</select>
 <label>
-  Mobile :
-  <input type="checkbox" name="mobile" />
+  Mobile
 </label>
-<input type="submit" value="Ok">`;
+<input class="input" type="checkbox" name="mobile" />
+<div><!-- empty grid cell --></div>
+<input class="input" type="submit" value="Ok">`;
   div.append(form);
   document.body.append(div);
 };
