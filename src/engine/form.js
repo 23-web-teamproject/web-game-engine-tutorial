@@ -11,10 +11,6 @@ let resolutionList;
  * @param {function} callback - form에 submit된 데이터로 초기화를 진행하는 콜백함수
  */
 const makeForm = async (imagePath, callback) => {
-  // fps와 해상도 리스트를 가져온다.
-  fpsList = await getAvailableFpsList();
-  resolutionList = getAvailableResolution();
-
   // form에 입력된 데이터를 추출할 함수다.
   const getFormData = (event) => {
     const formData = new FormData(event.target);
@@ -26,7 +22,6 @@ const makeForm = async (imagePath, callback) => {
       width: resolutionList[option["resolution"]].width,
       height: resolutionList[option["resolution"]].height,
       fps: fpsList[option["framelate"]].fps,
-      isMobileDevice: option["mobile"] || false,
     };
   };
 
@@ -53,41 +48,55 @@ const makeForm = async (imagePath, callback) => {
     return false;
   };
 
-  form.innerHTML = `
-<label>
-Resolution
-</label>
-<select class="input" name="resolution">
-  ${resolutionList.reduce((optionElement, item, index) => {
-    optionElement += `
-      <option value="${index}" ${
-      index + 1 === resolutionList.length ? "selected" : ""
-    }>${item.description}</option>
-    `;
-    return optionElement;
-  }, new String())}
-</select>
-<label>
-  Framelate
-</label>
-<select class="input" name="framelate">
-  ${fpsList.reduce((optionElement, item, index) => {
-    optionElement += `
-      <option value="${index}" ${
-      index + 1 === fpsList.length ? "selected" : ""
-    }>${item.description}</option>
-    `;
-    return optionElement;
-  }, new String())}
-</select>
-<label>
-  Mobile
-</label>
-<input class="input" type="checkbox" name="mobile" />
-<div><!-- empty grid cell --></div>
-<input class="input" type="submit" value="Ok">`;
+  // form을 구성한다.
+  form.append(createLabel("Resolution"));
+  form.append(createSelect("resolution"));
+  form.append(createLabel("Framelate"));
+  form.append(createSelect("framelate"));
+  form.append(createLabel("　"));
+  form.append(createSubmitButton());
+
+  // document에 생성한 element들을 등록한다.
   div.append(form);
   document.body.append(div);
+
+  // fps와 해상도 리스트를 가져온다.
+  await getAvailableFpsAndResolution();
+
+  // 가져온 해상도 리스트와 fps리스트로 option을 생성한다.
+  createOptions();
+};
+
+const createLabel = (content) => {
+  const label = document.createElement("label");
+  label.innerText = content;
+  return label;
+};
+
+const createSelect = (name) => {
+  const select = document.createElement("select");
+  select.className = "input";
+  select.name = name;
+  return select;
+};
+
+const createSubmitButton = () => {
+  const button = document.createElement("input");
+  button.className = "input";
+  button.type = "submit";
+  button.value = "Ok";
+  return button;
+};
+
+/**
+ * 현재 모니터의 해상도에 따라 적용 가능한 해상도와 fps를 가져온다.
+ *
+ * @function
+ * @async
+ */
+const getAvailableFpsAndResolution = async () => {
+  fpsList = await getAvailableFpsList();
+  resolutionList = getAvailableResolution();
 };
 
 /**
@@ -158,6 +167,32 @@ const getCurrentFps = () => {
         resolve(1000 / (t2 - t1));
       });
     });
+  });
+};
+
+const createOptions = () => {
+  const resolutionSelect = document.getElementsByName("resolution")[0];
+
+  resolutionList.forEach((item, index) => {
+    const option = document.createElement("option");
+    option.value = index;
+    option.innerText = item.description;
+    if (index + 1 === resolutionList.length) {
+      option.setAttribute("selected", true);
+    }
+    resolutionSelect.append(option);
+  });
+
+  const fpsSelect = document.getElementsByName("framelate")[0];
+
+  fpsList.forEach((item, index) => {
+    const option = document.createElement("option");
+    option.value = index;
+    option.innerText = item.description;
+    if (index + 1 === fpsList.length) {
+      option.setAttribute("selected", true);
+    }
+    fpsSelect.append(option);
   });
 };
 

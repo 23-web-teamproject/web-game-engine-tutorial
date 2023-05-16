@@ -35,13 +35,14 @@ export default class Engine {
    * @param {GameObject} [settings.scene]
    */
   static init(settings) {
-    Engine.inputManager = new InputManager();
-
     // 페이지의 타이틀을 정한다.
     HTMLManager.setTitle(settings.title);
 
     // 페이지의 아이콘을 정한다.
     HTMLManager.setFavicon(settings.faviconPath);
+
+    // InputManager를 초기화한다.
+    Engine.inputManager = new InputManager();
 
     // fps를 타이머에 등록하여 fixedDeltaTime을 프레임에 맞게 변경한다.
     Engine.timer = new Timer();
@@ -77,7 +78,6 @@ export default class Engine {
         width: data.width,
         height: data.height,
         fps: data.fps,
-        isMobile: data.isMobileDevice,
         title: options.title,
         scene: options.scene,
       });
