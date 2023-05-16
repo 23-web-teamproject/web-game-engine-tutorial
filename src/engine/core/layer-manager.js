@@ -30,7 +30,7 @@ export default class LayerManager {
    * a의 Set이 {'a','b','c'}라면, a레이어는 a, b, c레이어와
    * 충돌체크를 진행하게 된다.
    *
-   * @type {Map}
+   * @property {Map}
    * @static
    */
   static physicsInteractionMap = new Map();
