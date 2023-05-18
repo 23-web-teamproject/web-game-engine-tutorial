@@ -116,6 +116,7 @@ export default class ParticleEffect extends GameObject {
    * @constructor
    * @param {object} options
    * @param {boolean} [options.isEnable]
+   * @param {number} [options.duration]
    * @param {boolean} [options.isScaleFade]
    * @param {boolean} [options.isAlphaFade]
    * @param {number} [options.countPerSecond]
@@ -148,6 +149,13 @@ export default class ParticleEffect extends GameObject {
      * @type {boolean}
      */
     this.isEnable = typeCheck(options.isEnable, "boolean", false);
+    /**
+     * 파티클 이펙트의 지속시간을 말한다.
+     * 이 값이 0이라면 파티클 이펙트가 무한히 재생된다.
+     * 이 값이 3이라면 3초 동안만 파티클 이펙트가 재생된다.
+     * 기본값은 0이다.
+     */
+    this.duration = typeCheckAndClamp(options.duration, "number", 0, 0, Number.MAX_VALUE);
     /**
      * 이 값이 true라면 파티클이 점점 크기가 작아지는 효과를 낸다.
      * 기본값은 true다.
@@ -244,12 +252,19 @@ export default class ParticleEffect extends GameObject {
       false
     );
     /**
-     * 파티클을 일정 시간마다 생성하기 위해 시간이 얼마나 지났는지 알아야 하므로
-     * 파티클효과가 켜진 후 지난 시간을 나타낸다.
+     * 파티클 효과가 켜진 후 지난 시간을 나타낸다.
      *
      * @type {number}
      */
     this.elapsedTime = 0;
+    /**
+     * 파티클 효과가 켜진 후 지난 시간을 나타낸다.
+     * elapsedTime과 다른 점은 이 값은 파티클 생성에 사용되기 때문에
+     * 이 값이 unitTime보다 커질 경우 파티클을 생성하게 된다.
+     *
+     * @type {number}
+     */
+    this.accumulatedTime = 0;
 
     if (this.isEnable) {
       this.run();
@@ -265,11 +280,12 @@ export default class ParticleEffect extends GameObject {
     super.update(deltaTime);
     if (this.isEnable) {
       this.elapsedTime += deltaTime;
+      this.accumulatedTime += deltaTime;
 
       // 파티클 효과가 켜지면 파티클들을 생성한다.
       // 누적된 시간이 unitTime보다 커질 때에만 파티클을 생성한다.
-      if (this.elapsedTime > this.unitTime) {
-        this.elapsedTime %= this.unitTime;
+      if (this.accumulatedTime > this.unitTime) {
+        this.accumulatedTime %= this.unitTime;
         const options = {
           direction: this.direction,
           diffuseness: this.diffuseness,
@@ -283,6 +299,10 @@ export default class ParticleEffect extends GameObject {
         const newParticle = new Particle(options);
         this.addChild(newParticle);
       }
+
+      if(this.duration > 0 && this.elapsedTime > this.duration) {
+        this.stop();
+      }
     }
   }
 
@@ -295,6 +315,7 @@ export default class ParticleEffect extends GameObject {
     // 정확히 몇 초가 지나야지만 생성할 수 있는지 미리 계산한다.
     this.unitTime = 1 / this.countPerSecond;
     this.elapsedTime = 0;
+    this.accumulatedTime = 0;
   }
 
   /**
