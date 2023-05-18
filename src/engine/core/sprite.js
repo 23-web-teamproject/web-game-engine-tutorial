@@ -18,12 +18,24 @@ export default class Sprite extends GameObject {
    * @constructor
    * @param {object} options
    * @param {string} [options.imagePath]
-   * @param {Color} [options.color]
    * @param {boolean} [options.isColorOverlayEnable]
    * @param {Color} [options.overlayColor]
-   * @param {boolean} [options.isPhysicsEnable]
-   * @param {Transform} [options.transform]
-   * @param {RigidBody} [options.rigidbody]
+   * @param {boolean} [options.isActive]
+   * @param {boolean} [options.isVisible]
+   * @param {Layer} [options.layer]
+   * @param {boolean} [options.isPhysicsEnable=false]
+   * @param {object} [options.transform]
+   * @param {Vector} [options.transform.position=new Vector(0, 0)]
+   * @param {Vector} [options.transform.scale=new Vector(1, 1)]
+   * @param {number} [options.transform.rotation=0]
+   * @param {object} [options.rigidbody]
+   * @param {number} [options.rigidbody.mass=1]
+   * @param {number} [options.rigidbody.bounceness=0.5]
+   * @param {number} [options.rigidbody.staticFriction=0.2]
+   * @param {number} [options.rigidbody.dynamicFriction=0.1]
+   * @param {boolean} [options.rigidbody.isStatic=false]
+   * @param {boolean} [options.rigidbody.isGravity=false]
+   * @param {boolean} [options.rigidbody.isTrigger=false]
    */
   constructor(options = {}) {
     super(options);

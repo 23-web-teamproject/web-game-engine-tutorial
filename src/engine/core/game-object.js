@@ -1,5 +1,9 @@
 import Color from "/src/engine/data-structure/color.js";
-import { DefaultLayer, Layer, TerrainLayer } from "/src/engine/data-structure/layer.js";
+import {
+  DefaultLayer,
+  Layer,
+  TerrainLayer,
+} from "/src/engine/data-structure/layer.js";
 import Matrix from "/src/engine/data-structure/matrix.js";
 import Transform from "/src/engine/data-structure/transform.js";
 import RigidBody from "/src/engine/data-structure/rigidbody.js";
@@ -25,8 +29,18 @@ export default class GameObject {
    * @param {Layer} [options.layer]
    * @param {Color} [options.color=Random Color]
    * @param {boolean} [options.isPhysicsEnable=false]
-   * @param {Transform} [options.transform]
-   * @param {RigidBody} [options.rigidbody]
+   * @param {object} [options.transform]
+   * @param {Vector} [options.transform.position=new Vector(0, 0)]
+   * @param {Vector} [options.transform.scale=new Vector(1, 1)]
+   * @param {number} [options.transform.rotation=0]
+   * @param {object} [options.rigidbody]
+   * @param {number} [options.rigidbody.mass=1]
+   * @param {number} [options.rigidbody.bounceness=0.5]
+   * @param {number} [options.rigidbody.staticFriction=0.2]
+   * @param {number} [options.rigidbody.dynamicFriction=0.1]
+   * @param {boolean} [options.rigidbody.isStatic=false]
+   * @param {boolean} [options.rigidbody.isGravity=false]
+   * @param {boolean} [options.rigidbody.isTrigger=false]
    */
   constructor(options = {}) {
     /**
