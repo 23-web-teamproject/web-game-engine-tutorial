@@ -15,10 +15,15 @@ export default class Text extends GameObject {
    * @param {number} [options.fontSize]
    * @param {string} [options.font]
    * @param {number} [options.lineHeight]
-   * @param {Color} [options.color]
-   * @param {boolean} [options.isPhysicsEnable]
-   * @param {Transform} [options.transform]
-   * @param {RigidBody} [options.rigidbody]
+   * @param {boolean} [options.isActive]
+   * @param {boolean} [options.isVisible]
+   * @param {Layer} [options.layer]
+   * @param {Color} [options.color=Random Color]
+   * @param {boolean} [options.isPhysicsEnable=false]
+   * @param {object} [options.transform]
+   * @param {Vector} [options.transform.position=new Vector(0, 0)]
+   * @param {Vector} [options.transform.scale=new Vector(1, 1)]
+   * @param {number} [options.transform.rotation=0]
    */
   constructor(options) {
     super(options);

@@ -13,8 +13,9 @@ export default class RigidBody {
    * @param {number} [options.bounceness=0.5]
    * @param {number} [options.staticFriction=0.2]
    * @param {number} [options.dynamicFriction=0.1]
-   * @param {number} [options.isStatic=false]
-   * @param {number} [options.isGravity=false]
+   * @param {boolean} [options.isStatic=false]
+   * @param {boolean} [options.isGravity=false]
+   * @param {boolean} [options.isTrigger=false]
    */
   constructor(options = {}) {
     /**
@@ -95,5 +96,13 @@ export default class RigidBody {
      * @type {boolean}
      */
     this.isGravity = typeCheck(options.isGravity, "boolean", false);
+    /**
+     * 트리거 상태인지를 나타낸다.
+     * 트리거 상태라면 물리적인 상호작용은 하지 않고,
+     * 이 객체에 충돌된 상태인지만 검사하게 된다.
+     *
+     * @type {boolean}
+     */
+    this.isTrigger = typeCheck(options.isTrigger, "boolean", false);
   }
 }
