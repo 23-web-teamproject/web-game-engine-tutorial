@@ -39,11 +39,30 @@ Engine.init({
   width: 1920,
   height: 1080,
   fps: 60,
+  title: "game-title",
+  favicon: "path/to/favicon.ico"
   scene: NewScene,
 });
 ```
 
-위 코드는 1920*1080의 해상도와 60fps로 게임을 실행하도록 설정하고, 첫 씬 객체는 `NewScene`으로 설정하는 코드입니다.
+위 코드는 1920x1080의 해상도와 60fps로 게임을 실행하도록 설정하고, 첫 씬 객체는 `NewScene`으로 설정하는 코드입니다.
+그리고 title을 `game-title`로, 페이지의 아이콘도 설정하고 있습니다.
+
+만약 위 과정에서 해상도와 프레임을 플레이어가 설정할 수 있게 하려면 `Engine.initWithForm`을 이용하면 됩니다.
+
+```js
+//main.js
+
+Engine.initWithForm({
+  thumbnailImagePath: "path/to/thumnail-image.png",
+  title: "game-title",
+  scene: NewScene
+});
+```
+
+위 코드는 해상도와 프레임을 고를 수 있는 form을 생성함과 동시에 썸네일 이미지도 생성하여 초기 페이지를 구성합니다.
+
+form을 통해 해상도와 프레임을 입력받은 후에는 첫 씬을 `NewScene`으로 설정하여 엔진을 초기화하게 됩니다.
 
 엔진에 필요한 초기값들을 설정함과 동시에, `DeltaTime`을 구하기 위한 `Timer`객체와, 키보드의 키 상태와 마우스의 클릭 상태 등을 확인할 수 있는 `InputManager`도 초기화됩니다.
 
