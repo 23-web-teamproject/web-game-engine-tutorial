@@ -90,11 +90,16 @@ export default class PhysicsManager {
      * 물체의 충돌을 계산하여 속도를 변화시킨다.
      */
     manifoldList.forEach((manifold) => {
-      PhysicsManager.applyImpulse(
-        manifold.objA,
-        manifold.objB,
-        manifold.normal
-      );
+      if (
+        manifold.objA.rigidbody.isTrigger === false &&
+        manifold.objB.rigidbody.isTrigger === false
+      ) {
+        PhysicsManager.applyImpulse(
+          manifold.objA,
+          manifold.objB,
+          manifold.normal
+        );
+      }
       manifold.objA.onCollision(manifold.objB);
       manifold.objB.onCollision(manifold.objA);
     });
@@ -111,7 +116,12 @@ export default class PhysicsManager {
      * 겹친 도형끼리 멀어지는 연산을 한다.
      */
     manifoldList.forEach((manifold) => {
-      PhysicsManager.positionalCorrection(manifold);
+      if (
+        manifold.objA.rigidbody.isTrigger === false &&
+        manifold.objB.rigidbody.isTrigger === false
+      ) {
+        PhysicsManager.positionalCorrection(manifold);
+      }
     });
 
     // 더이상 참조하지 않기 위해 리스트를 초기화한다.
