@@ -72,4 +72,33 @@ const findKeyInObjectWithValue = (object, value) => {
   });
 };
 
-export { clamp, typeCheck, typeCheckAndClamp, findKeyInObjectWithValue };
+/**
+ * 발생한 에러 메시지의 스택을 document에 출력한다.
+ *
+ * @param {string} error
+ */
+const writeErrorMessageOnDocument = (error) => {
+  const errorStackString = error.stack;
+  const splitedErrorMsg = errorStackString.split("    ");
+
+  let errorMessage = `<h3 class="error-msg">⚠️ ${splitedErrorMsg[0]}</h3>`;
+  for (let i = 1; i < splitedErrorMsg.length; i++) {
+    errorMessage += `<h3 class="error-msg">... ${splitedErrorMsg[i]}</h3>`;
+  }
+
+  const errorMessageDiv = document.createElement("div");
+  errorMessageDiv.id = "error-msg-container";
+  errorMessageDiv.innerHTML = errorMessage;
+
+  document.body.appendChild(errorMessageDiv);
+
+  console.error(error);
+};
+
+export {
+  clamp,
+  typeCheck,
+  typeCheckAndClamp,
+  findKeyInObjectWithValue,
+  writeErrorMessageOnDocument,
+};
