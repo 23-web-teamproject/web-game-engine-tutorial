@@ -548,6 +548,15 @@ export default class GameObject {
   }
 
   /**
+   * 이 객체의 속도를 특정값으로 설정한다.
+   *
+   * @param {Vector} velocity
+   */
+  setVelocity(velocity) {
+    this.transform.velocity = velocity;
+  }
+
+  /**
    * 이 객체의 속도를 반환한다.
    *
    * @returns {Vector}

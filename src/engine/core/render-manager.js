@@ -169,9 +169,9 @@ export default class RenderManager {
    * @param {number} height - 세로 크기
    */
   static changeRenderCanvasStyleVariable(width, height) {
-    const renderCanvas = RenderManager.getRenderCanvas();
-    renderCanvas.style.setProperty("--render-canvas-width", width);
-    renderCanvas.style.setProperty("--render-canvas-height", height);
+    const root = document.querySelector(":root");
+    root.style.setProperty("--render-canvas-width", width);
+    root.style.setProperty("--render-canvas-height", height);
   }
 
   /**

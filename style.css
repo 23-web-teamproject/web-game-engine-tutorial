@@ -9,7 +9,7 @@ html {
   background-color: black;
 }
 
-body{
+body {
   margin: 0;
   padding: 0;
   display: flex;
@@ -17,21 +17,37 @@ body{
   align-items: center;
 }
 
-#render-canvas{
+#render-canvas {
   background-color: white;
   width: var(--render-canvas-width);
   height: var(--render-canvas-height);
 }
 
-.error-msg{
+#error-msg-container {
+  position: absolute;
+  background-color: lightgray;
+  box-sizing: border-box;
+  border-radius: 15px;
+  padding: 1rem;
+  margin: 1rem;
+  max-width: var(--render-canvas-width);
+  max-height: var(--render-canvas-height);
+}
+
+.error-msg {
   color: gray;
+  margin: 0;
+}
+
+.error-msg:first-child {
+  color: red;
 }
 
 ::-webkit-scrollbar {
   display: none;
 }
 
-#buffer-canvas{
+#buffer-canvas {
   background-color: white;
   display: none;
 }

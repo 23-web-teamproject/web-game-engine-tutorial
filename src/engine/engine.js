@@ -10,7 +10,7 @@ import {
 
 import makeForm from "/src/engine/form.js";
 
-import { Timer } from "/src/engine/utils.js";
+import { Timer, writeErrorMessageOnDocument } from "/src/engine/utils.js";
 
 /**
  * 게임 로직을 실행하고 물리효과를 적용시키며 화면에 렌더링하는 엔진이다.
@@ -35,32 +35,36 @@ export default class Engine {
    * @param {GameObject} [settings.scene]
    */
   static init(settings) {
-    // 페이지의 타이틀을 정한다.
-    HTMLManager.setTitle(settings.title);
+    try {
+      // 페이지의 타이틀을 정한다.
+      HTMLManager.setTitle(settings.title);
 
-    // 페이지의 아이콘을 정한다.
-    HTMLManager.setFavicon(settings.faviconPath);
+      // 페이지의 아이콘을 정한다.
+      HTMLManager.setFavicon(settings.faviconPath);
 
-    // InputManager를 초기화한다.
-    Engine.inputManager = new InputManager();
+      // InputManager를 초기화한다.
+      Engine.inputManager = new InputManager();
 
-    // fps를 타이머에 등록하여 fixedDeltaTime을 프레임에 맞게 변경한다.
-    Engine.timer = new Timer();
-    Engine.timer.setFps(settings.fps);
+      // fps를 타이머에 등록하여 fixedDeltaTime을 프레임에 맞게 변경한다.
+      Engine.timer = new Timer();
+      Engine.timer.setFps(settings.fps);
 
-    // canvas의 해상도를 변경한다.
-    RenderManager.changeResolution(settings.width, settings.height);
+      // canvas의 해상도를 변경한다.
+      RenderManager.changeResolution(settings.width, settings.height);
 
-    // 레이어 상태를 초기화한다.
-    LayerManager.initializePhysicsInteractionState();
+      // 레이어 상태를 초기화한다.
+      LayerManager.initializePhysicsInteractionState();
 
-    // 씬을 불러온다.
-    // 씬의 모든 리소스가 로드되었을 때 엔진을 실행하는
-    // 콜백함수를 인자로 넘겨준다.
-    SceneManager.loadScene(settings.scene, () => {
-      const engine = new Engine();
-      setInterval(engine.run, 1000 * Engine.timer.fixedDeltaTime);
-    });
+      // 씬을 불러온다.
+      // 씬의 모든 리소스가 로드되었을 때 엔진을 실행하는
+      // 콜백함수를 인자로 넘겨준다.
+      SceneManager.loadScene(settings.scene, () => {
+        const engine = new Engine();
+        setInterval(engine.run, 1000 * Engine.timer.fixedDeltaTime);
+      });
+    } catch (error) {
+      writeErrorMessageOnDocument(error);
+    }
   }
 
   /**
@@ -89,31 +93,35 @@ export default class Engine {
    * https://developer.ibm.com/tutorials/wa-build2dphysicsengine/#physics-loop-step
    */
   run() {
-    // 이전 프레임와 현재 프레임의 시간차를 계산한다.
-    Engine.timer.update();
+    try {
+      // 이전 프레임와 현재 프레임의 시간차를 계산한다.
+      Engine.timer.update();
 
-    // 키의 상태를 업데이트한다.
-    Engine.inputManager.update();
+      // 키의 상태를 업데이트한다.
+      Engine.inputManager.update();
 
-    // 게임 로직을 처리한다.
-    SceneManager.getCurrentScene().update(Engine.timer.deltaTime);
+      // 게임 로직을 처리한다.
+      SceneManager.getCurrentScene().update(Engine.timer.deltaTime);
 
-    // 물리 효과를 적용한다.
-    while (Engine.timer.accumulatedTime > Engine.timer.fixedDeltaTime) {
-      PhysicsManager.update(
-        SceneManager.getCurrentScene(),
-        Engine.timer.fixedDeltaTime
-      );
-      Engine.timer.accumulatedTime -= Engine.timer.fixedDeltaTime;
+      // 물리 효과를 적용한다.
+      while (Engine.timer.accumulatedTime > Engine.timer.fixedDeltaTime) {
+        PhysicsManager.update(
+          SceneManager.getCurrentScene(),
+          Engine.timer.fixedDeltaTime
+        );
+        Engine.timer.accumulatedTime -= Engine.timer.fixedDeltaTime;
+      }
+
+      // 물리효과를 적용하고 나서 모든 오브젝트의 matrix를 업데이트한다.
+      SceneManager.getCurrentScene().calculateMatrix();
+
+      // 모든 오브젝트를 canvas에 그린다.
+      RenderManager.render();
+
+      // 삭제되길 기다리는 오브젝트가 있다면 모두 삭제한다.
+      DestroyManager.destroyAll();
+    } catch (error) {
+      writeErrorMessageOnDocument(error);
     }
-
-    // 물리효과를 적용하고 나서 모든 오브젝트의 matrix를 업데이트한다.
-    SceneManager.getCurrentScene().calculateMatrix();
-
-    // 모든 오브젝트를 canvas에 그린다.
-    RenderManager.render();
-
-    // 삭제되길 기다리는 오브젝트가 있다면 모두 삭제한다.
-    DestroyManager.destroyAll();
   }
 }
