@@ -5,7 +5,7 @@ import {
   Vector,
 } from "/src/engine/module.js";
 
-export default class TutorialScene5 extends GameObject {
+export default class TutorialScene10 extends GameObject {
   constructor() {
     super();
     this.ground = new Rect({

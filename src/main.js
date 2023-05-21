@@ -1,6 +1,16 @@
 import Engine from "/src/engine/engine.js";
-import ExampleScene from "/src/default-scene/scene.js";
-
+import TutorialScene1 from "../tutorial/1-engine-initialization/scene.js";
+import TutorialScene2 from "../tutorial/2-create-game-object/scene.js";
+import TutorialScene3 from "../tutorial/3-input-manager/scene.js";
+import TutorialScene4 from "../tutorial/4-rect-and-circle/scene.js";
+import TutorialScene5 from "../tutorial/5-text/scene.js";
+import TutorialScene6 from "../tutorial/6-sprite/scene.js";
+import TutorialScene7 from "../tutorial/7-change-transform-in-update/scene.js";
+import TutorialScene8 from "../tutorial/8-sound-effect/scene.js";
+import TutorialScene9 from "../tutorial/9-particle-effect/scene.js";
+import TutorialScene10 from "../tutorial/10-physics-engine/scene.js";
+import TutorialScene11 from "../tutorial/11-destroy-object/scene.js";
+import TutorialScene12 from "../tutorial/12-change-scene/scene.js";
 /**
  * main.js는 index.html에서 명시적으로 불러오고 있다.
  * 따라서 절대 지워서는 안된다.
@@ -23,6 +33,6 @@ window.onload = () => {
   Engine.initWithForm({
     thumbnailImagePath: "/favicon.ico",
     title: "gameEngine",
-    scene: ExampleScene
+    scene: TutorialScene12
   });
 };

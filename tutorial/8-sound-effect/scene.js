@@ -1,6 +1,6 @@
 import { GameObject, SoundEffect, Text, Vector, InputManager } from "/src/engine/module.js";
 
-export default class TutorialScene5 extends GameObject {
+export default class TutorialScene8 extends GameObject {
   constructor() {
     super();
     this.text = new Text({
