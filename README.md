@@ -6,13 +6,9 @@
 
 웹게임 프레임워크의 여러가지 튜토리얼입니다.
 
-웹게임 프레임워크 0.6버전을 사용하여 제작되었습니다.
+웹게임 프레임워크 0.7버전을 사용하여 제작되었습니다.
 
 `main.js`의 `scene` 속성을 import된 다른 객체로 변경하여 예제를 실행하면 됩니다.
-
-# Tutorial
-
-이 엔진에 대한 예제는 [튜토리얼 레포지토리](https://github.com/23-web-teamproject/web-game-engine-tutorial)에 있습니다.
 
 # Index
 
@@ -56,7 +52,7 @@ Engine.init({
 Engine.initWithForm({
   thumbnailImagePath: "path/to/thumnail-image.png",
   title: "game-title",
-  scene: NewScene
+  scene: NewScene,
 });
 ```
 
@@ -135,11 +131,11 @@ constructor() {
 
 물체의 좌표, 회전각도, 규모를 갖고 있는 객체입니다.
 
-|속성|설명|
-|---|---|
-|position|xy좌표를 말합니다.|
-|rotation|회전각(degree)를 말합니다.|
-|scale|물체의 규모를 의미합니다. 만약 100x100크기의 물체의 scale이 (2,1)라면 화면에 나타나는 물체의 크기는 200x100이 됩니다.|
+| 속성     | 설명                                                                                                                  |
+| -------- | --------------------------------------------------------------------------------------------------------------------- |
+| position | xy좌표를 말합니다.                                                                                                    |
+| rotation | 회전각(degree)를 말합니다.                                                                                            |
+| scale    | 물체의 규모를 의미합니다. 만약 100x100크기의 물체의 scale이 (2,1)라면 화면에 나타나는 물체의 크기는 200x100이 됩니다. |
 
 # 3. InputManager를 이용한 입력 받기
 
@@ -178,7 +174,7 @@ constructor() {
 
 ## Circle
 
-원은 반지름을 필수로 정의해야하는 `GameObject`압니다.
+원은 반지름을 필수로 정의해야하는 `GameObject`입니다.
 
 원도 사각형과 마찬가지로 윤곽선 색상과 두께를 설정할 수 있습니다.
 
@@ -212,6 +208,8 @@ html에서 글자의 속성으로는 `fontSize`, `color`, `line-height`, `font-f
 `Path.setAssetFolderPath()`함수를 통해 상대경로의 루트가 되는 폴더를 지정할 수 있습니다.
 
 이 함수를 실행하게 되면 절대경로가 아닌 모든 경로는 위 함수를 통해 설정한 폴더를 루트로 가지게 됩니다.
+
+그러므로 씬 생성자 내에서 한 번만 호출하여 상대 경로를 설정하여 반복되는 절대경로 패턴을 줄일 수 있습니다.
 
 ```
 // folder structure
@@ -304,6 +302,7 @@ constructor(){
 | isEnable       | 파티클효과를 실행할지를 말합니다.                                                                             |
 | isScaleFade    | 크기가 줄어드는 효과를 적용할 것인지를 말합니다.                                                              |
 | isAlphaFade    | 점점 투명해지는 효과를 적용할 것인지를 말합니다.                                                              |
+| duration       | 파티클 이펙트가 몇 초동안 재생될 것인지를 말합니다. 이 값이 0이라면 무한히 재생됩니다.                        |
 | countPerSecond | 1초에 파티클 몇 개를 생성할 것인지를 말합니다.                                                                |
 | direction      | 파티클의 진행방향(degree)을 의미합니다.                                                                       |
 | diffuseness    | 파티클의 퍼짐 정도를 의미합니다. 만약 direction이 30이고 diffuseness가 15라면 최종 방향은 15 ~ 45도가 됩니다. |
@@ -340,5 +339,16 @@ this.physicsEnabledObject = new GameObject({
 | dynamicFriction | 운동 마찰 계수를 의미합니다.                                    |
 | isStatic        | `true`라면 물리 효과는 적용되지만 고정된 좌표를 갖습니다.       |
 | isGravity       | `true`라면 중력가속도가 적용됩니다.                             |
+| isTrigger       | `true`라면 충돌체크만 진행하고 물리 효과는 적용되지 않습니다.   |
 
 만약 땅처럼 절대 움직이지 않지만 물리 효과가 적용되어야 할 때는 `isStatic: true`여야 합니다.
+
+만약 단순히 충돌했는지만 알기 위해서는 `isTrigger: true`여야 합니다.
+
+## onCollision
+
+물체와 물체가 충돌할 때 두 물체의 `isTrigger`가 모두 참이 아니라면 충돌 이벤트가 발생합니다.
+
+이 이벤트가 발생하면 `onCollision` 함수가 실행됩니다.
+
+충돌한 객체의 함수를 오버라이드하여 충돌되었을 때 어떤 행동을 할 것인지를 정의할 수 있습니다.
