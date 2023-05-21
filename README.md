@@ -22,6 +22,8 @@
 8. [SoundEffect](#8-soundeffect)
 9. [ParticleEffect](#9-particleeffect)
 10. [물리 효과](#10-물리-효과)
+11. [객체 삭제](#11-객체-삭제)
+12. [씬 교체](#12-씬-교체)
 
 # 1. 엔진 초기화 및 씬 생성
 
