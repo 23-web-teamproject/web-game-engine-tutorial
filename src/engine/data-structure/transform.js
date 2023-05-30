@@ -6,7 +6,7 @@ import { typeCheck } from "/src/engine/utils.js";
  * GameObject의 좌표, 회전, 규모 등을 나타내기 위해 사용한다.
  * 좌표, 회전, 규모를 한 번에 나타낼 수 있게 matrix형태로 바꾸는 기능도 갖고 있다.
  */
-export default class Transform {
+class Transform {
   /**
    * @constructor
    * @param {object} [options]
@@ -75,8 +75,9 @@ export default class Transform {
   toMatrix() {
     // 먼저 현재 좌표를 행렬에 저장한다.
     let matrix = new Matrix();
-    matrix.x = this.position.x;
-    matrix.y = this.position.y;
+    const positionMatrix = new Matrix();
+    positionMatrix.x = this.position.x;
+    positionMatrix.y = this.position.y;
 
     // 회전변환을 한다.
     const rotateMatrix = new Matrix();
@@ -87,12 +88,13 @@ export default class Transform {
     rotateMatrix.b = sin;
     rotateMatrix.c = -sin;
     rotateMatrix.d = cos;
-    matrix = matrix.multiply(rotateMatrix);
-
+    
     // 크기변환을 한다.
     const scaleMatrix = new Matrix();
     scaleMatrix.a = this.scale.x;
     scaleMatrix.d = this.scale.y;
+    matrix = matrix.multiply(positionMatrix);
+    matrix = matrix.multiply(rotateMatrix);
     matrix = matrix.multiply(scaleMatrix);
 
     return matrix;
@@ -107,3 +109,5 @@ export default class Transform {
     this.size = size;
   }
 }
+
+export default Transform;

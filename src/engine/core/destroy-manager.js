@@ -15,7 +15,7 @@ import { findKeyInObjectWithValue } from "/src/engine/utils.js";
  * object.destroy()를 실행하면 바로 삭제되는게 아니라,
  * 현재의 update가 종료된 후 큐에 등록된 오브젝트를 삭제한다.
  */
-export default class DestroyManager {
+class DestroyManager {
   /**
    * 삭제되길 기다리는 객체들을 저장한 큐
    *
@@ -65,3 +65,5 @@ export default class DestroyManager {
     }
   }
 }
+
+export default DestroyManager;

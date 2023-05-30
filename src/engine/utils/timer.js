@@ -46,7 +46,7 @@ import { typeCheckAndClamp } from "/src/engine/utils.js";
  * 이 객체는 이전 프레임과 현재 프레임의 시간차인
  * deltaTime을 계산하는 일을 담당한다.
  */
-export default class Timer {
+class Timer {
   constructor() {
     /**
      * 현재 프레임의 시간을 말한다.
@@ -140,3 +140,5 @@ export default class Timer {
     this.fixedDeltaTime = 1 / this.fps;
   }
 }
+
+export default Timer;

@@ -13,7 +13,7 @@ import {
  * 충돌체크에 사용한 공식은 아래 링크에서 참고했다.
  * https://gamedevelopment.tutsplus.com/series/how-to-create-a-custom-physics-engine--gamedev-12715
  */
-export default class CollisionResolver {
+class CollisionResolver {
   /**
    * 주 객체를 먼저 등록하여 충돌체크를 진행한다.
    *
@@ -67,3 +67,5 @@ export default class CollisionResolver {
 
   resolveCircleCollision(circle) {}
 }
+
+export default CollisionResolver;

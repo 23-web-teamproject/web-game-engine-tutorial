@@ -5,7 +5,6 @@
     "[css]": {
         "editor.tabSize": 2
     },
-    "liveServer.settings.port": 5501,
     "javascript.preferences.importModuleSpecifierEnding": "js",
     "javascript.preferences.importModuleSpecifier": "relative"
 }

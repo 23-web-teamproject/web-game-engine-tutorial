@@ -1,3 +1,4 @@
+import Vector from "/src/engine/data-structure/vector.js";
 import SceneManager from "/src/engine/core/scene-manager.js";
 
 import { typeCheckAndClamp } from "/src/engine/utils.js";
@@ -11,7 +12,7 @@ import { typeCheckAndClamp } from "/src/engine/utils.js";
  *
  * Canvas의 크기, 해상도를 바꾸는 책임도 맡는다.
  */
-export default class RenderManager {
+class RenderManager {
   /**
    * renderCanvas의 id값
    *
@@ -175,6 +176,20 @@ export default class RenderManager {
   }
 
   /**
+   * 화면상으로 보이는 renderCanvas의 크기를 반환한다.
+   * 앞서 화면 크기에 따라 변경한 renderCanvas의 css변수중
+   * --render-canvas-width와 --render-canvas-height를 말한다.
+   *
+   * @returns {Vector}
+   */
+  static getActualRenderCanvasSize() {
+    const root = document.querySelector(":root");
+    const actualWidth = root.style.getPropertyValue("--render-canvas-width");
+    const actualHeight = root.style.getPropertyValue("--render-canvas-height");
+    return new Vector(actualWidth, actualHeight);
+  }
+
+  /**
    * bufferCanvas의 크기(width, height)를 변경한다.
    *
    * @param {number} width - 가로 크기
@@ -231,3 +246,5 @@ export default class RenderManager {
     return RenderManager.bufferCanvas;
   }
 }
+
+export default RenderManager;

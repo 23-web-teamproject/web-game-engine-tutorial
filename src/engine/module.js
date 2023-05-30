@@ -29,6 +29,8 @@ import Text from "/src/engine/core/text.js";
 import SoundEffect from "/src/engine/fx/sound-effect.js";
 import ParticleEffect from "/src/engine/fx/particle-effect.js";
 
+import Debug from "/src/engine/debug.js";
+
 export {
   Color,
   DefaultLayer,
@@ -50,4 +52,5 @@ export {
   Text,
   SoundEffect,
   ParticleEffect,
+  Debug,
 };

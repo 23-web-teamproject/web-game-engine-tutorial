@@ -10,10 +10,11 @@ import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
  *
  * @extends {GameObject}
  */
-export default class Rect extends GameObject {
+class Rect extends GameObject {
   /**
    * @constructor
    * @param {object} options
+   * @param {string} [options.name]
    * @param {number} [options.width]
    * @param {number} [options.height]
    * @param {boolean} [options.isActive]
@@ -21,6 +22,10 @@ export default class Rect extends GameObject {
    * @param {Layer} [options.layer]
    * @param {Color} [options.color=Random Color]
    * @param {boolean} [options.isPhysicsEnable=false]
+   * @param {object} [options.boundary]
+   * @param {number} [options.boundary.width]
+   * @param {number} [options.boundary.height]
+   * @param {number} [options.boundary.offset]
    * @param {object} [options.transform]
    * @param {Vector} [options.transform.position=new Vector(0, 0)]
    * @param {Vector} [options.transform.scale=new Vector(1, 1)]
@@ -35,6 +40,26 @@ export default class Rect extends GameObject {
    * @param {boolean} [options.rigidbody.isTrigger=false]
    */
   constructor(options = {}) {
+    // 만약 boundary가 주어지지 않았고 width와 height가 주어졌다면
+    // boundary를 width와 height로 설정한다.
+    if (typeof options.boundary !== "object") {
+      options.boundary = {};
+    }
+    if (typeof options.width === "number") {
+      options.boundary.width = typeCheck(
+        options.boundary.width,
+        "number",
+        options.width
+      );
+    }
+    if (typeof options.height === "number") {
+      options.boundary.height = typeCheck(
+        options.boundary.height,
+        "number",
+        options.height
+      );
+    }
+
     super(options);
     /**
      * 사각형의 가로, 세로를 의미한다.
@@ -47,6 +72,22 @@ export default class Rect extends GameObject {
         typeCheck(options.height, "number", 50)
       )
     );
+
+    if (typeof options.boundary !== "object") {
+      options.boundary = new Object();
+    }
+    if (
+      typeof options.boundary.width !== "number" &&
+      typeof options.width === "number"
+    ) {
+      options.boundary.width = typeCheck(options.width, "number", 0);
+    }
+    if (
+      typeof options.boundary.height !== "number" &&
+      typeof options.height === "number"
+    ) {
+      options.boundary.height = typeCheck(options.height, "number", 0);
+    }
     /**
      * 윤곽선을 그릴 것인지를 의미한다.
      * 윤곽선을 그리기 위해서는 옵션에서 strokeColor나
@@ -96,12 +137,8 @@ export default class Rect extends GameObject {
       ${this.color.g},
       ${this.color.b}
       )`;
-    this.context2d.fillRect(
-      -this.getSize().x / 2,
-      -this.getSize().y / 2,
-      this.getSize().x,
-      this.getSize().y
-    );
+    const size = this.getSize();
+    this.context2d.fillRect(-size.x / 2, -size.y / 2, size.x, size.y);
 
     // 윤곽선을 그리도록 설정했다면 윤곽선을 렌더링한다.
     if (this.isStroke) {
@@ -112,10 +149,10 @@ export default class Rect extends GameObject {
         ${this.strokeColor.b}
         )`;
       this.context2d.strokeRect(
-        this.strokeWidth / 2 - this.getSize().x / 2,
-        this.strokeWidth / 2 - this.getSize().y / 2,
-        this.getSize().x - this.strokeWidth,
-        this.getSize().y - this.strokeWidth
+        this.strokeWidth / 2 - size.x / 2,
+        this.strokeWidth / 2 - size.y / 2,
+        size.x - this.strokeWidth,
+        size.y - this.strokeWidth
       );
     }
   }
@@ -129,3 +166,5 @@ export default class Rect extends GameObject {
     this.strokeWidth = typeCheckAndClamp(width, "number", 1, 1, 15);
   }
 }
+
+export default Rect;

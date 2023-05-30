@@ -12,7 +12,7 @@ class Layer {
    * 충돌체크를 진행하게 한다.
    *
    * @constructor
-   * @param {Layer} layerConstructor
+   * @param {function(new:Layer)} layerConstructor
    */
   constructor(layerConstructor) {
     if (LayerManager.layerSet.has(layerConstructor.name) === false) {
@@ -30,7 +30,7 @@ class Layer {
   /**
    * 이 레이어와 다른 레이어가 충돌체크를 할 수 있다면 true를 반환한다.
    *
-   * @param {T} otherLayer
+   * @param {Layer} otherLayer
    * @returns {boolean}
    */
   canPhysicsInteractLayerWith(otherLayer) {

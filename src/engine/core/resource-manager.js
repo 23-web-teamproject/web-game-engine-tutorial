@@ -4,7 +4,7 @@ import ResourceLoaderFactory from "/src/engine/core/resource-loader-factory.js";
  * 리소스를 비동기로 로드하는 역할을 맡는다.
  * 모든 리소스가 불러와졌다면 등록된 콜백 함수를 호출한다.
  */
-export default class ResourceManager {
+class ResourceManager {
   /**
    * 불러온 리소스의 개수
    *
@@ -116,3 +116,5 @@ export default class ResourceManager {
     return ResourceManager.loadedResourceCount;
   }
 }
+
+export default ResourceManager;

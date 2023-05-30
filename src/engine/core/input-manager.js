@@ -21,7 +21,7 @@ const KEY_STATUS = {
  * 엔진을 초기화 할 때 이벤트 리스너를 등록하여 매 프레임마다 입력을 받고
  * 키의 상태를 갱신하여 관리한다.
  */
-export default class InputManager {
+class InputManager {
   /**
    * 이전 프레임에서 키가 눌렸는가와
    * 현재 프레임에서 키가 눌렸는가를 저장할 테이블이다.
@@ -208,6 +208,11 @@ export default class InputManager {
    * @returns {Vector}
    */
   static getMousePos() {
-    return InputManager.mousePosition;
+    const ratio =
+      RenderManager.getRenderCanvas().height /
+      RenderManager.getActualRenderCanvasSize().y;
+    return InputManager.mousePosition.multiply(ratio);
   }
 }
+
+export default InputManager;

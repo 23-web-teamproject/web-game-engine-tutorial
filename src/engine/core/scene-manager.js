@@ -8,7 +8,7 @@ import ResourceManager from "/src/engine/core/resource-manager.js";
  * 모든 오브젝트들의 최상위 오브젝트를 말한다.
  * 씬 객체는 모든 게임 오브젝트를 통제하여 게임의 로직을 설계하고 관리하게 된다.
  */
-export default class SceneManager {
+class SceneManager {
   /**
    * 엔진에 연결된 현재 씬
    *
@@ -67,3 +67,5 @@ export default class SceneManager {
     return SceneManager.currentScene;
   }
 }
+
+export default SceneManager;

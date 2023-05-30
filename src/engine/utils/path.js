@@ -8,7 +8,7 @@
  * 절대 경로의 예시
  * - /folderC/index.js
  */
-export default class Path {
+class Path {
   /**
    * 상대 경로의 루트가 될 경로를 의미한다.
    *
@@ -61,3 +61,5 @@ export default class Path {
     return path[0] === "/";
   }
 }
+
+export default Path;

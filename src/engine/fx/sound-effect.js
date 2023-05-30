@@ -3,7 +3,7 @@ import ResourceManager from "/src/engine/core/resource-manager.js";
 /**
  * 사운드파일을 제어하는 역할을 담당한다.
  */
-export default class SoundEffect {
+class SoundEffect {
   /**
    * @constructor
    * @param {string} path - 사운드파일의 경로
@@ -43,3 +43,5 @@ export default class SoundEffect {
     this.source.volume = volumn;
   }
 }
+
+export default SoundEffect;

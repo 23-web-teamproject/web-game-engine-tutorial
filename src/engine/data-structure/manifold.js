@@ -1,7 +1,7 @@
 /**
  * 물체와 물체가 충돌했을 때 그 물체들과 충돌 깊이, 반작용방향을 나타낸다.
  */
-export default class Manifold {
+class Manifold {
   /**
    * @constructor
    * @param {GameObject} objA
@@ -16,3 +16,5 @@ export default class Manifold {
     this.penetrationDepth = penetrationDepth;
   }
 }
+
+export default Manifold;

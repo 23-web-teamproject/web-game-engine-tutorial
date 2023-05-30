@@ -15,7 +15,7 @@ import CircleCollisionResolver from "/src/engine/core/circle-collision-resolver.
  * https://github.com/Kareus/SP2C/
  * https://kareus.tistory.com/15
  */
-export default class PhysicsManager {
+class PhysicsManager {
   /**
    * 물리효과가 적용될 객체들
    *
@@ -253,3 +253,5 @@ export default class PhysicsManager {
     manifold.objB.addPosition(objBCorrection);
   }
 }
+
+export default PhysicsManager;

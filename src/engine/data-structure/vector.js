@@ -1,7 +1,7 @@
 /**
  * 수학에서 말하는 그 벡터인데, 웹브라우저는 2차원이니까 차원이 2인 벡터를 말한다.
  */
-export default class Vector {
+class Vector {
   /**
    * @constructor
    * @param {number} x - x좌표
@@ -10,6 +10,51 @@ export default class Vector {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+  }
+
+  /**
+   * (0, 0)을 갖는 벡터를 반환합니다.
+   *
+   * @type {Vector}
+   */
+  static get zero() {
+    return new Vector(0, 0);
+  }
+
+  /**
+   * (0, -1)을 갖는 벡터를 반환합니다.
+   *
+   * @type {Vector}
+   */
+  static get up() {
+    return new Vector(0, -1);
+  }
+
+  /**
+   * (0, 1)을 갖는 벡터를 반환합니다.
+   *
+   * @type {Vector}
+   */
+  static get down() {
+    return new Vector(0, 1);
+  }
+
+  /**
+   * (1, 0)을 갖는 벡터를 반환합니다.
+   *
+   * @type {Vector}
+   */
+  static get right() {
+    return new Vector(1, 0);
+  }
+
+  /**
+   * (-1, 0)을 갖는 벡터를 반환합니다.
+   *
+   * @type {Vector}
+   */
+  static get left() {
+    return new Vector(-1, 0);
   }
 
   /**
@@ -113,3 +158,5 @@ export default class Vector {
     return new Vector(this.x * other.x, this.y * other.y);
   }
 }
+
+export default Vector;

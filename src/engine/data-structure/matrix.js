@@ -14,26 +14,32 @@
  *               x = x좌표
  *               y = y좌표
  */
-export default class Matrix {
+class Matrix {
   /**
-   * 3x3행렬의 기본행렬의 원소중에 
+   * 3x3행렬의 기본행렬의 원소중에
    * a, b, c, d, x, y위치에 해당하는 값이 초기화된다.
-   * 
+   *
    * @constructor
+   * @param {number} a
+   * @param {number} b
+   * @param {number} c
+   * @param {number} d
+   * @param {number} x
+   * @param {number} y
    */
-  constructor() {
+  constructor(a = 1, b = 0, c = 0, d = 1, x = 0, y = 0) {
     /** @type {number} */
-    this.a = 1;
+    this.a = a;
     /** @type {number} */
-    this.b = 0;
+    this.b = b;
     /** @type {number} */
-    this.x = 0;
+    this.c = c;
     /** @type {number} */
-    this.c = 0;
+    this.d = d;
     /** @type {number} */
-    this.d = 1;
+    this.x = x;
     /** @type {number} */
-    this.y = 0;
+    this.y = y;
   }
 
   /**
@@ -56,4 +62,26 @@ export default class Matrix {
     result.y = this.b * other.x + this.d * other.y + this.y;
     return result;
   }
+
+  /**
+   * 이 행렬의 역행렬을 구해 반환한다.
+   * a c x         1      d -c cy-dx
+   * b d y ^-1 = ----- * -b  a bx-ay
+   * 0 0 1       ad-cb    0  0     1
+   *
+   * @returns {Matrix}
+   */
+  inverse() {
+    const inverse = new Matrix();
+    const inverseDet = 1 / (this.a * this.d - this.b * this.c);
+    inverse.a = this.d * inverseDet;
+    inverse.b = -this.b * inverseDet;
+    inverse.c = -this.c * inverseDet;
+    inverse.d = this.a * inverseDet;
+    inverse.x = (this.c * this.y - this.d * this.x) * inverseDet;
+    inverse.y = (this.b * this.x - this.a * this.y) * inverseDet;
+    return inverse;
+  }
 }
+
+export default Matrix;

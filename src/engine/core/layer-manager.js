@@ -6,7 +6,7 @@
  * 객체의 충돌을 무시할 수 있다.
  * LayerManager에서는 각 레이어의 상태를 관리한다.
  */
-export default class LayerManager {
+class LayerManager {
   /**
    * 전체 레이어의 목록을 나타낸다.
    * 새로운 Layer클래스를 생성하는 순간 Layer클래스의 생성자에 의해
@@ -68,3 +68,5 @@ export default class LayerManager {
     }
   }
 }
+
+export default LayerManager;

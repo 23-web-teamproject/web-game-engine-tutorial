@@ -5,7 +5,7 @@ import { typeCheck, typeCheckAndClamp } from "/src/engine/utils.js";
  * 물체의 질량, 탄성계수, 정지 마찰 계수 등을 담고 있다.
  *
  */
-export default class RigidBody {
+class RigidBody {
   /**
    * @constructor
    * @param {object} [options]
@@ -106,3 +106,5 @@ export default class RigidBody {
     this.isTrigger = typeCheck(options.isTrigger, "boolean", false);
   }
 }
+
+export default RigidBody;

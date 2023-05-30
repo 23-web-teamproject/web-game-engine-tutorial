@@ -1,6 +1,9 @@
 import ResourceManager from "/src/engine/core/resource-manager.js";
 
 import Path from "/src/engine/utils/path.js";
+import { writeErrorMessageOnDocument } from "/src/engine/utils.js";
+import { ResourceNotFoundError } from "/src/engine/utils/error.js";
+
 /**
  * 추상 팩토리 패턴을 사용하여 원하는 리소스를 로드하는
  * ResourceLoader 클래스를 생성해 반환한다.
@@ -66,6 +69,12 @@ class ResourceLoader {
    * 구체적인 리소스 생성방법을 정의해야한다.
    */
   load() {}
+
+  addErrorEventListener() {
+    this.resource.addEventListener("error", () => {
+      writeErrorMessageOnDocument(new ResourceNotFoundError(this.path));
+    });
+  }
 }
 
 /**
@@ -90,13 +99,17 @@ class AudioResourceLoader extends ResourceLoader {
    * @returns {HTMLAudioElement}
    */
   load() {
-    const resource = new Audio(this.path);
+    this.resource = new Audio(this.path);
     ResourceManager.addResourceCount(1);
-    resource.addEventListener("loadeddata", () => {
+
+    this.resource.addEventListener("loadeddata", () => {
       ResourceManager.onResourceLoad(1);
       this.callback();
     });
-    return resource;
+
+    this.addErrorEventListener();
+
+    return this.resource;
   }
 }
 
@@ -121,15 +134,18 @@ class ImageResourceLoader extends ResourceLoader {
    * @returns {HTMLImageElement}
    */
   load() {
-    const resource = new Image();
-    resource.src = this.path;
+    this.resource = new Image();
+    this.resource.src = this.path;
     ResourceManager.addResourceCount(1);
-    resource.addEventListener("load", () => {
+
+    this.resource.addEventListener("load", () => {
       ResourceManager.onResourceLoad(1);
       this.callback();
     });
 
-    return resource;
+    this.addErrorEventListener();
+
+    return this.resource;
   }
 }
 

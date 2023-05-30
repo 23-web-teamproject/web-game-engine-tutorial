@@ -5,7 +5,7 @@
 import { clamp } from "/src/engine/utils.js";
 
 /** rgba에 해당하는 색상값을 나타낸다. */
-export default class Color {
+class Color {
   /**
    * 각각의 rgba값을 설정한다.
    *
@@ -32,3 +32,5 @@ export default class Color {
     return [clamped.r, clamped.g, clamped.b, clamped.a];
   }
 }
+
+export default Color;

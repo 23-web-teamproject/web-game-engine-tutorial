@@ -3,7 +3,7 @@ import { typeCheck } from "/src/engine/utils.js";
 /**
  * 페이지의 title, favicon을 관리한다.
  */
-export default class HTMLManager {
+class HTMLManager {
   /**
    * 페이지의 기본 아이콘의 경로
    *
@@ -46,3 +46,5 @@ export default class HTMLManager {
     image.src = path;
   }
 }
+
+export default HTMLManager;
